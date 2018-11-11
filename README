@@ -1,0 +1,4 @@
+Directories:
+--include: all .h files.
+--src: all .cpp files.
+--lib: dynamic linked files.
