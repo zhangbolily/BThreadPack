@@ -4,11 +4,14 @@ export MAKE := make
 # make flag
 MAKEFLAG := -s --no-print-directory
 
+# include file path
+INC_PATH := -I../../include
+
 # compile marcro
 CC := gcc
 
 # compile flags
-CCFLAG := --std=c++11 -fPIC -Wall
+CCFLAG := --std=c++11 -fPIC -Wall $(INC_PATH)
 OBJCCFLAG := $(CCFLAG) -c
 
 # recursive make and clean
@@ -18,7 +21,7 @@ build-subdirs: $(DIRS)
 .PHONY: $(DIRS)
 $(DIRS):
 	@$(MAKE) $(MAKEFLAG) -C $@ all
-	
+
 .PHONY: clean-subdirs
 clean-subdirs:
 	@for dir in $(DIRS); do \

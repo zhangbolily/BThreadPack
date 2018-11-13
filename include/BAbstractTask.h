@@ -27,7 +27,7 @@ public:
 	~BAbstractTask();
 
 private:
-	BTaskStatus _taskStatus_;
+	atomic_int _taskStatus_;
 
 };
 

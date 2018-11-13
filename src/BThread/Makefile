@@ -1,4 +1,4 @@
-OBJS := BThread.o
+OBJS := BWorkerThread.o
 DIRS :=
 
 include $(SUB_MAKE_INCLUDE)

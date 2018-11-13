@@ -1,9 +1,8 @@
 /*
- * @Author      : Ball Chang
- * @File        : BAbstractThread.h
- * @Date        : 2018-11-12
+ * @Author	: Ball Chang
+ * @File	: BAbstractThread.h
+ * @Date	: 2018-11-12
 */
-
 
 #ifndef _BABSTRACT_THREAD_H_
 #define _BABSTRACT_THREAD_H_
@@ -29,8 +28,6 @@ public:
 private:
 	atomic_int _pid_;
 	atomic_bool _detach_;
-
-	virtual void ThreadFunction();
 
 };
 

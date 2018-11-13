@@ -1,7 +1,7 @@
-/*      
+/*
  * @Author      : Ball Chang
  * @File        : BAbstractThread.cpp
- * @Date        : 2018-11-11
+ * @Date        : 2018-11-12
 */
 
 
@@ -9,7 +9,7 @@
 
 namespace BThreadPack{
 
-BAbstractThread::BAbstractThread(int _detach = 0)
+BAbstractThread::BAbstractThread(bool _detach = false)
 	:_pid_(0), _detach_(_detach)
 {
 }

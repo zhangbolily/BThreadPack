@@ -9,8 +9,8 @@
 namespace BThreadPack{
 
 BAbstractTask::BAbstractTask()
-	:_taskStatus_(BTaskStatus::TaskInit)
 {
+		this->_taskStatus_ = (int)BTaskStatus::TaskInit;
 }
 
 BAbstractTask::~BAbstractTask()
