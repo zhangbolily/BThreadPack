@@ -18,13 +18,13 @@ namespace BThreadPack {
 class BWorkerThread : public BAbstractThread{
 
 public:
-	BWorkerThread(bool _detach);
-	~BWorkerThread();
+    BWorkerThread(bool _detach);
+    ~BWorkerThread();
 
-	/* @kill - Kill this thread and release all resources.
-	 * Don't need any parameters.
-	*/
-	void kill();
+    /* @kill - Kill this thread and release all resources.
+     * Don't need any parameters.
+    */
+    void kill();
 
 private:
 

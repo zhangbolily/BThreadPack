@@ -10,19 +10,19 @@
 namespace BThreadPack{
 
 BWorkerThread::BWorkerThread(bool _detach = false)
-				:BAbstractThread(_detach)
+    :BAbstractThread(_detach)
 {
-	//Do nothing.
+    //Do nothing.
 }
 
 BWorkerThread::~BWorkerThread()
 {
-	//Do nothing.
+    //Do nothing.
 }
 
 void BWorkerThread::kill()
 {
-	//Do nothing.
+    //Do nothing.
 }
 
 };

@@ -10,18 +10,23 @@
 namespace BThreadPack{
 
 BAbstractThread::BAbstractThread(bool _detach = false)
-	:_pid_(0), _detach_(_detach)
+    :_pid_(0), _detach_(_detach)
 {
 }
 
 BAbstractThread::~BAbstractThread()
 {
-	//Do nothing.
+    //Do nothing.
 }
 
 void BAbstractThread::kill()
 {
-	//Do nothing.
+    //Do nothing.
+}
+
+void BAbstractThread::ThreadFunction()
+{
+    //Do nothing.
 }
 
 };
