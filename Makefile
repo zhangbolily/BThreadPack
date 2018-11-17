@@ -1,5 +1,6 @@
 # path marcros
 LIB_PATH := lib
+SYS_LIB_PATH := /usr/local/lib
 
 # target marcros
 TARGET_NAME := libbthreadpack
@@ -34,6 +35,8 @@ default: show-info all
 $(TARGET): build-subdirs $(OBJS) find-all-objs
 	@echo -e "\t" CC $(CCFLAG) $(ALL_OBJS) -shared -o $@
 	@$(CC) $(CCFLAG) $(ALL_OBJS) -shared -o $@
+	@echo -e "\t" sudo cp $(TARGET) $(SYS_LIB_PATH)
+	@sudo cp $(TARGET) $(SYS_LIB_PATH)
 
 # phony targets
 .PHONY: all

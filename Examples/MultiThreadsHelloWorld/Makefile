@@ -1,6 +1,6 @@
 # tool marcros
 CC := g++
-CCFLAG := --std=c++11 -Wall -I../../include -L../../lib
+CCFLAG := --std=c++11 -Wl,--no-as-needed -I../../include `pkg-config --cflags protobuf`
 DBGFLAG := -g
 CCOBJFLAG := $(CCFLAG) -c
 
@@ -12,7 +12,7 @@ DBG_PATH := debug
 INC_PATH := -I../../../include
 
 # librarys
-LIBS := -lbthreadpack
+LIBS := -lbthreadpack `pkg-config --libs protobuf`
 
 # compile marcros
 TARGET_NAME := MultiThreadsHelloWorld
