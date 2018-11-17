@@ -8,24 +8,14 @@
 #define _BABSTRACT_TASK_H_
 
 #include <atomic>
+#include <thread>
+#include <iostream>
 
 using namespace std;
 
 namespace BThreadPack {
 
 class BAbstractTask{
-
-private:
-
-    /* @_taskStatus_ - store the status of task
-     *
-    */
-    atomic_int _taskStatus_;
-    
-    /* @_taskStatus_ - store the data of task
-     *
-    */
-    int _taskData_;
 
 public:
     enum class BTaskStatus{
@@ -36,39 +26,91 @@ public:
     };
 
     /* @BAbstractTask() - Constructor
-     * Don't need any parameters
+     * Don't need any parameter
     */    
     BAbstractTask();
+    
+    /* @BAbstractTask() - Constructor
+     * @_buffer - the task data buffer
+     * @_size - the size of buffer
+    */    
+    BAbstractTask(void* _buffer, size_t _size);
 	
     /* @~BAbstractTask() - Destructor
-     * Don't need any parameters
+     * Don't need any parameter
     */
     ~BAbstractTask();
 
     /* @getTaskStatus() - Return the _taskStatus_ value
-     * Don't need any parameters
+     * Don't need any parameter
     */
-    int getTaskStatus() const;
+    int getTaskStatus();
 
     /* @setTaskStatus() - set the _taskStatus_ value
-     * @parameter status : the new value of _taskStatus_
+     * @parameter status - the new value of _taskStatus_
     */
-    void setTaskStatus(BTaskStatus _status);
+    int setTaskStatus(BTaskStatus _status);
     
     /* @setTaskStatus() - set the _taskStatus_ value
-     * @parameter status : the new value of _taskStatus_ with type atomic_int
+     * @parameter status - the new value of _taskStatus_ with type atomic_int
     */
-    void setTaskStatus(atomic_int _status);
+    int setTaskStatus(atomic_int _status);
     
-    /* @getTaskData() - Return the _taskData_ value
-     * Don't need any parameters
+    /* @setInputBufer() - set the _inputBuffer_ value
+     * @_buffer - the task input buffer
+     * @_size - the size of buffer
+     * @return - return 0 if success
     */
-    int getTaskData() const;
+    int setInputBuffer(void* _buffer, size_t _size);
     
-    /* @setTaskData() - set the _taskData_ value
-     * @_data - the task data
+    /* @getOutputBufer() - get the _outputBuffer_ value
+     * @_buffer - the task output buffer
+     * @_size - the size of buffer
     */
-    void setTaskData(int _data);
+    int getOutputBuffer(void** _buffer, size_t &_size);
+    
+private:
+
+    /* @_taskStatus_ - store the status of task
+     *
+    */
+    atomic_int _taskStatus_;
+    
+    /* @_inputBuffer - store the buffer of input data
+     *
+    */
+    void* _inputBuffer_;
+    
+    /* @_inputBufferSize - store the size of input data buffer
+     *
+    */
+    atomic_int _inputBufferSize_;
+    
+    /* @_outputBuffer_ - store the buffer of output data
+     *
+    */
+    void* _outputBuffer_;
+    
+    /* @_threadID_ - store the id of thread
+     *
+    */
+    thread::id _threadID_;
+    
+    /* @_threadRefCount_ - store how many thread used this object
+     *
+    */
+    atomic_int _threadRefCount_;
+    
+    /* @_threadChanged() - check whether this object has beed moved to another thread
+     * Don't need any parameterr
+    */
+    bool _threadChanged();
+    
+    /* @_threadSafe() - check the thread status of this object and make sure this object is thread-safe
+     * Don't need any parameterr
+     * Returned B_ONLY_SINGLE_THREAD error code if this object is running in multi-thread mode.
+    */
+    int _threadSafe();
 
 };
 
