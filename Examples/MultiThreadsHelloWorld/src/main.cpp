@@ -1,26 +1,56 @@
-#include "BAbstractTask.h"
+#include "BThreadPack.h"
+#include "task_data.pb.h"
 #include <iostream>
 
 using namespace std;
 using namespace BThreadPack;
 
+void FunHello(void* buffer, size_t size)
+{
+    if(buffer == nullptr)
+    {
+        return;
+    }
+    
+    TaskData task_data;
+    task_data.ParseFromArray(buffer, size);
+    
+    cout<<task_data.message()<<endl;
+}
+
 int main(int argc, char** argv)
 {
+    int buffer_size = 0;
+    void* task_buffer = nullptr;
     BAbstractTask _hello_task;
-    _hello_task.setTaskData(1);
     
+    TaskData task_data;
+    task_data.set_message("This will be a multi-thread hello world!");
+    
+    buffer_size = task_data.ByteSizeLong();
+    task_buffer = (void*)malloc(buffer_size);
+    
+    if(task_buffer == nullptr)
     {
-        //Start the task.
-        int _task_data_ = _hello_task.getTaskData();
-        cout<<"The task data before porcessing is "<<_task_data_<<"."<<endl;
-        
-        _task_data_++;
-        _hello_task.setTaskData(_task_data_);
-        
-        cout<<"The task data after porcessing is "<<_hello_task.getTaskData()<<"."<<endl;
+        cerr<<"[Error]task_buffer memory allocated failed."<<endl;
+        return -1;
     }
-
-    cout<<"This will be a multi-thread hello world!"<<endl;
+    
+    if(!task_data.SerializeToArray(task_buffer, buffer_size))
+    {
+        cerr<<"[Error] task_data SerializeToArray failed."<<endl;
+        return -1;
+    }
+    
+    _hello_task.setInputBuffer(task_buffer, buffer_size);
+    
+    FunHello(task_buffer, buffer_size);
+    
+    if(task_buffer != nullptr)
+    {
+        free(task_buffer);
+        task_buffer = nullptr;
+    }
 
     return 0;
 }

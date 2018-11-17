@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message TaskData {
+  string Message = 1;
+}
+
+/*
+ * Use this command to generate .h .cc files
+ * protoc --cpp_out=. task_data.proto
+*/

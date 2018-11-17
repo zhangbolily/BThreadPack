@@ -2,3 +2,7 @@
 *.o
 
 *.so
+
+Examples/MultiThreadsHelloWorld/core
+
+Examples/MultiThreadsHelloWorld/bin/MultiThreadsHelloWorld
