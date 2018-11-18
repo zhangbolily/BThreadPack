@@ -14,10 +14,18 @@ namespace BThreadPack{
 BAbstractTask::BAbstractTask()
 {
     this->_inputBuffer_ = nullptr;
+    this->_inputBufferSize_ = 0;
     this->_outputBuffer_ = nullptr;
+    this->_outputBufferSize_ = 0;
     this->_taskStatus_ = (int)BTaskStatus::TaskInit;
     this->_threadID_ = this_thread::get_id();
     this->_threadRefCount_ = 1;
+    
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Constructing object.")
+    B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Current thread id :"<<this->_threadID_)
+    B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Current thread counter :"<<this->_threadRefCount_)
+#endif
 }
 
 /* @BAbstractTask() - Constructor
@@ -84,7 +92,7 @@ int BAbstractTask::setTaskStatus(atomic_int _status)
     if(this->_threadSafe())
         return this->_threadSafe();
         
-    this->_taskStatus_.store(_status, std::memory_order_relaxed);
+    this->_taskStatus_.store(_status);
     
     return B_SUCCESS;
 }
@@ -114,7 +122,56 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
         this->_inputBuffer_ = nullptr;
         return B_ERROR;
     }else
-        this->_inputBufferSize_.store(_size, std::memory_order_relaxed);
+        this->_inputBufferSize_.store(_size);
+        
+    return B_SUCCESS;
+}
+
+/* @getInputBufer() - get the _inputBuffer_ value
+ * @_buffer - the task output buffer
+ * @_size - the size of buffer
+*/
+int BAbstractTask::getInputBuffer(void** _buffer, size_t &_size)
+{
+    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+     * mode and return an error code.
+    */
+    if(this->_threadSafe())
+        return this->_threadSafe();
+        
+    *_buffer = this->_inputBuffer_;
+    _size = this->_inputBufferSize_.load();
+    
+    return B_SUCCESS;
+}
+
+/* @setOutputBufer() - set the _outputBuffer_ value
+ * @_buffer - the task output buffer
+ * @_size - the size of buffer
+ * @return - return 0 if success
+*/
+int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
+{
+    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+     * mode and return an error code.
+    */
+    if(this->_threadSafe())
+        return this->_threadSafe();
+        
+    if(_buffer == nullptr)
+    {
+        cerr<<"[Error] BAbstractTask::setInputBufer input pointer is nullptr. "<<endl;
+        return B_ERROR;
+    }else
+        this->_outputBuffer_ = _buffer;
+        
+    if(!_size)
+    {
+        cerr<<"[Error] BAbstractTask::setInputBufer input buffer size is 0. "<<endl;
+        this->_outputBuffer_ = nullptr;
+        return B_ERROR;
+    }else
+        this->_outputBufferSize_.store(_size);
         
     return B_SUCCESS;
 }
@@ -131,18 +188,41 @@ int BAbstractTask::getOutputBuffer(void** _buffer, size_t &_size)
         return this->_threadSafe();
         
     *_buffer = this->_outputBuffer_;
+    _size = this->_outputBufferSize_.load();
     
     return B_SUCCESS;
+}
+
+/* @_checkThreadExists() - check whether this thread id has beed recorded
+ * @_threadID - thread id will be checked
+*/
+bool BAbstractTask::_checkThreadExists(thread::id _threadID)
+{
+    std::lock_guard<std::mutex> lk(this->_threadMapMut_);
+    
+    if(this->_threadMap_[_threadID])
+        return true;
+    else{
+        this->_threadMap_[_threadID] = true;
+        this->_threadRefCount_ = this->_threadMap_.size();
+        return false;
+    }
 }
 
 /* @_threadChanged() - check whether this object has beed moved to another thread
  * Don't need any parameter
 */
 bool BAbstractTask::_threadChanged()
-{
+{    
     if(this_thread::get_id() != this->_threadID_)
     {
-        this->_threadRefCount_++;
+        this->_checkThreadExists(this_thread::get_id());
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Thread has been changed.")
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Current thread id:"<<this_thread::get_id())
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Original thread id:"<<this->_threadID_)
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Current thread counter :"<<this->_threadRefCount_)
+#endif
         return true;
     }else
         return false;
