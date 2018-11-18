@@ -55,10 +55,14 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    hello_world_task.setInputBuffer(task_buffer, buffer_size);
+    if(hello_world_task.setInputBuffer(task_buffer, buffer_size))
+    {
+        cerr<<"[Error] hello_world_task.setInputBuffer failed."<<endl;
+        return -1;
+    }
     
     //2. Start threads
-    int num_threads = 4;
+    int num_threads = 1;
     std::thread hello_thread[num_threads];
     
     for (int i = 0; i < num_threads; ++i) {

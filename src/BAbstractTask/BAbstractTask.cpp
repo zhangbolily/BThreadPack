@@ -19,7 +19,10 @@ BAbstractTask::BAbstractTask()
     this->_outputBufferSize_ = 0;
     this->_taskStatus_ = (int)BTaskStatus::TaskInit;
     this->_threadID_ = this_thread::get_id();
-    this->_threadRefCount_ = 1;
+    
+    /* Check the constuct thread and initialize _threadRefCount_
+     */
+    this->_checkThreadExists(this->_threadID_);
     
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Constructing object.")
@@ -110,14 +113,18 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
         
     if(_buffer == nullptr)
     {
-        cerr<<"[Error] BAbstractTask::setInputBufer input pointer is nullptr. "<<endl;
+#ifdef _B_DEBUG_
+        B_PRINT_ERROR("BAbstractTask::setInputBufer input pointer is nullptr. ")
+#endif
         return B_ERROR;
     }else
         this->_inputBuffer_ = _buffer;
         
     if(!_size)
     {
-        cerr<<"[Error] BAbstractTask::setInputBufer input buffer size is 0. "<<endl;
+#ifdef _B_DEBUG_
+        B_PRINT_ERROR("BAbstractTask::setInputBufer input buffer size is 0. ")
+#endif
         this->_inputBuffer_ = nullptr;
         return B_ERROR;
     }else
@@ -159,14 +166,19 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
         
     if(_buffer == nullptr)
     {
-        cerr<<"[Error] BAbstractTask::setInputBufer input pointer is nullptr. "<<endl;
+#ifdef _B_DEBUG_
+        B_PRINT_ERROR("BAbstractTask::setOutputBuffer input pointer is nullptr.")
+#endif
+        cerr<<"[Error]  "<<endl;
         return B_ERROR;
     }else
         this->_outputBuffer_ = _buffer;
         
     if(!_size)
     {
-        cerr<<"[Error] BAbstractTask::setInputBufer input buffer size is 0. "<<endl;
+#ifdef _B_DEBUG_
+        B_PRINT_ERROR("BAbstractTask::setOutputBuffer input buffer size is 0. ")
+#endif
         this->_outputBuffer_ = nullptr;
         return B_ERROR;
     }else
