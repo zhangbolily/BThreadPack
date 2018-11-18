@@ -112,30 +112,30 @@ private:
     */
     atomic_size_t _outputBufferSize_;
     
-    /* @_threadID_ - store the id of thread
-     *
-    */
-    thread::id _threadID_;
-    
-    /* @_threadMapMut_ - the mutex of _threadMap_
-     *
-    */
-    mutex _threadMapMut_;
-    
-    /* @_threadMap_ - store which threads obtain this object
-     *
-    */
-    map<thread::id, bool> _threadMap_;
-    
-    /* @_threadRefCount_ - store how many thread used this object
+    /* @_threadRefCount_ - store how many threads are using this object
      *
     */
     atomic_int _threadRefCount_;
     
-    /* @_checkThreadExists() - check whether this thread id has beed recorded
+    /* @_createThreadID_ - store which thread create this object
+     *
+    */
+    thread::id _createThreadID_;
+    
+    /* @_workThreadID_ - store which thread use this object
+     *
+    */
+    thread::id _workThreadID_;
+    
+    /* @_isCreateThread_ - check whether this thread is work thread
      * @_threadID - thread id will be checked
     */
-    bool _checkThreadExists(thread::id _threadID);
+    bool _isCreateThread_(thread::id _threadID);
+    
+    /* @_isWorkThread_ - check whether this thread is work thread
+     * @_threadID - thread id will be checked
+    */
+    bool _isWorkThread_(thread::id _threadID);
     
     /* @_threadChanged() - check whether this object has beed moved to another thread
      * Don't need any parameterr
