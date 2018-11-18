@@ -1,6 +1,7 @@
 #include "BThreadPack.h"
 #include "task_data.pb.h"
 #include <iostream>
+#include <sstream>
 #include <queue>
 #include <unistd.h>
 #include <mutex>
@@ -23,10 +24,12 @@ void FunHello()
         
         void* task_buffer;
         size_t task_buffer_size;
+        std::ostringstream _os;
         
         if(p_hello_task->getInputBuffer(&task_buffer, task_buffer_size) == B_ONLY_SINGLE_THREAD)
         {
-            cerr<<"[Error] Get task input buffer failed.\n";
+            _os<<"[Error] Get task input buffer failed.\n";
+            cerr<<_os.str();
             lock.unlock();
             return;
         }
@@ -38,13 +41,20 @@ void FunHello()
         TaskData task_data;
         task_data.ParseFromArray(task_buffer, task_buffer_size);
         
-        cout<<"\033[37;42m"<<this_thread::get_id()<<" Task id is:"<<task_data.taskid()<<"\033[0m"<<endl;
-        cout<<"\033[37;42m"<<this_thread::get_id()<<" Task message is:"<<task_data.message()<<"\033[0m"<<endl;
+        _os<<"\033[32m"<<"Task id is:"<<task_data.taskid()<<"\033[0m\n";
+        _os<<"\033[32m"<<task_data.message()<<"\033[0m\n";
+        cout<<_os.str();
         
         if(task_buffer != nullptr)
         {
             free(task_buffer);
             task_buffer = nullptr;
+        }
+        
+        if(p_hello_task != nullptr)
+        {
+            delete p_hello_task;
+            p_hello_task = nullptr;
         }
         
         if(q_hello_world.size())
@@ -72,7 +82,7 @@ int main(int argc, char** argv)
         BAbstractTask* hello_world_task = new BAbstractTask();
         
         TaskData task_data;
-        task_data.set_message("This will be a multi-thread hello world!");
+        task_data.set_message("This is a multi-thread hello world!");
         task_data.set_taskid(i);
         
         buffer_size = task_data.ByteSizeLong();
