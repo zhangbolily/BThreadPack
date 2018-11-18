@@ -8,6 +8,9 @@
 #define _BABSTRACT_TASK_H_
 
 #include <atomic>
+#include <map>
+#include <mutex>
+#include <condition_variable>
 #include <thread>
 #include <iostream>
 
@@ -63,6 +66,19 @@ public:
     */
     int setInputBuffer(void* _buffer, size_t _size);
     
+    /* @getInputBufer() - get the _inputBuffer_ value
+     * @_buffer - the task output buffer
+     * @_size - the size of buffer
+    */
+    int getInputBuffer(void** _buffer, size_t &_size);
+    
+    /* @setOutputBufer() - set the _outputBuffer_ value
+     * @_buffer - the task output buffer
+     * @_size - the size of buffer
+     * @return - return 0 if success
+    */
+    int setOutputBuffer(void* _buffer, size_t _size);
+    
     /* @getOutputBufer() - get the _outputBuffer_ value
      * @_buffer - the task output buffer
      * @_size - the size of buffer
@@ -84,22 +100,47 @@ private:
     /* @_inputBufferSize - store the size of input data buffer
      *
     */
-    atomic_int _inputBufferSize_;
+    atomic_size_t _inputBufferSize_;
     
     /* @_outputBuffer_ - store the buffer of output data
      *
     */
     void* _outputBuffer_;
     
+    /* @_outputBuffer_ - store the size of output data buffer
+     *
+    */
+    atomic_size_t _outputBufferSize_;
+    
     /* @_threadID_ - store the id of thread
      *
     */
     thread::id _threadID_;
     
+    /* @_threadMapMut_ - the mutex of _threadMap_
+     *
+    */
+    mutex _threadMapMut_;
+    
+    /* @_threadMapCond_ - the condition variable of _threadMap_
+     *
+    */
+    condition_variable _threadMapCond_;
+    
+    /* @_threadMap_ - store which threads obtain this object
+     *
+    */
+    map<thread::id, bool> _threadMap_;
+    
     /* @_threadRefCount_ - store how many thread used this object
      *
     */
     atomic_int _threadRefCount_;
+    
+    /* @_checkThreadExists() - check whether this thread id has beed recorded
+     * @_threadID - thread id will be checked
+    */
+    bool _checkThreadExists(thread::id _threadID);
     
     /* @_threadChanged() - check whether this object has beed moved to another thread
      * Don't need any parameterr
