@@ -11,7 +11,7 @@ INC_PATH := -I../../include
 CC := gcc
 
 # compile flags
-CCFLAG := --std=c++11 -g -fPIC -Wall $(INC_PATH) -D_B_DEBUG_
+CCFLAG := --std=c++11 -g -fPIC -Wall $(INC_PATH)
 OBJCCFLAG := $(CCFLAG) -c
 
 # recursive make and clean
