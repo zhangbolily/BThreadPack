@@ -122,11 +122,6 @@ private:
     */
     mutex _threadMapMut_;
     
-    /* @_threadMapCond_ - the condition variable of _threadMap_
-     *
-    */
-    condition_variable _threadMapCond_;
-    
     /* @_threadMap_ - store which threads obtain this object
      *
     */

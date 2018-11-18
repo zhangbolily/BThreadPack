@@ -23,7 +23,6 @@ BAbstractTask::BAbstractTask()
     
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Constructing object.")
-    B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Current thread id :"<<this->_threadID_)
     B_PRINT_DEBUG("BAbstractTask::BAbstractTask() - Current thread counter :"<<this->_threadRefCount_)
 #endif
 }
@@ -218,8 +217,7 @@ bool BAbstractTask::_threadChanged()
     {
         this->_checkThreadExists(this_thread::get_id());
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Thread has been changed.")
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Current thread id:"<<this_thread::get_id())
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Thread change detected.")
         B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Original thread id:"<<this->_threadID_)
         B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Current thread counter :"<<this->_threadRefCount_)
 #endif
