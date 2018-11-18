@@ -167,12 +167,19 @@ class TaskData : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::std::string* release_message();
   void set_allocated_message(::std::string* message);
 
+  // int32 TaskID = 2;
+  void clear_taskid();
+  static const int kTaskIDFieldNumber = 2;
+  ::google::protobuf::int32 taskid() const;
+  void set_taskid(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:TaskData)
  private:
   class HasBitSetters;
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr message_;
+  ::google::protobuf::int32 taskid_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_task_5fdata_2eproto;
 };
@@ -238,6 +245,20 @@ inline void TaskData::set_allocated_message(::std::string* message) {
   }
   message_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), message);
   // @@protoc_insertion_point(field_set_allocated:TaskData.Message)
+}
+
+// int32 TaskID = 2;
+inline void TaskData::clear_taskid() {
+  taskid_ = 0;
+}
+inline ::google::protobuf::int32 TaskData::taskid() const {
+  // @@protoc_insertion_point(field_get:TaskData.TaskID)
+  return taskid_;
+}
+inline void TaskData::set_taskid(::google::protobuf::int32 value) {
+  
+  taskid_ = value;
+  // @@protoc_insertion_point(field_set:TaskData.TaskID)
 }
 
 #ifdef __GNUC__

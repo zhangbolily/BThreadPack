@@ -20,6 +20,16 @@
  *  Definition of return code
 */
 
+/* If an object has been passed to a thread, some function might can only be called in
+ * work thread. If you call member function in another thread, this error occurs.
+*/
+#define B_NOT_IN_WORK_THREAD    -4
+
+/* If an object has been passed to a thread, some function might can only be called in
+ * create thread. If you call member function in another thread, this error occurs.
+*/
+#define B_NOT_IN_CREATE_THREAD    -3
+
 /* If an object can only run in a single thread was used in
  * multi-thread mode, this error code will be returned.
 */
