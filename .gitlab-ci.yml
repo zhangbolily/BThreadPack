@@ -8,7 +8,7 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install build-essentials
+    - apt update && apt -y install build-essential
   script:
     - make -j 4
   # after_script:
