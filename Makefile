@@ -35,6 +35,7 @@ default: show-info all
 $(TARGET): build-subdirs $(OBJS) find-all-objs
 	@echo -e "\t" mkdir $(LIB_PATH)
 	@echo -e "\t" CC $(CCFLAG) $(ALL_OBJS) -shared -o $@
+	@rm -rf $(LIB_PATH)
 	@mkdir $(LIB_PATH)
 	@$(CC) $(CCFLAG) $(ALL_OBJS) -shared -o $@
 
