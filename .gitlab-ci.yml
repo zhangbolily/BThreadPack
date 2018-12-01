@@ -6,13 +6,13 @@ build:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
-  before_script: 
-    - apt update && apt -y install make autoconf 
-  script: 
+  before_script:
+    - apt update && apt -y install make autoconf
+  script:
     - make -j 4
-  after_script:
+  # after_script:
 
 # run tests using the binary built before
-test:
-  stage: test
+# test:
+  # stage: test
   # script:
