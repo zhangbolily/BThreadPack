@@ -20,6 +20,12 @@ void FunHello()
         std::unique_lock<std::mutex> lock(task_mut);
         task_cond.wait(lock);
         
+        if(!q_hello_world.size())
+        {
+            task_cond.notify_all();
+            return;
+        }
+        
         BAbstractTask* p_hello_task = (BAbstractTask*)q_hello_world.front();
         
         void* task_buffer;
@@ -41,7 +47,7 @@ void FunHello()
         TaskData task_data;
         task_data.ParseFromArray(task_buffer, task_buffer_size);
         
-        _os<<"\033[32m"<<"Task id is:"<<task_data.taskid()<<"\033[0m\n";
+        _os<<"\033[32m"<<"Task id is:"<<task_data.taskid()<<"\033[0m - ";
         _os<<"\033[32m"<<task_data.message()<<"\033[0m\n";
         cout<<_os.str();
         
@@ -57,17 +63,16 @@ void FunHello()
             p_hello_task = nullptr;
         }
         
-        if(q_hello_world.size())
-            task_cond.notify_all();
+        task_cond.notify_all();
     }
 }
 
 int main(int argc, char** argv)
 {
-    int task_num = 20;
+    int task_num = 100;
     
     //1. Start threads
-    int num_threads = 10;
+    int num_threads = 20;
     std::thread hello_thread[num_threads];
     
     for (int i = 0; i < num_threads; ++i) {
