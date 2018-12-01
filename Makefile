@@ -35,8 +35,8 @@ default: show-info all
 $(TARGET): build-subdirs $(OBJS) find-all-objs
 	@echo -e "\t" mkdir $(LIB_PATH)
 	@echo -e "\t" CC $(CCFLAG) $(ALL_OBJS) -shared -o $@
-	@$(CC) $(CCFLAG) $(ALL_OBJS) -shared -o $@
 	@mkdir $(LIB_PATH)
+	@$(CC) $(CCFLAG) $(ALL_OBJS) -shared -o $@
 
 # phony targets
 .PHONY: all
@@ -45,13 +45,13 @@ all: $(TARGET)
 
 .PHONY: clean
 clean: clean-subdirs
-	@echo CLEAN $(CLEAN_FILES)
+	@echo CLEAN $(CLEAN_FILES) $(LIB_PATH)
 	@rm -rf $(CLEAN_FILES) LIB_PATH
 
 .PHONY: distclean
 distclean: clean-subdirs
-	@echo CLEAN $(DIST_CLEAN_FILES)
-	@rm -f $(DIST_CLEAN_FILES)
+	@echo CLEAN $(DIST_CLEAN_FILES) $(LIB_PATH)
+	@rm -rf $(DIST_CLEAN_FILES) LIB_PATH
 
 # phony funcs
 .PHONY: find-all-objs
