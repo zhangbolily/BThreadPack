@@ -17,11 +17,11 @@ MAIN_SRC := # FILL: src file which contains `main()`
 
 # compile marcros
 DIRS := src
-OBJS := 
+OBJS :=
 
 # intermedia compile marcros
 # NOTE: ALL_OBJS are intentionally left blank, no need to fill it
-ALL_OBJS := 
+ALL_OBJS :=
 CLEAN_FILES := $(TARGET) $(OBJS)
 DIST_CLEAN_FILES := $(OBJS)
 
@@ -53,7 +53,7 @@ distclean: clean-subdirs
 
 # phony funcs
 .PHONY: find-all-objs
-find-all-objs:
+find-all-objs: build-subdirs
 	$(eval ALL_OBJS += $(call rwildcard,$(DIRS),*.o))
 
 .PHONY: show-info
