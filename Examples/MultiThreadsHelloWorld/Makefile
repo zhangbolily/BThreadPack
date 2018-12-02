@@ -1,6 +1,6 @@
 # tool marcros
 CC := g++
-CCFLAG := --std=c++11 -Wl,--no-as-needed -I../../include `pkg-config --cflags protobuf`
+CCFLAG := --std=c++11 -Wl,--no-as-needed `pkg-config --cflags protobuf`
 DBGFLAG := -g
 CCOBJFLAG := $(CCFLAG) -c
 

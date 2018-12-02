@@ -18,7 +18,14 @@ namespace BThreadPack {
 class BAbstractThread{
 
 public:
+    /* @BAbstractThread() - Constructor
+     * Don't need any parameter
+    */
     BAbstractThread(bool _detach);
+    
+    /* @~BAbstractThread() - Destructor
+     * Don't need any parameter
+    */
     ~BAbstractThread();
 
     /* @kill - Kill this thread and release all resources.
@@ -27,10 +34,10 @@ public:
     void kill();
 
 private:
-    atomic_int _pid_;
+    thread::id _pid_;
     atomic_bool _detach_;
 
-    virtual void ThreadFunction();
+    virtual void ThreadFunction(void * _buffer);
 
 };
 

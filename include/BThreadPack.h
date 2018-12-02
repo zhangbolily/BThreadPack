@@ -9,10 +9,6 @@
 #include <thread>
 #endif
 
-#include "BAbstractTask.h"
-#include "BAbstractThread.h"
-#include "BWorkerThread.h"
-
 #ifndef _BTHREAD_PACK_H_
 #define _BTHREAD_PACK_H_
 
