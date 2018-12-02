@@ -11,6 +11,7 @@
 #include <atomic>
 #include <queue>
 #include <vector>
+#include <functional>
 #include <condition_variable>
 #include "BThreadPack.h"
 
@@ -49,6 +50,12 @@ public:
      * @return - return 0 if success
     */
     int kill();
+    
+    /* @addTask - Add a task to the task queue.
+     * @_taskBuffer - A memory buffer that contains the task data.
+     * @return - return 0 if success
+    */
+    int addTask(void* _taskBuffer);
 
 private:
     /* @_threadNum_ - The number of threads.
@@ -78,7 +85,7 @@ private:
     /* @_threadFunction_ - The function that threads will execute.
      * @_buffer - Transfer data into thread.
     */
-    static void _threadFunction_(void * _buffer);
+    static void _threadFunction_(void* _buffer);
     
     /* @_initThreads_ - This function will initialize all threads.
      * @return - return 0 if success
