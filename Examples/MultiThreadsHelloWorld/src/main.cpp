@@ -1,4 +1,5 @@
-#include "BThreadPack.h"
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BWorkerTask.h"
 #include "task_data.pb.h"
 #include <iostream>
 #include <sstream>
@@ -12,7 +13,7 @@ using namespace BThreadPack;
 
 mutex task_mut;
 condition_variable task_cond;
-queue<BAbstractTask*> q_hello_world;
+queue<BWorkerTask*> q_hello_world;
 
 void FunHello()
 {
@@ -26,7 +27,7 @@ void FunHello()
             return;
         }
         
-        BAbstractTask* p_hello_task = (BAbstractTask*)q_hello_world.front();
+        BWorkerTask* p_hello_task = (BWorkerTask*)q_hello_world.front();
         
         void* task_buffer;
         size_t task_buffer_size;
@@ -84,7 +85,7 @@ int main(int argc, char** argv)
     {
         size_t buffer_size = 0;
         void* task_buffer = nullptr;
-        BAbstractTask* hello_world_task = new BAbstractTask();
+        BWorkerTask* hello_world_task = new BWorkerTask();
         
         TaskData task_data;
         task_data.set_message("This is a multi-thread hello world!");

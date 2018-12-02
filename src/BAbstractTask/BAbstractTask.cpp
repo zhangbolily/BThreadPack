@@ -5,6 +5,7 @@
 */
 
 #include "BThreadPack.h"
+#include "BAbstractTask.h"
 
 namespace BThreadPack{
 
