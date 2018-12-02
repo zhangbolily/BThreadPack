@@ -140,13 +140,13 @@ private:
     /* @_threadChanged() - check whether this object has beed moved to another thread
      * Don't need any parameterr
     */
-    bool _threadChanged();
+    bool _threadChanged_();
     
     /* @_threadSafe() - check the thread status of this object and make sure this object is thread-safe
      * Don't need any parameterr
      * Returned B_ONLY_SINGLE_THREAD error code if this object is running in multi-thread mode.
     */
-    int _threadSafe();
+    int _threadSafe_();
 
 };
 

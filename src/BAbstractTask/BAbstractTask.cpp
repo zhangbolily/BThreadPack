@@ -48,7 +48,7 @@ BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
 */
 BAbstractTask::~BAbstractTask()
 {
-    this->_threadSafe();
+    this->_threadSafe_();
 }
 
 /* @getTaskStatus() - Return the _taskStatus_ value
@@ -56,11 +56,11 @@ BAbstractTask::~BAbstractTask()
 */
 int BAbstractTask::getTaskStatus()
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
         
     return this->_taskStatus_;
 }
@@ -70,11 +70,11 @@ int BAbstractTask::getTaskStatus()
 */
 int BAbstractTask::setTaskStatus(BAbstractTask::BTaskStatus _status)
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
     
     if(this->_isWorkThread_(this_thread::get_id()) || (this->_threadRefCount_ == 1))
     {    
@@ -91,11 +91,11 @@ int BAbstractTask::setTaskStatus(BAbstractTask::BTaskStatus _status)
 */
 int BAbstractTask::setTaskStatus(atomic_int _status)
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
         
     if(this->_isWorkThread_(this_thread::get_id()) || (this->_threadRefCount_ == 1))
     {    
@@ -113,11 +113,11 @@ int BAbstractTask::setTaskStatus(atomic_int _status)
 */
 int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
     
     if(this->_isCreateThread_(this_thread::get_id()))
     {    
@@ -152,11 +152,11 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
 */
 int BAbstractTask::getInputBuffer(void** _buffer, size_t &_size)
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
     
     if(this->_isWorkThread_(this_thread::get_id()) || (this->_threadRefCount_ == 1))
     {    
@@ -176,11 +176,11 @@ int BAbstractTask::getInputBuffer(void** _buffer, size_t &_size)
 */
 int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
     
     if(this->_isWorkThread_(this_thread::get_id()) || (this->_threadRefCount_ == 1))
     {
@@ -215,11 +215,11 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 */
 int BAbstractTask::getOutputBuffer(void** _buffer, size_t &_size)
 {
-    /* If _threadSafe() returned none-zero, this means this object is not running in single-thread
+    /* If _threadSafe_() returned none-zero, this means this object is not running in single-thread
      * mode and return an error code.
     */
-    if(this->_threadSafe())
-        return this->_threadSafe();
+    if(this->_threadSafe_())
+        return this->_threadSafe_();
         
     if(this->_isCreateThread_(this_thread::get_id()))
     {
@@ -258,19 +258,19 @@ bool BAbstractTask::_isWorkThread_(thread::id _threadID)
     }
 }
 
-/* @_threadChanged() - check whether this object has beed moved to another thread
+/* @_threadChanged_() - check whether this object has beed moved to another thread
  * Don't need any parameter
 */
-bool BAbstractTask::_threadChanged()
+bool BAbstractTask::_threadChanged_()
 {   
     bool _createThreadRet = false, _workThreadRet = false;
  
     if(!this->_isCreateThread_(this_thread::get_id()))
     {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Thread change detected. But the new thread is not create thread.")
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Create thread id:"<<this->_createThreadID_)
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Current thread counter :"<<this->_threadRefCount_)
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged_() - Thread change detected. But the new thread is not create thread.")
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged_() - Create thread id:"<<this->_createThreadID_)
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged_() - Current thread counter :"<<this->_threadRefCount_)
 #endif
          /* The second thread obtained this object will be regard as work thread.
         */
@@ -288,9 +288,9 @@ bool BAbstractTask::_threadChanged()
     if(!this->_isWorkThread_(this_thread::get_id()))
     {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Thread change detected. But the new thread is not work thread.")
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Work thread id:"<<this->_workThreadID_)
-        B_PRINT_DEBUG("BAbstractTask::_threadChanged() - Current thread counter :"<<this->_threadRefCount_)
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged_() - Thread change detected. But the new thread is not work thread.")
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged_() - Work thread id:"<<this->_workThreadID_)
+        B_PRINT_DEBUG("BAbstractTask::_threadChanged_() - Current thread counter :"<<this->_threadRefCount_)
 #endif
         _workThreadRet = true;
     }else
@@ -299,13 +299,13 @@ bool BAbstractTask::_threadChanged()
     return (_createThreadRet && _workThreadRet);
 }
 
-/* @_threadSafe() - check the thread status of this object and make sure this object is thread-safe
+/* @_threadSafe_() - check the thread status of this object and make sure this object is thread-safe
  * Don't need any parameterr
  * Returned B_ONLY_SINGLE_THREAD error code if this object is running in multi-thread mode.
 */
-int BAbstractTask::_threadSafe()
+int BAbstractTask::_threadSafe_()
 {
-    if(this->_threadChanged())
+    if(this->_threadChanged_())
     {
         return B_ONLY_SINGLE_THREAD;
     }else{
