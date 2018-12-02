@@ -1,6 +1,7 @@
 # path marcros
 LIB_PATH := lib
 SYS_LIB_PATH := /usr/local/lib
+SYS_INC_PATH := /usr/local/include
 
 # target marcros
 TARGET_NAME := libbthreadpack
@@ -47,12 +48,20 @@ all: $(TARGET)
 .PHONY: clean
 clean: clean-subdirs
 	@echo CLEAN $(CLEAN_FILES) $(LIB_PATH)
-	@rm -rf $(CLEAN_FILES) LIB_PATH
+	@rm -rf $(CLEAN_FILES) $(LIB_PATH)
 
 .PHONY: distclean
 distclean: clean-subdirs
 	@echo CLEAN $(DIST_CLEAN_FILES) $(LIB_PATH)
-	@rm -rf $(DIST_CLEAN_FILES) LIB_PATH
+	@rm -rf $(DIST_CLEAN_FILES) $(LIB_PATH)
+	
+.PHONY: install
+install: all
+	@echo -e Install libbthreadpack.so and header files into /usr/local
+	@rm -rf $(SYS_INC_PATH)/BThreadPack
+	@mkdir -p $(SYS_INC_PATH)/BThreadPack
+	@cp -rf $(TARGET) $(SYS_LIB_PATH)
+	@cp -rf include/* $(SYS_INC_PATH)/BThreadPack
 
 # phony funcs
 .PHONY: find-all-objs
