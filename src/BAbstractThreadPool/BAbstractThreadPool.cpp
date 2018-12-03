@@ -14,7 +14,6 @@ namespace BThreadPack{
 BAbstractThreadPool::BAbstractThreadPool(int _threadNum)
     :_threadNum_(_threadNum)
 {
-    this->_initThreads_();
 }
 
 /* @~BAbstractThreadPool() - Destructor
@@ -23,6 +22,56 @@ BAbstractThreadPool::BAbstractThreadPool(int _threadNum)
 BAbstractThreadPool::~BAbstractThreadPool()
 {
     //Do nothing.
+}
+
+/* @getThreadNum - Get how many threads in this pool.
+ * @return - return thread number.
+*/
+unsigned int BAbstractThreadPool::getThreadNum()
+{
+    return this->_threadNum_;
+}
+
+/* @addThread - Add a thread to the thread pool.
+ * @return - return current thread number.
+*/
+int BAbstractThreadPool::addThread(thread _newThread)
+{
+    /*TODO: Some bugs here.
+     *Can't control over created threads.
+    */
+    if(this->_threadNum_ == this->_threadVec_.size())
+    {
+        this->_threadVec_.push_back(std::move(_newThread));
+        return this->_threadNum_;
+    }
+    else{
+        this->_threadVec_.push_back(std::move(_newThread));
+        return this->_threadNum_;
+    }
+    return 0;
+}
+
+/* @_initThreads_ - This function will initialize all threads.
+ * @_this - Pass a fake this pointer into thread.
+ * @return - return 0 if success
+*/
+int BAbstractThreadPool::initThreads(BAbstractThreadPool* _this)
+{    
+    for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
+        this->addThread(thread(BAbstractThreadPool::_threadFunction_, ref(_this)));
+    }
+    
+    return 0;
+}
+
+/* @waitCond - This function wait the signal of condition_variable. 
+ * No return value.
+*/
+void BAbstractThreadPool::waitCond()
+{
+    std::unique_lock<std::mutex> lock(this->_startMut_);
+    this->_startCond_.wait(lock);
 }
 
 /* @startOneTask - Start one thread not creat it.
@@ -64,24 +113,27 @@ int BAbstractThreadPool::kill()
 */
 int BAbstractThreadPool::addTask(void* _taskBuffer)
 {
+    lock_guard<std::mutex> guard(_taskMut_);
     this->_taskQueue_.push(_taskBuffer);
     
     return 0;
 }
 
-/* @_initThreads_ - This function will initialize all threads.
- * @return - return 0 if success
+/* @getTask - Get the first task from task queue and remove it from task queue.
+ * @return - return task buffer.
 */
-int BAbstractThreadPool::_initThreads_()
+void* BAbstractThreadPool::getTask()
 {
-    //TODO: Define a temp pointer.
-    void* _tempPointer = nullptr;
+    lock_guard<std::mutex> guard(_taskMut_);
     
-    for (unsigned int i = 0; i < this->_threadNum_; ++i) {
-        this->_threadVec_.push_back(thread(BAbstractThreadPool::_threadFunction_, ref(_tempPointer)));
+    if(!this->_taskQueue_.size())
+        return nullptr;
+    else{
+        void* _resultTask = this->_taskQueue_.front();
+        this->_taskQueue_.pop();
+        
+        return _resultTask;
     }
-    
-    return 0;
 }
 
 void BAbstractThreadPool::_threadFunction_(void* _buffer)
