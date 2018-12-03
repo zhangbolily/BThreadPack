@@ -25,8 +25,9 @@ public:
     
     int initThreads(BAbstractThreadPool* _this)
     {    
-        for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
-            this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this));
+        for (unsigned int i = 0; i < this->getThreadCap(); ++i) {
+            if(this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
+                return B_THREAD_POOL_IS_FULL;
         }
         
         return 0;
@@ -87,7 +88,8 @@ int main(int argc, char** argv)
     int task_num = 100;
     
     //1. Start threads
-    hello_world_pool.initThreads(&hello_world_pool);
+    if(hello_world_pool.initThreads(&hello_world_pool) == B_THREAD_POOL_IS_FULL)
+        return B_THREAD_POOL_IS_FULL;
     
     //2. Make task data
     for(int i=0;i < task_num;i++)
