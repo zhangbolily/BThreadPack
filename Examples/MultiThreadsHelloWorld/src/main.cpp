@@ -1,5 +1,6 @@
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BWorkerTask.h"
+#include "BThreadPack/BAbstractThreadPool.h"
 #include "task_data.pb.h"
 #include <iostream>
 #include <sstream>
@@ -11,74 +12,82 @@
 using namespace std;
 using namespace BThreadPack;
 
-mutex task_mut;
-condition_variable task_cond;
-queue<BWorkerTask*> q_hello_world;
-
-void FunHello()
-{
-    while(1){
-        std::unique_lock<std::mutex> lock(task_mut);
-        task_cond.wait(lock);
-        
-        if(!q_hello_world.size())
-        {
-            task_cond.notify_all();
-            return;
-        }
-        
-        BWorkerTask* p_hello_task = (BWorkerTask*)q_hello_world.front();
-        
-        void* task_buffer;
-        size_t task_buffer_size;
-        std::ostringstream _os;
-        
-        if(p_hello_task->getInputBuffer(&task_buffer, task_buffer_size) == B_ONLY_SINGLE_THREAD)
-        {
-            _os<<"[Error] Get task input buffer failed.\n";
-            cerr<<_os.str();
-            lock.unlock();
-            return;
-        }
-        
-        q_hello_world.pop();
-        
-        lock.unlock();
-        
-        TaskData task_data;
-        task_data.ParseFromArray(task_buffer, task_buffer_size);
-        
-        _os<<"\033[32m"<<"Task id is:"<<task_data.taskid()<<"\033[0m - ";
-        _os<<"\033[32m"<<task_data.message()<<"\033[0m\n";
-        cout<<_os.str();
-        
-        if(task_buffer != nullptr)
-        {
-            free(task_buffer);
-            task_buffer = nullptr;
-        }
-        
-        if(p_hello_task != nullptr)
-        {
-            delete p_hello_task;
-            p_hello_task = nullptr;
-        }
-        
-        task_cond.notify_all();
+class HelloWorldThreadPool: public BAbstractThreadPool{
+public:
+    HelloWorldThreadPool(int _threadNum)
+        :BAbstractThreadPool(_threadNum)
+    {
     }
-}
+    
+    ~HelloWorldThreadPool()
+    {
+    }
+    
+    int initThreads(BAbstractThreadPool* _this)
+    {    
+        for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
+            this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this));
+        }
+        
+        return 0;
+    }
+
+private:
+    static void _threadFunction_(BAbstractThreadPool* _this)
+    {
+        while(1)
+        {
+            _this->waitCond();
+            
+            BWorkerTask* p_hello_task = (BWorkerTask*)_this->getTask();
+            
+            if(p_hello_task == nullptr)
+                return;
+            
+            void* task_buffer;
+            size_t task_buffer_size;
+            std::ostringstream _os;
+            
+            if(p_hello_task->getInputBuffer(&task_buffer, task_buffer_size) == B_ONLY_SINGLE_THREAD)
+            {
+                _os<<"[Error] Get task input buffer failed.\n";
+                cerr<<_os.str();
+                return;
+            }
+            
+            TaskData task_data;
+            task_data.ParseFromArray(task_buffer, task_buffer_size);
+            
+            _os<<"\033[32m"<<"Task id is:"<<task_data.taskid()<<"\033[0m - ";
+            _os<<"\033[32m"<<task_data.message()<<"\033[0m\n";
+            cout<<_os.str();
+            
+            if(task_buffer != nullptr)
+            {
+                free(task_buffer);
+                task_buffer = nullptr;
+            }
+            
+            if(p_hello_task != nullptr)
+            {
+                delete p_hello_task;
+                p_hello_task = nullptr;
+            }
+            
+            _this->startAllTask();
+        }
+    }
+};
+
+int num_threads = 20;
+HelloWorldThreadPool hello_world_pool(num_threads);
 
 int main(int argc, char** argv)
 {
     int task_num = 100;
     
     //1. Start threads
-    int num_threads = 20;
-    std::thread hello_thread[num_threads];
-    
-    for (int i = 0; i < num_threads; ++i) {
-        hello_thread[i] = std::thread(FunHello);
-    }
+    hello_world_pool.initThreads(&hello_world_pool);
     
     //2. Make task data
     for(int i=0;i < task_num;i++)
@@ -112,15 +121,13 @@ int main(int argc, char** argv)
             return -1;
         }
         
-        q_hello_world.push(hello_world_task);
+        hello_world_pool.addTask((void *)hello_world_task);
     }      
         
     sleep(1);
-    task_cond.notify_all();
+    hello_world_pool.startAllTask();
     
-    for (int i = 0; i < num_threads; ++i) {
-        hello_thread[i].join();
-    }
+    while(1);
 
     return 0;
 }
