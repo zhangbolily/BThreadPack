@@ -32,6 +32,27 @@ public:
     */
     ~BAbstractThreadPool();
     
+    /* @getThreadNum - Get how many threads in this pool.
+     * @return - return thread number.
+    */
+    unsigned int getThreadNum();
+    
+    /* @addThread - Add a thread to the thread pool.
+     * @return - return current thread number.
+    */
+    int addThread(thread _newThread);
+    
+    /* @_initThreads_ - This function will initialize all threads.
+     * @_this - Pass a fake this pointer into thread.
+     * @return - return 0 if success
+    */
+    virtual int initThreads(BAbstractThreadPool* _this);
+    
+    /* @waitCond - This function wait the signal of condition_variable. 
+     * No return value.
+    */
+    void waitCond();
+    
     /* @startOneTask - This function will notify at least one thread to pop task queue.
      * If the task queue only has one task, this function behaves like start one task.
      * However, if the task queue has more than one task, the behaviour is undefined.
@@ -56,6 +77,11 @@ public:
      * @return - return 0 if success
     */
     int addTask(void* _taskBuffer);
+    
+    /* @getTask - Get a task from task queue.
+     * @return - return task buffer.
+    */
+    void* getTask();
 
 private:
     /* @_threadNum_ - The number of threads.
@@ -86,12 +112,6 @@ private:
      * @_buffer - Transfer data into thread.
     */
     static void _threadFunction_(void* _buffer);
-    
-    /* @_initThreads_ - This function will initialize all threads.
-     * @return - return 0 if success
-    */
-    int _initThreads_();
-
 };
 
 };
