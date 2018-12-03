@@ -40,12 +40,15 @@ default: all
 
 # non-phony targets
 $(TARGET): $(OBJ)
+	@if [ -d $(BIN_PATH) ]; then :; else mkdir $(BIN_PATH) && echo "Dir bin doesn't exist, create it."; fi
 	$(CC) $(CCFLAG) -o $@ $? $(LIBS)
 
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
+	@if [ -d $(OBJ_PATH) ]; then :; else mkdir $(OBJ_PATH) && echo "Dir obj doesn't exist, create it."; fi
 	$(CC) $(CCOBJFLAG) -o $@ $< $(LIBS)
 
 $(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
+	@if [ -d $(DBG_PATH) ]; then :; else mkdir $(DBG_PATH) && echo "Dir debug doesn't exist, create it."; fi
 	$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $< $(LIBS)
 
 $(TARGET_DEBUG): $(OBJ_DEBUG)
