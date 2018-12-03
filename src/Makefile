@@ -1,4 +1,4 @@
 OBJS := 
-DIRS := BAbstractTask BAbstractThreadPool BWorkerTask
+DIRS := BAbstractTask BAbstractThreadPool BGeneralThreadPool BGeneralTask BWorkerTask
 
 include $(SUB_MAKE_INCLUDE)

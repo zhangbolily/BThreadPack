@@ -32,18 +32,26 @@ public:
     */
     ~BAbstractThreadPool();
     
+    /* @getThreadCap - Get how many threads can be stored in this pool.
+     * @return - return thread capacity value.
+    */
+    unsigned int getThreadCap();
+    
     /* @getThreadNum - Get how many threads in this pool.
      * @return - return thread number.
     */
     unsigned int getThreadNum();
     
     /* @addThread - Add a thread to the thread pool.
+     * You can add threads less than the thread pool capacity.
      * @return - return current thread number.
     */
-    int addThread(thread _newThread);
+    long long addThread(thread _newThread);
     
     /* @_initThreads_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
+     * All threads will use this pointer to call public member in this class.
+     * Mostly for task management purpose.
      * @return - return 0 if success
     */
     virtual int initThreads(BAbstractThreadPool* _this);

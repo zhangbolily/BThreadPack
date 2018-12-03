@@ -16,6 +16,10 @@
  *  Definition of return code
 */
 
+/* If you have add threads more than the thread pool capacity, this error code will be returned.
+*/
+#define B_THREAD_POOL_IS_FULL    -5
+
 /* If an object has been passed to a thread, some function might can only be called in
  * work thread. If you call member function in another thread, this error occurs.
 */
