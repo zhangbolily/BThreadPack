@@ -8,3 +8,7 @@ Examples/MultiThreadsHelloWorld/core
 Examples/MultiThreadsHelloWorld/bin/MultiThreadsHelloWorld
 
 Examples/MultiThreadsHelloWorld/debug/MultiThreadsHelloWorld
+
+Examples/MultiThreadsHelloWorld/src/task_data\.pb\.cc
+
+Examples/MultiThreadsHelloWorld/src/task_data\.pb\.h
