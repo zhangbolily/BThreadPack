@@ -24,6 +24,9 @@ int main(int argc, char** argv)
     EmojiHelloWorldTask* p_emoji_hello = new EmojiHelloWorldTask();
     hello_world_pool.addTask((void *)p_emoji_hello);
     
+    IndianHelloWorldTask* p_indian_hello = new IndianHelloWorldTask();
+    hello_world_pool.addTask((void *)p_indian_hello);
+    
     JapaneseHelloWorldTask* p_japanese_hello = new JapaneseHelloWorldTask();
     hello_world_pool.addTask((void *)p_japanese_hello);
     

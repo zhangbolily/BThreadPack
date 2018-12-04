@@ -87,6 +87,25 @@ public:
     }
 };
 
+class IndianHelloWorldTask: public BGeneralTask{
+public:
+    IndianHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~IndianHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"नमस्ते दुनिया!"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
 class EmojiHelloWorldTask: public BGeneralTask{
 public:
     EmojiHelloWorldTask()
