@@ -1,0 +1,128 @@
+#ifndef _MULTI_LANGUAGE_HELLO_WORLD_
+#define _MULTI_LANGUAGE_HELLO_WORLD_
+
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BGeneralTask.h"
+#include "BThreadPack/BGeneralThreadPool.h"
+#include <iostream>
+#include <sstream>
+#include <unistd.h>
+
+using namespace std;
+using namespace BThreadPack;
+
+class EnglishHelloWorldTask: public BGeneralTask{
+public:
+    EnglishHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~EnglishHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"Hello World!"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class FrenchHelloWorldTask: public BGeneralTask{
+public:
+    FrenchHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~FrenchHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"Bonjour le monde!"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class SapnishHelloWorldTask: public BGeneralTask{
+public:
+    SapnishHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~SapnishHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"Hola Mundo!"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class JapaneseHelloWorldTask: public BGeneralTask{
+public:
+    JapaneseHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~JapaneseHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"こんにちは世界"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class KoreanHelloWorldTask: public BGeneralTask{
+public:
+    KoreanHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~KoreanHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"안녕하세요!"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class ChineseHelloWorldTask: public BGeneralTask{
+public:
+    ChineseHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~ChineseHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"你好，世界！"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+#endif

@@ -12,3 +12,5 @@ Examples/MultiThreadsHelloWorld/debug/MultiThreadsHelloWorld
 Examples/MultiThreadsHelloWorld/src/task_data\.pb\.cc
 
 Examples/MultiThreadsHelloWorld/src/task_data\.pb\.h
+
+Examples/MultiLanguageHelloWorld/bin/
