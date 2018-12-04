@@ -27,7 +27,7 @@ int BGeneralThreadPool::initThreads(BGeneralThreadPool* _this)
     return B_SUCCESS;
 }
 
-void _threadFunction_(BGeneralThreadPool* _this)
+void BGeneralThreadPool::_threadFunction_(BGeneralThreadPool* _this)
 {
     while(1)
     {
