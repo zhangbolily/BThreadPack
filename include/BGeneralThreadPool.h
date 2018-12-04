@@ -27,15 +27,15 @@ public:
     */
     ~BGeneralThreadPool();
     
-    /* @_initThreads_ - This function will initialize all threads.
+private:
+	/* @_initThreads_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
      * All threads will use this pointer to call public member in this class.
      * Mostly for task management purpose.
      * @return - return 0 if success
     */
-    int initThreads(BGeneralThreadPool* _this);
+    int _initThreads_(BGeneralThreadPool* _this);
     
-private:
     static void _threadFunction_(BGeneralThreadPool* _this);
 };
 

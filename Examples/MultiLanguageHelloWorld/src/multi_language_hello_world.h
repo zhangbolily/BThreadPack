@@ -68,6 +68,45 @@ public:
     }
 };
 
+class RussianHelloWorldTask: public BGeneralTask{
+public:
+    RussianHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~RussianHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<"Привет, мир!"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class EmojiHelloWorldTask: public BGeneralTask{
+public:
+    EmojiHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    ~EmojiHelloWorldTask()
+    {
+    }
+    
+    virtual int processTask()
+    {
+    	std::ostringstream _os;
+    	
+    	_os<<"\033[32m"<<"🙋  🌎"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
 class JapaneseHelloWorldTask: public BGeneralTask{
 public:
     JapaneseHelloWorldTask()

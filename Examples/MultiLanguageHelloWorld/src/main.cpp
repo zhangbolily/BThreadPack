@@ -4,14 +4,8 @@ int num_threads = 20;
 BGeneralThreadPool hello_world_pool(num_threads);
 
 int main(int argc, char** argv)
-{
-    int task_num = 100;
-    
-    //1. Start threads
-    if(hello_world_pool.initThreads(&hello_world_pool) == B_THREAD_POOL_IS_FULL)
-        return B_THREAD_POOL_IS_FULL;
-    
-    //2. Add task into thread pool.
+{   
+    //1. Add task into thread pool.
     ChineseHelloWorldTask* p_chinese_hello = new ChineseHelloWorldTask();
     hello_world_pool.addTask((void *)p_chinese_hello);
     
@@ -24,6 +18,12 @@ int main(int argc, char** argv)
     SapnishHelloWorldTask* p_spanish_hello = new SapnishHelloWorldTask();
     hello_world_pool.addTask((void *)p_spanish_hello);
     
+    RussianHelloWorldTask* p_russian_hello = new RussianHelloWorldTask();
+    hello_world_pool.addTask((void *)p_russian_hello);
+    
+    EmojiHelloWorldTask* p_emoji_hello = new EmojiHelloWorldTask();
+    hello_world_pool.addTask((void *)p_emoji_hello);
+    
     JapaneseHelloWorldTask* p_japanese_hello = new JapaneseHelloWorldTask();
     hello_world_pool.addTask((void *)p_japanese_hello);
     
@@ -34,15 +34,18 @@ int main(int argc, char** argv)
     
     sleep(1);
     
-    cout<<"Press any key to exit......"<<endl;
+    cout<<"\nPress any key to exit......"<<endl;
     getchar();
+    
+    hello_world_pool.kill();
     
     delete p_chinese_hello;
     delete p_english_hello;
     delete p_french_hello;
     delete p_spanish_hello;
+    delete p_russian_hello;
 	delete p_japanese_hello;
 	delete p_korean_hello;
 	
-    exit(0);
+    return 0;
 }

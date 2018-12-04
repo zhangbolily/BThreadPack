@@ -22,6 +22,12 @@ namespace BThreadPack {
 class BAbstractThreadPool{
 
 public:
+	enum class BThreadPoolStatus{
+        ThreadPoolError = -1,
+        ThreadPoolStop = 0,
+        ThreadPoolRunning = 1,
+    };
+
     /* @BAbstractThreadPool() - Constructor
      * @_thread_num - How many thread you want to create.
     */
@@ -56,10 +62,30 @@ public:
     */
     virtual int initThreads(BAbstractThreadPool* _this);
     
+    /* @detachThreads - This function will detach all threads.
+     * @return - No return value.
+    */
+    void detachThreads();
+    
+    /* @joinThreads - This function will join all threads.
+     * @return - No return value.
+    */
+    void joinThreads();
+    
     /* @waitCond - This function wait the signal of condition_variable. 
      * No return value.
     */
     void waitCond();
+    
+    /* @setThreadPoolStatus - Set the status of this thread pool.
+     * No return value.
+    */
+    void setThreadPoolStatus(BThreadPoolStatus _status);
+    
+    /* @getThreadPoolStatus - Get the status of this thread pool.
+     * @return the status of this thread pool.
+    */
+    BThreadPoolStatus getThreadPoolStatus();
     
     /* @startOneTask - This function will notify at least one thread to pop task queue.
      * If the task queue only has one task, this function behaves like start one task.
@@ -103,6 +129,10 @@ private:
     /* @_taskQueue_ - The queue of tasks.
     */
     queue<void *> _taskQueue_;
+    
+    /* @_poolStatus_ - Control the status of this thread pool.
+    */
+    BThreadPoolStatus _poolStatus_;
     
     /* @_taskQueueMut_ - Mutex for _taskQueue_.
     */

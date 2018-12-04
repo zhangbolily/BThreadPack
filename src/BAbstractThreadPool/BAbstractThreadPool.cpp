@@ -11,11 +11,12 @@ namespace BThreadPack{
 BAbstractThreadPool::BAbstractThreadPool(int _threadNum)
     :_threadNum_(_threadNum)
 {
+	this->setThreadPoolStatus(BThreadPoolStatus::ThreadPoolRunning);
 }
 
 BAbstractThreadPool::~BAbstractThreadPool()
 {
-    //Do nothing.
+    this->kill();
 }
 
 unsigned int BAbstractThreadPool::getThreadCap()
@@ -50,10 +51,34 @@ int BAbstractThreadPool::initThreads(BAbstractThreadPool* _this)
     return 0;
 }
 
+void BAbstractThreadPool::joinThreads()
+{
+	for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
+        this->_threadVec_[i].join();
+    }
+}
+
+void BAbstractThreadPool::detachThreads()
+{
+	for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
+        this->_threadVec_[i].detach();
+    }
+}
+
 void BAbstractThreadPool::waitCond()
 {
     std::unique_lock<std::mutex> lock(this->_startMut_);
     this->_startCond_.wait(lock);
+}
+
+void BAbstractThreadPool::setThreadPoolStatus(BThreadPoolStatus _status)
+{
+	this->_poolStatus_ = _status;
+}
+
+BAbstractThreadPool::BThreadPoolStatus BAbstractThreadPool::getThreadPoolStatus()
+{
+	return this->_poolStatus_;
 }
 
 int BAbstractThreadPool::startOneTask()
@@ -72,6 +97,10 @@ int BAbstractThreadPool::startAllTask()
 
 int BAbstractThreadPool::kill()
 {
+	//TODO:There are some problem with kill function.
+	this->setThreadPoolStatus(BThreadPoolStatus::ThreadPoolStop);
+	this->startAllTask();
+	
     return 0;
 }
 
