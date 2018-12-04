@@ -8,7 +8,8 @@
 
 namespace BThreadPack{
 
-BAbstractThreadPool::BAbstractThreadPool(int _threadNum)
+BAbstractThreadPool::BAbstractThreadPool(int _threadNum,
+    BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadNum)
     :_threadNum_(_threadNum)
 {
 	this->setThreadPoolStatus(BThreadPoolStatus::ThreadPoolRunning);

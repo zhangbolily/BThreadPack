@@ -27,11 +27,21 @@ public:
         ThreadPoolStop = 0,
         ThreadPoolRunning = 1,
     };
+    
+    enum class BThreadControlMode{
+        /* In this mode, thread number is fixed. */
+        FixedThreadNum = 0,
+        /* In this mode, thread number is dynamic controled.
+         * If application doesn't specify the thread number, BAbstractThreadPool will caculate
+         * a proper thread number baseed on the system hardware.
+        */
+        DynamicThreadNum = 1,
+    };
 
     /* @BAbstractThreadPool() - Constructor
      * @_thread_num - How many thread you want to create.
     */
-    BAbstractThreadPool(int _threadNum);
+    BAbstractThreadPool(int _threadNum, BAbstractThreadPool::BThreadControlMode _mode);
     
     /* @~BAbstractThreadPool() - Destructor
      * Don't need any parameter
