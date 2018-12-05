@@ -40,8 +40,10 @@ public:
 
     /* @BAbstractThreadPool() - Constructor
      * @_thread_num - How many thread you want to create.
+     * @_mode - This thread pool will work in which mode.Work mode is defined in BThreadControlMode.
     */
-    BAbstractThreadPool(int _threadNum, BAbstractThreadPool::BThreadControlMode _mode);
+    BAbstractThreadPool(int _threadNum,
+                        BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadNum);
     
     /* @~BAbstractThreadPool() - Destructor
      * Don't need any parameter
