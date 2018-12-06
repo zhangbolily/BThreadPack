@@ -22,7 +22,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"Hello World!"<<"\033[0m\n";
@@ -41,7 +41,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"Bonjour le monde!"<<"\033[0m\n";
@@ -60,7 +60,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"Hola Mundo!"<<"\033[0m\n";
@@ -79,7 +79,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"Привет, мир!"<<"\033[0m\n";
@@ -98,7 +98,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"नमस्ते दुनिया!"<<"\033[0m\n";
@@ -117,7 +117,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	
@@ -137,7 +137,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"こんにちは世界"<<"\033[0m\n";
@@ -156,7 +156,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"안녕하세요!"<<"\033[0m\n";
@@ -175,7 +175,7 @@ public:
     {
     }
     
-    virtual int processTask()
+    virtual int process()
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"你好，世界！"<<"\033[0m\n";

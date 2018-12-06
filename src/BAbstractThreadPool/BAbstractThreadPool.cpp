@@ -8,11 +8,10 @@
 
 namespace BThreadPack{
 
-BAbstractThreadPool::BAbstractThreadPool(int _threadNum,
+BAbstractThreadPool::BAbstractThreadPool(unsigned int _threadCap,
     BAbstractThreadPool::BThreadControlMode _mode)
-    :_threadNum_(_threadNum)
+    :_threadCap_(_threadCap)
 {
-	this->setThreadPoolStatus(BThreadPoolStatus::ThreadPoolRunning);
 }
 
 BAbstractThreadPool::~BAbstractThreadPool()
@@ -20,64 +19,89 @@ BAbstractThreadPool::~BAbstractThreadPool()
     this->kill();
 }
 
-unsigned int BAbstractThreadPool::getThreadCap()
+unsigned int BAbstractThreadPool::capacity()
 {
-    return this->_threadNum_;
+    return this->_threadCap_;
 }
 
-unsigned int BAbstractThreadPool::getThreadNum()
+unsigned int BAbstractThreadPool::size()
 {
     return this->_threadVec_.size();
 }
 
 long long BAbstractThreadPool::addThread(thread _newThread)
 {
-    if(this->_threadNum_ == this->_threadVec_.size())
+    if(this->capacity() == this->size())
     {
         return B_THREAD_POOL_IS_FULL;
     }
     else{
         this->_threadVec_.push_back(std::move(_newThread));
-        return this->_threadNum_;
+        return this->size();
     }
-    return 0;
+    return B_SUCCESS;
 }
 
-int BAbstractThreadPool::initThreads(BAbstractThreadPool* _this)
-{    
-    for (unsigned int i = 0; i < this->getThreadCap(); ++i) {
+long long BAbstractThreadPool::removeThread(unsigned int _threadNum)
+{
+	if(_threadNum > this->size())
+    {
+        return B_THREAAD_NOT_EXISTS;
+    }
+    else{
+        this->_threadVec_.erase(this->_threadVec_.begin() + _threadNum);
+        return this->size();
+    }
+    return B_SUCCESS;
+}
+
+int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
+{
+	this->setStatus(BThreadPoolStatus::ThreadPoolRunning);
+	    
+    for (unsigned int i = 0; i < this->capacity(); ++i) {
         this->addThread(thread(BAbstractThreadPool::_threadFunction_, ref(_this)));
     }
     
-    return 0;
+    return B_SUCCESS;
 }
 
-void BAbstractThreadPool::joinThreads()
+void BAbstractThreadPool::join()
 {
-	for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
+	for (unsigned int i = 0; i < this->size(); ++i) {
         this->_threadVec_[i].join();
     }
 }
 
-void BAbstractThreadPool::detachThreads()
+void BAbstractThreadPool::join(unsigned int _threadNum)
 {
-	for (unsigned int i = 0; i < this->getThreadNum(); ++i) {
+        this->_threadVec_[_threadNum].join();
+}
+
+void BAbstractThreadPool::detach()
+{
+	for (unsigned int i = 0; i < this->capacity(); ++i) {
         this->_threadVec_[i].detach();
     }
 }
 
-void BAbstractThreadPool::waitCond()
+void BAbstractThreadPool::detach(unsigned int _threadNum)
+{
+        this->_threadVec_[_threadNum].detach();
+}
+
+void BAbstractThreadPool::wait()
 {
     std::unique_lock<std::mutex> lock(this->_startMut_);
     this->_startCond_.wait(lock);
 }
 
-void BAbstractThreadPool::setThreadPoolStatus(BThreadPoolStatus _status)
+void BAbstractThreadPool::setStatus(BThreadPoolStatus _status)
 {
-	this->_poolStatus_ = _status;
+	this->_poolStatus_ = (int)_status;
 }
 
-BAbstractThreadPool::BThreadPoolStatus BAbstractThreadPool::getThreadPoolStatus()
+int BAbstractThreadPool::status()
 {
 	return this->_poolStatus_;
 }
@@ -86,23 +110,25 @@ int BAbstractThreadPool::startOneTask()
 {
     this->_startCond_.notify_one();
     
-    return 0;
+    return B_SUCCESS;
 }
 
-int BAbstractThreadPool::startAllTask()
+int BAbstractThreadPool::startAllTasks()
 {
     this->_startCond_.notify_all();
     
-    return 0;
+    return B_SUCCESS;
 }
 
 int BAbstractThreadPool::kill()
 {
-	//TODO:There are some problem with kill function.
-	this->setThreadPoolStatus(BThreadPoolStatus::ThreadPoolStop);
-	this->startAllTask();
+	this->setStatus(BThreadPoolStatus::ThreadPoolStop);
+	/* Notify all threads to get the status flag, then thread will exit.*/
+	this->startAllTasks();
+	/*Delete all threads.*/
+	this->_threadVec_.clear();
 	
-    return 0;
+    return B_SUCCESS;
 }
 
 int BAbstractThreadPool::addTask(void* _taskBuffer)
@@ -110,7 +136,7 @@ int BAbstractThreadPool::addTask(void* _taskBuffer)
     lock_guard<std::mutex> guard(_taskMut_);
     this->_taskQueue_.push(_taskBuffer);
     
-    return 0;
+    return B_SUCCESS;
 }
 
 void* BAbstractThreadPool::getTask()

@@ -8,8 +8,8 @@
 
 namespace BThreadPack{
 
-BGeneralThreadPool::BGeneralThreadPool(int _threadNum)
-    :BAbstractThreadPool(_threadNum)
+BGeneralThreadPool::BGeneralThreadPool(unsigned int _threadCap)
+    :BAbstractThreadPool(_threadCap)
 {
 	this->_initThreads_(this);
 }
@@ -20,12 +20,14 @@ BGeneralThreadPool::~BGeneralThreadPool()
 
 int BGeneralThreadPool::_initThreads_(BGeneralThreadPool* _this)
 {
-    for (unsigned int i = 0; i < this->getThreadCap(); ++i) {
+	this->setStatus(BThreadPoolStatus::ThreadPoolRunning);
+	
+    for (unsigned int i = 0; i < this->capacity(); ++i) {
         if(this->addThread(thread(BGeneralThreadPool::_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
             return B_THREAD_POOL_IS_FULL;
     }
     
-    this->detachThreads();
+    this->detach();
     
     return B_SUCCESS;
 }
@@ -38,17 +40,24 @@ void BGeneralThreadPool::_threadFunction_(BGeneralThreadPool* _this)
         
         if(_pGeneralTask == nullptr)
         {
-            _this->waitCond();
+            _this->wait();
             
-            if(_this->getThreadPoolStatus() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop)
+            if(_this->status() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop)
             {
             	return;
             }else
             	continue;
         }
+        
+        _pGeneralTask->setStatus(BGeneralTask::BTaskStatus::TaskProcessing);
+        
+        int _retcode = _pGeneralTask->process();
             
-        if(_pGeneralTask->processTask() == B_ERROR)
+        if(_retcode == B_ERROR)
         {
+        	_pGeneralTask->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
+        }else{
+        	_pGeneralTask->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
         }
     }
 }

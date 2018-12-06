@@ -22,7 +22,7 @@ BGeneralTask::~BGeneralTask()
 {
 }
 
-int BGeneralTask::processTask()
+int BGeneralTask::process()
 {
     //Define how to process this task
     return B_SUCCESS;

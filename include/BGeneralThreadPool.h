@@ -18,9 +18,9 @@ class BGeneralThreadPool: public BAbstractThreadPool{
 
 public:
     /* @BAbstractThreadPool() - Constructor
-     * @_thread_num - How many thread you want to create.
+     * @_threadCap - How many threads can be created in this pool.
     */
-    BGeneralThreadPool(int _threadNum);
+    BGeneralThreadPool(unsigned int _threadCap);
     
     /* @~BAbstractThreadPool() - Destructor
      * Don't need any parameter

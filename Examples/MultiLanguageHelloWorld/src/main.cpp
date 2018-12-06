@@ -33,11 +33,8 @@ int main(int argc, char** argv)
     KoreanHelloWorldTask* p_korean_hello = new KoreanHelloWorldTask();
     hello_world_pool.addTask((void *)p_korean_hello);
     
-    hello_world_pool.startAllTask();
+    hello_world_pool.startAllTasks();
     
-    sleep(1);
-    
-    cout<<"\nPress any key to exit......"<<endl;
     getchar();
     
     hello_world_pool.kill();
