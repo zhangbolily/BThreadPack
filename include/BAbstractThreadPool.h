@@ -39,10 +39,10 @@ public:
     };
 
     /* @BAbstractThreadPool() - Constructor
-     * @_thread_num - How many thread you want to create.
+     * @_threadCap - The maximum number of threads this pool can create.
      * @_mode - This thread pool will work in which mode.Work mode is defined in BThreadControlMode.
     */
-    BAbstractThreadPool(int _threadNum,
+    BAbstractThreadPool(unsigned int _threadCap,
                         BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadNum);
     
     /* @~BAbstractThreadPool() - Destructor
@@ -50,15 +50,15 @@ public:
     */
     ~BAbstractThreadPool();
     
-    /* @getThreadCap - Get how many threads can be stored in this pool.
-     * @return - return thread capacity value.
+    /* @capacity - Get how many threads can be stored in this pool.
+     * @return - return thread capacity number.
     */
-    unsigned int getThreadCap();
+    unsigned int capacity();
     
-    /* @getThreadNum - Get how many threads in this pool.
-     * @return - return thread number.
+    /* @size - Get how many threads in this pool.
+     * @return - return thread size.
     */
-    unsigned int getThreadNum();
+    unsigned int size();
     
     /* @addThread - Add a thread to the thread pool.
      * You can add threads less than the thread pool capacity.
@@ -66,38 +66,51 @@ public:
     */
     long long addThread(thread _newThread);
     
-    /* @_initThreads_ - This function will initialize all threads.
-     * @_this - Pass a fake this pointer into thread.
-     * All threads will use this pointer to call public member in this class.
-     * Mostly for task management purpose.
-     * @return - return 0 if success
+    /* @removeThread - Remove a thread from the thread pool.
+     * You can remove the thread amount to 0.
+     * @_threadNum - Which thread you want to delete.
+     * @return - return none B_SUCCESS if error happens or return the current thread amount
+     * with positive value.
     */
-    virtual int initThreads(BAbstractThreadPool* _this);
+    long long removeThread(unsigned int _threadNum);
     
-    /* @detachThreads - This function will detach all threads.
+    /* @detach - This function will detach all threads.
      * @return - No return value.
     */
-    void detachThreads();
+    void detach();
     
-    /* @joinThreads - This function will join all threads.
+    /* @detach - This function will detach the thread specified by _threadNum.
+     * @_threadNum - Which thread you want to detach.The first thread number is 0.
      * @return - No return value.
     */
-    void joinThreads();
+    void detach(unsigned int _threadNum);
     
-    /* @waitCond - This function wait the signal of condition_variable. 
+    /* @join - This function will join all threads.
+     * @return - No return value.
+    */
+    void join();
+    
+    /* @join - This function will join the thread specified by _threadNum.
+     * @_threadNum - Which thread you want to join.The first thread number is 0.
+     * @return - No return value.
+    */
+    void join(unsigned int _threadNum);
+    
+    /* @wait - This function wait the signal of condition_variable. 
      * No return value.
     */
-    void waitCond();
+    void wait();
     
-    /* @setThreadPoolStatus - Set the status of this thread pool.
+    /* @setStatus - Set the status of this thread pool.
+     * @_status - New pool status value.
      * No return value.
     */
-    void setThreadPoolStatus(BThreadPoolStatus _status);
+    void setStatus(BThreadPoolStatus _status);
     
-    /* @getThreadPoolStatus - Get the status of this thread pool.
+    /* @status - Get the status of this thread pool.
      * @return the status of this thread pool.
     */
-    BThreadPoolStatus getThreadPoolStatus();
+    int status();
     
     /* @startOneTask - This function will notify at least one thread to pop task queue.
      * If the task queue only has one task, this function behaves like start one task.
@@ -107,10 +120,10 @@ public:
     */
     int startOneTask();
     
-    /* @startOneTask - This function will notify all threads to pop task queue.
+    /* @startOneTasks - This function will notify all threads to pop task queue.
      * @return - return 0 if success
     */
-    int startAllTask();
+    int startAllTasks();
 
     /* @kill - Kill all threads and release all resources.
      * Don't need any parameters.
@@ -130,9 +143,9 @@ public:
     void* getTask();
 
 private:
-    /* @_threadNum_ - The number of threads.
+    /* @_threadNum_ - The capacity of how many threads this pool can create.
     */
-    atomic_uint _threadNum_;
+    atomic_uint _threadCap_;
     
     /* @_threadVec_ - The vector contains all threads of this pool.
     */
@@ -144,7 +157,7 @@ private:
     
     /* @_poolStatus_ - Control the status of this thread pool.
     */
-    BThreadPoolStatus _poolStatus_;
+    atomic_int _poolStatus_;
     
     /* @_taskQueueMut_ - Mutex for _taskQueue_.
     */
@@ -157,6 +170,14 @@ private:
     /* @_startCond_ - Determin whether start threads.
     */
     condition_variable _startCond_;
+    
+    /* @_init_ - This function will initialize all threads.
+     * @_this - Pass a fake this pointer into thread.
+     * All threads will use this pointer to call public member in this class.
+     * Mostly for task management purpose.
+     * @return - return 0 if success
+    */
+    virtual int _init_(BAbstractThreadPool* _this);
 
     /* @_threadFunction_ - The function that threads will execute.
      * @_buffer - Transfer data into thread.

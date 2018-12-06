@@ -24,7 +24,7 @@ public:
     enum class BTaskStatus{
         TaskFailed = -1,
         TaskInit = 0,
-        TaskDoing = 1,
+        TaskProcessing = 1,
         TaskFinished = 2
     };
 
@@ -44,20 +44,20 @@ public:
     */
     ~BAbstractTask();
 
-    /* @getTaskStatus() - Return the _taskStatus_ value
+    /* @status() - Return the _taskStatus_ value
      * Don't need any parameter
     */
-    int getTaskStatus();
+    int status();
 
-    /* @setTaskStatus() - set the _taskStatus_ value
+    /* @setStatus() - set the _taskStatus_ value
      * @parameter status - the new value of _taskStatus_
     */
-    int setTaskStatus(BTaskStatus _status);
+    int setStatus(BTaskStatus _status);
     
-    /* @setTaskStatus() - set the _taskStatus_ value
+    /* @setStatus() - set the _taskStatus_ value
      * @parameter status - the new value of _taskStatus_ with type atomic_int
     */
-    int setTaskStatus(atomic_int _status);
+    int setStatus(atomic_int _status);
     
     /* @setInputBufer() - set the _inputBuffer_ value
      * @_buffer - the task input buffer
@@ -66,11 +66,11 @@ public:
     */
     int setInputBuffer(void* _buffer, size_t _size);
     
-    /* @getInputBufer() - get the _inputBuffer_ value
+    /* @inputBuffer() - get the _inputBuffer_ value
      * @_buffer - the task output buffer
      * @_size - the size of buffer
     */
-    int getInputBuffer(void** _buffer, size_t &_size);
+    int inputBuffer(void** _buffer, size_t &_size);
     
     /* @setOutputBufer() - set the _outputBuffer_ value
      * @_buffer - the task output buffer
@@ -79,11 +79,11 @@ public:
     */
     int setOutputBuffer(void* _buffer, size_t _size);
     
-    /* @getOutputBufer() - get the _outputBuffer_ value
+    /* @outputBuffer() - get the _outputBuffer_ value
      * @_buffer - the task output buffer
      * @_size - the size of buffer
     */
-    int getOutputBuffer(void** _buffer, size_t &_size);
+    int outputBuffer(void** _buffer, size_t &_size);
     
 private:
 

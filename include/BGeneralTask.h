@@ -32,10 +32,10 @@ public:
     */
     ~BGeneralTask();
     
-    /* @processTask() - This function will call _taskFunction to process this task itself.
+    /* @process() - This function will call _taskFunction to process this task itself.
      * No return value.
     */
-    virtual int processTask();
+    virtual int process();
 };
 
 };
