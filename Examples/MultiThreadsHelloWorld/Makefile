@@ -46,7 +46,7 @@ CLEAN_LIST := 	$(TARGET) \
 default: all
 
 # non-phony targets
-$(TARGET): $(OBJ) $(OBJ_PATH)/$(OBJ_PROTO)
+$(TARGET): $(OBJ_PATH)/$(OBJ_PROTO) $(OBJ)
 	@if [ -d $(BIN_PATH) ]; then :; else mkdir $(BIN_PATH) && echo "Dir bin doesn't exist, create it."; fi
 	$(CC) $(CCFLAG) -o $@ $? $(LIBS)
 

@@ -12,11 +12,24 @@
 using namespace std;
 using namespace BThreadPack;
 
+#define LANGUAGES 9
+const char* language[LANGUAGES] = {"Chinese",
+									"English",
+									"French",
+									"Spanish",
+									"Indian",
+									"Russian",
+									"Japanese",
+									"Korean",
+									"Emoji"
+									};
+
 class HelloWorldThreadPool: public BAbstractThreadPool{
 public:
     HelloWorldThreadPool(int _threadNum)
         :BAbstractThreadPool(_threadNum)
     {
+    	this->initThreads(this);
     }
     
     ~HelloWorldThreadPool()
@@ -25,7 +38,7 @@ public:
     
     int initThreads(BAbstractThreadPool* _this)
     {    
-        for (unsigned int i = 0; i < this->getThreadCap(); ++i) {
+        for (unsigned int i = 0; i < this->capacity(); ++i) {
             if(this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
                 return B_THREAD_POOL_IS_FULL;
         }
@@ -38,7 +51,7 @@ private:
     {
         while(1)
         {
-            _this->waitCond();
+            _this->wait();
             
             BWorkerTask* p_hello_task = (BWorkerTask*)_this->getTask();
             
@@ -49,7 +62,7 @@ private:
             size_t task_buffer_size;
             std::ostringstream _os;
             
-            if(p_hello_task->getInputBuffer(&task_buffer, task_buffer_size) == B_ONLY_SINGLE_THREAD)
+            if(p_hello_task->inputBuffer(&task_buffer, task_buffer_size) == B_ONLY_SINGLE_THREAD)
             {
                 _os<<"[Error] Get task input buffer failed.\n";
                 cerr<<_os.str();
@@ -59,9 +72,43 @@ private:
             TaskData task_data;
             task_data.ParseFromArray(task_buffer, task_buffer_size);
             
-            _os<<"\033[32m"<<"Task id is:"<<task_data.taskid()<<"\033[0m - ";
-            _os<<"\033[32m"<<task_data.message()<<"\033[0m\n";
-            cout<<_os.str();
+            if(task_data.language() == language[0])
+            {
+            	_os<<"\033[32m"<<"你好，世界！"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[1])
+            {
+            	_os<<"\033[32m"<<"Hello World!"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[2])
+            {
+            	_os<<"\033[32m"<<"Bonjour le monde!"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[3])
+            {
+            	_os<<"\033[32m"<<"Hola Mundo!"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[4])
+            {
+            	_os<<"\033[32m"<<"नमस्ते दुनिया!"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[5])
+            {
+            	_os<<"\033[32m"<<"Привет, мир!"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[6])
+            {
+            	_os<<"\033[32m"<<"こんにちは世界"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[7])
+            {
+            	_os<<"\033[32m"<<"안녕하세요!"<<"\033[0m\n";
+		        cout<<_os.str();
+            }else if(task_data.language() == language[8])
+            {
+            	_os<<"\033[32m"<<"🙋  🌎"<<"\033[0m\n";
+		        cout<<_os.str();
+            }
             
             if(task_buffer != nullptr)
             {
@@ -75,7 +122,7 @@ private:
                 p_hello_task = nullptr;
             }
             
-            _this->startAllTask();
+            _this->startAllTasks();
         }
     }
 };
@@ -84,22 +131,16 @@ int num_threads = 20;
 HelloWorldThreadPool hello_world_pool(num_threads);
 
 int main(int argc, char** argv)
-{
-    int task_num = 100;
-    
-    //1. Start threads
-    if(hello_world_pool.initThreads(&hello_world_pool) == B_THREAD_POOL_IS_FULL)
-        return B_THREAD_POOL_IS_FULL;
-    
-    //2. Make task data
-    for(int i=0;i < task_num;i++)
+{   
+    //1. Make task data
+    for(int i=0;i < LANGUAGES;i++)
     {
         size_t buffer_size = 0;
         void* task_buffer = nullptr;
         BWorkerTask* hello_world_task = new BWorkerTask();
         
         TaskData task_data;
-        task_data.set_message("This is a multi-thread hello world!");
+        task_data.set_language(language[i]);
         task_data.set_taskid(i);
         
         buffer_size = task_data.ByteSizeLong();
@@ -125,11 +166,13 @@ int main(int argc, char** argv)
         
         hello_world_pool.addTask((void *)hello_world_task);
     }      
-        
-    sleep(1);
-    hello_world_pool.startAllTask();
     
-    while(1);
+    hello_world_pool.detach();
+    hello_world_pool.startAllTasks();
+    
+    getchar();
+    
+    hello_world_pool.kill();
 
     return 0;
 }
