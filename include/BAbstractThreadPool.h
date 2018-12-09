@@ -28,14 +28,14 @@ public:
         ThreadPoolRunning = 1,
     };
     
-    enum class BThreadControlMode{
-        /* In this mode, thread number is fixed. */
-        FixedThreadNum = 0,
-        /* In this mode, thread number is dynamic controled.
-         * If application doesn't specify the thread number, BAbstractThreadPool will caculate
-         * a proper thread number baseed on the system hardware.
+    enum BThreadControlMode{
+        /* In this mode, thread capacity is fixed. */
+        FixedThreadCapacity = 0,
+        /* In this mode, thread capacity is dynamic controled.
+         * If application doesn't specify the thread capacity, BAbstractThreadPool will caculate
+         * a proper thread capacity baseed on the system hardware.
         */
-        DynamicThreadNum = 1,
+        DynamicThreadCapacity = 1,
     };
 
     /* @BAbstractThreadPool() - Constructor
@@ -43,17 +43,29 @@ public:
      * @_mode - This thread pool will work in which mode.Work mode is defined in BThreadControlMode.
     */
     BAbstractThreadPool(unsigned int _threadCap,
-                        BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadNum);
+                        BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadCapacity);
     
     /* @~BAbstractThreadPool() - Destructor
      * Don't need any parameter
     */
     ~BAbstractThreadPool();
     
+    /* @mode - The thread pool is running in which mode.
+     * @return - return thread capacity number.
+    */
+    int mode();
+    
     /* @capacity - Get how many threads can be stored in this pool.
      * @return - return thread capacity number.
     */
     unsigned int capacity();
+    
+    /* @setCapacity - Set how many threads can be stored in this pool.
+     * If thread pool is running in DynamicThreadCapacity mode, the input _capacity is a reference value 
+     * for calculating the best solution of capacity value.
+     * @return - No return value.
+    */
+    void setCapacity(unsigned int _capacity);
     
     /* @size - Get how many threads in this pool.
      * @return - return thread size.
@@ -75,26 +87,26 @@ public:
     long long removeThread(unsigned int _threadNum);
     
     /* @detach - This function will detach all threads.
-     * @return - No return value.
+     * @return - Return B_SUCCESS if operation success.
     */
-    void detach();
+    int detach();
     
     /* @detach - This function will detach the thread specified by _threadNum.
      * @_threadNum - Which thread you want to detach.The first thread number is 0.
-     * @return - No return value.
+     * @return - Return B_SUCCESS if operation success.
     */
-    void detach(unsigned int _threadNum);
+    int detach(unsigned int _threadNum);
     
     /* @join - This function will join all threads.
-     * @return - No return value.
+     * @return - Return B_SUCCESS if operation success.
     */
-    void join();
+    int join();
     
     /* @join - This function will join the thread specified by _threadNum.
      * @_threadNum - Which thread you want to join.The first thread number is 0.
-     * @return - No return value.
+     * @return - Return B_SUCCESS if operation success.
     */
-    void join(unsigned int _threadNum);
+    int join(unsigned int _threadNum);
     
     /* @wait - This function wait the signal of condition_variable. 
      * No return value.
@@ -154,6 +166,10 @@ private:
     /* @_taskQueue_ - The queue of tasks.
     */
     queue<void *> _taskQueue_;
+    
+    /* @_poolMode_ - Control the running mode of this thread pool.
+    */
+    atomic_int _poolMode_;
     
     /* @_poolStatus_ - Control the status of this thread pool.
     */

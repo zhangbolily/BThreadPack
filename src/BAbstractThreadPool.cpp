@@ -10,8 +10,9 @@ namespace BThreadPack{
 
 BAbstractThreadPool::BAbstractThreadPool(unsigned int _threadCap,
     BAbstractThreadPool::BThreadControlMode _mode)
-    :_threadCap_(_threadCap)
+    :_poolMode_(_mode)
 {
+    this->setCapacity(_threadCap);
 }
 
 BAbstractThreadPool::~BAbstractThreadPool()
@@ -19,9 +20,35 @@ BAbstractThreadPool::~BAbstractThreadPool()
     this->kill();
 }
 
+int BAbstractThreadPool::mode()
+{
+    return this->_poolMode_;
+}
+
 unsigned int BAbstractThreadPool::capacity()
 {
     return this->_threadCap_;
+}
+
+void BAbstractThreadPool::setCapacity(unsigned int _capacity)
+{
+    switch(this->_poolMode_){
+        case BThreadControlMode::FixedThreadCapacity:{
+            this->_threadCap_ = _capacity;
+            break;
+        };
+        case BThreadControlMode::DynamicThreadCapacity:{
+            unsigned int _tempCapcity = thread::hardware_concurrency() * 2;
+            this->_threadCap_ = _tempCapcity > _capacity?_capacity:_tempCapcity;
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BAbstractThreadPool::setCapacity - Calculating dynamic thread capacity number.")
+            B_PRINT_DEBUG("BAbstractThreadPool::setCapacity - Current logistic cpu core number :"<<thread::hardware_concurrency())
+            B_PRINT_DEBUG("BAbstractThreadPool::setCapacity - Current thread pool capacity number :"<<this->_threadCap_)
+#endif
+        };
+        default:
+            break;
+    }
 }
 
 unsigned int BAbstractThreadPool::size()
@@ -33,6 +60,10 @@ long long BAbstractThreadPool::addThread(thread _newThread)
 {
     if(this->capacity() == this->size())
     {
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BAbstractThreadPool::addThread - Thread number reach the thread pool capacity limitation.")
+            B_PRINT_DEBUG("BAbstractThreadPool::addThread - Current thread pool capacity number :"<<this->_threadCap_)
+#endif
         return B_THREAD_POOL_IS_FULL;
     }
     else{
@@ -46,7 +77,10 @@ long long BAbstractThreadPool::removeThread(unsigned int _threadNum)
 {
 	if(_threadNum > this->size())
     {
-        return B_THREAAD_NOT_EXISTS;
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number "<<_threadNum<<" doesn't exist.")
+#endif
+        return B_THREAD_NOT_EXISTS;
     }
     else{
         this->_threadVec_.erase(this->_threadVec_.begin() + _threadNum);
@@ -66,28 +100,50 @@ int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
     return B_SUCCESS;
 }
 
-void BAbstractThreadPool::join()
+int BAbstractThreadPool::join()
 {
 	for (unsigned int i = 0; i < this->size(); ++i) {
         this->_threadVec_[i].join();
     }
+    
+    return B_SUCCESS;
 }
 
-void BAbstractThreadPool::join(unsigned int _threadNum)
+int BAbstractThreadPool::join(unsigned int _threadNum)
 {
+    if(_threadNum > this->size())
+    {
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_threadNum<<" doesn't exist.")
+#endif
+        return B_THREAD_NOT_EXISTS;
+    }else
         this->_threadVec_[_threadNum].join();
+        
+    return B_SUCCESS;
 }
 
-void BAbstractThreadPool::detach()
+int BAbstractThreadPool::detach()
 {
 	for (unsigned int i = 0; i < this->capacity(); ++i) {
         this->_threadVec_[i].detach();
     }
+    
+    return B_SUCCESS;
 }
 
-void BAbstractThreadPool::detach(unsigned int _threadNum)
+int BAbstractThreadPool::detach(unsigned int _threadNum)
 {
+    if(_threadNum > this->size())
+    {
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_threadNum<<" doesn't exist.")
+#endif
+        return B_THREAD_NOT_EXISTS;
+    }else
         this->_threadVec_[_threadNum].detach();
+        
+    return B_SUCCESS;
 }
 
 void BAbstractThreadPool::wait()

@@ -1,7 +1,7 @@
-#include "multi_language_hello_world.h"
+#include "HelloWorld.h"
 
 int num_threads = 20;
-BGeneralThreadPool hello_world_pool(num_threads);
+BGeneralThreadPool hello_world_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
 
 int main(int argc, char** argv)
 {   

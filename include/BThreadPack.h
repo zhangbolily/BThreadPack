@@ -5,6 +5,7 @@
 */
 #ifdef _B_DEBUG_
 #include <sstream>
+#include <iostream>
 #include <ctime>
 #include <thread>
 #endif
@@ -19,7 +20,7 @@
 /* If you specified a thread number that doesn't exist, this error code returned.
 */
 
-#define B_THREAAD_NOT_EXISTS	-6
+#define B_THREAD_NOT_EXISTS	-6
 
 /* If you have add threads more than the thread pool capacity, this error code will be returned.
 */
