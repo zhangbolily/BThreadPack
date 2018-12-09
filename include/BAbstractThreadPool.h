@@ -22,7 +22,7 @@ namespace BThreadPack {
 class BAbstractThreadPool{
 
 public:
-	enum class BThreadPoolStatus{
+	enum BThreadPoolStatus{
         ThreadPoolError = -1,
         ThreadPoolStop = 0,
         ThreadPoolRunning = 1,

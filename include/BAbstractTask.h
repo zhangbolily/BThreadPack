@@ -21,7 +21,7 @@ namespace BThreadPack {
 class BAbstractTask{
 
 public:
-    enum class BTaskStatus{
+    enum BTaskStatus{
         TaskFailed = -1,
         TaskInit = 0,
         TaskProcessing = 1,

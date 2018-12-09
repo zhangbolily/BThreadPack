@@ -44,20 +44,15 @@ Then you can build project in Examples directory to test this library.
 
 ## Running the tests
 
-##### MultiThreadsHelloWorld
+##### Examples
 
-This project is in Examples directory. Enter Examples/MultiThreadsHelloWorld directory and execute these commands.
+This project contains some examples for a better understanding how to use these components.
 
-```
-make
-bin/MultiThreadsHelloWorld
-```
-
-Then terminal will output many Hello Worlds!
+Read [./examples/README.md](./examples/README.md) for more details.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+For the versions available, see the [tags on this repository](https://gitlab.com/zhangbolily/bthreadpack/tags).
 
 ## Authors
 
