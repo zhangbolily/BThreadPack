@@ -1,6 +1,6 @@
 # tool marcros
 CC := g++
-CCFLAG := --std=c++11 -Wl,--no-as-needed
+CCFLAG := --std=c++11 -Wl,--no-as-needed `pkg-config --cflags protobuf`
 DBGFLAG := -g
 CCOBJFLAG := $(CCFLAG) -c
 
@@ -12,10 +12,16 @@ DBG_PATH := debug
 INC_PATH :=
 
 # librarys
-LIBS := -lbthreadpack -lpthread
+LIBS := -lbthreadpack `pkg-config --libs protobuf`
+
+# protobuf file marcros
+PROTOC = /usr/local/bin/protoc
+PROTO_NAME := task_data.proto
+SRC_PROTO := task_data.pb.cc
+OBJ_PROTO := task_data.pb.o
 
 # compile marcros
-TARGET_NAME := MultiLanguageHelloWorld
+TARGET_NAME := HelloWorld
 ifeq ($(OS),Windows_NT)
 	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
 endif
@@ -34,12 +40,13 @@ DISTCLEAN_LIST := $(OBJ) \
 CLEAN_LIST := 	$(TARGET) \
 		$(TARGET_DEBUG) \
 		$(DISTCLEAN_LIST) \
+		$(SRC_PATH)/$(SRC_PROTO)
 
 # default rule
 default: all
 
 # non-phony targets
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ_PATH)/$(OBJ_PROTO) $(OBJ)
 	@if [ -d $(BIN_PATH) ]; then :; else mkdir $(BIN_PATH) && echo "Dir bin doesn't exist, create it."; fi
 	$(CC) $(CCFLAG) -o $@ $? $(LIBS)
 
@@ -51,8 +58,17 @@ $(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
 	@if [ -d $(DBG_PATH) ]; then :; else mkdir $(DBG_PATH) && echo "Dir debug doesn't exist, create it."; fi
 	$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $< $(LIBS)
 
-$(TARGET_DEBUG): $(OBJ_DEBUG)
+$(OBJ_PATH)/$(OBJ_PROTO): $(SRC_PATH)/$(SRC_PROTO)
+	$(CC) $(CCOBJFLAG) -o $@ $< $(LIBS)
+
+$(DBG_PATH)/$(OBJ_PROTO): $(SRC_PATH)/$(SRC_PROTO)
+	$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $< $(LIBS)
+
+$(TARGET_DEBUG): $(OBJ_DEBUG) $(DBG_PATH)/$(OBJ_PROTO)
 	$(CC) $(CCFLAG) $(DBGFLAG) $? -o $@ $(LIBS)
+
+$(SRC_PATH)/$(SRC_PROTO): $(SRC_PATH)/$(PROTO_NAME)
+	$(PROTOC) --proto_path=$(SRC_PATH) --cpp_out=$(SRC_PATH) $(SRC_PATH)/$(PROTO_NAME)
 
 # phony rules
 .PHONY: all
