@@ -8,8 +8,9 @@
 
 namespace BThreadPack{
 
-BGeneralThreadPool::BGeneralThreadPool(unsigned int _threadCap)
-    :BAbstractThreadPool(_threadCap)
+BGeneralThreadPool::BGeneralThreadPool(unsigned int _threadCap,
+    BAbstractThreadPool::BThreadControlMode _mode)
+    :BAbstractThreadPool(_threadCap, _mode)
 {
 	this->_initThreads_(this);
 }

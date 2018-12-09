@@ -19,8 +19,10 @@ class BGeneralThreadPool: public BAbstractThreadPool{
 public:
     /* @BAbstractThreadPool() - Constructor
      * @_threadCap - How many threads can be created in this pool.
+     * @_mode - This thread pool will work in which mode.Work mode is defined in BThreadControlMode.
     */
-    BGeneralThreadPool(unsigned int _threadCap);
+    BGeneralThreadPool(unsigned int _threadCap,
+                        BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadCapacity);
     
     /* @~BAbstractThreadPool() - Destructor
      * Don't need any parameter

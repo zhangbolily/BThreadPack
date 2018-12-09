@@ -5,7 +5,7 @@ export MAKE := make
 MAKEFLAG := -s --no-print-directory
 
 # include file path
-INC_PATH := -I../../include
+INC_PATH := -I../include
 
 # compile marcro
 CC := gcc
