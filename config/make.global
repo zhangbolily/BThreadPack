@@ -4,6 +4,9 @@ export MAKE := make
 # make flag
 MAKEFLAG := -s --no-print-directory
 
+# object dir
+OBJ_DIR := ../obj
+
 # include file path
 INC_PATH := -I../include
 
@@ -30,5 +33,6 @@ clean-subdirs:
 
 # dependencies
 %.o: %.c*
-	@echo -e "\t" CC $(OBJCCFLAG) $< -o $@
-	@$(CC) $(OBJCCFLAG) $< -o $@
+	@if [ -d $(OBJ_DIR) ]; then :; else mkdir $(OBJ_DIR) && echo "Folder obj doesn't exist, creating it."; fi
+	@echo -e "\t" CC $(OBJCCFLAG) $< -o $(OBJ_DIR)/$@
+	@$(CC) $(OBJCCFLAG) $< -o $(OBJ_DIR)/$@

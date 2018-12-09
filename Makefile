@@ -19,6 +19,7 @@ MAIN_SRC := # FILL: src file which contains `main()`
 # compile marcros
 DIRS := src
 OBJS :=
+ALL_OBJS_DIR := obj
 
 # intermedia compile marcros
 # NOTE: ALL_OBJS are intentionally left blank, no need to fill it
@@ -34,9 +35,8 @@ default: show-info all
 
 # non-phony targets
 $(TARGET): build-subdirs $(OBJS) find-all-objs
-	@echo -e "\t" mkdir $(LIB_PATH)
 	@echo -e "\t" CC $(CCFLAG) $(ALL_OBJS) -shared -o $@
-	@if [ -d $(LIB_PATH) ]; then echo "Dir lib exists"; else mkdir $(LIB_PATH); fi
+	@if [ -d $(LIB_PATH) ]; then :; else mkdir $(LIB_PATH) && echo "Folder lib doesn't exist, creating it."; fi
 	@$(CC) $(CCFLAG) $(ALL_OBJS) -shared -o $@
 
 # phony targets
@@ -65,7 +65,7 @@ install: all
 # phony funcs
 .PHONY: find-all-objs
 find-all-objs: build-subdirs
-	$(eval ALL_OBJS += $(call rwildcard,$(DIRS),*.o))
+	$(eval ALL_OBJS += $(call rwildcard,$(ALL_OBJS_DIR),*.o))
 
 .PHONY: show-info
 show-info:
