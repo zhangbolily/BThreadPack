@@ -5,5 +5,5 @@ all: $(OBJS) build-subdirs
 
 .PHONY: clean
 clean: clean-subdirs
-	@echo CLEAN $(OBJ_DIR)/$(OBJS)
-	@rm -f $(OBJ_DIR)/$(OBJS)
+	@echo CLEAN $(OBJS)
+	@rm -f $(OBJS)
