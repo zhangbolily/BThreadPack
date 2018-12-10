@@ -59,9 +59,11 @@ $(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
 	$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $< $(LIBS)
 
 $(OBJ_PATH)/$(OBJ_PROTO): $(SRC_PATH)/$(SRC_PROTO)
+	@if [ -d $(OBJ_PATH) ]; then :; else mkdir $(OBJ_PATH) && echo "Dir obj doesn't exist, create it."; fi
 	$(CC) $(CCOBJFLAG) -o $@ $< $(LIBS)
 
 $(DBG_PATH)/$(OBJ_PROTO): $(SRC_PATH)/$(SRC_PROTO)
+	@if [ -d $(DBG_PATH) ]; then :; else mkdir $(DBG_PATH) && echo "Dir debug doesn't exist, create it."; fi
 	$(CC) $(CCOBJFLAG) $(DBGFLAG) -o $@ $< $(LIBS)
 
 $(TARGET_DEBUG): $(OBJ_DEBUG) $(DBG_PATH)/$(OBJ_PROTO)
