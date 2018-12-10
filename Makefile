@@ -19,7 +19,7 @@ MAIN_SRC := # FILL: src file which contains `main()`
 # compile marcros
 DIRS := src
 OBJS :=
-ALL_OBJS_DIR := obj
+ALL_OBJS_DIR := obj/
 
 # intermedia compile marcros
 # NOTE: ALL_OBJS are intentionally left blank, no need to fill it
@@ -34,7 +34,7 @@ rwildcard=$(foreach d,$(wildcard $(addsuffix *,$(1))),$(call rwildcard,$(d)/,$(2
 default: show-info all
 
 # non-phony targets
-$(TARGET): build-subdirs $(OBJS) find-all-objs
+$(TARGET): $(ALL_OBJS_DIR) $(OBJS) build-subdirs find-all-objs
 	@echo -e "\t" CC $(CCFLAG) $(ALL_OBJS) -shared -o $@
 	@if [ -d $(LIB_PATH) ]; then :; else mkdir $(LIB_PATH) && echo "Folder lib doesn't exist, creating it."; fi
 	@$(CC) $(CCFLAG) $(ALL_OBJS) -shared -o $@
@@ -45,9 +45,9 @@ all: $(TARGET)
 	@echo Target $(TARGET) build finished.
 
 .PHONY: clean
-clean: clean-subdirs
-	@echo CLEAN $(CLEAN_FILES) $(LIB_PATH)
-	@rm -rf $(CLEAN_FILES) $(LIB_PATH)
+clean: clean-subdirs find-all-objs
+	@echo CLEAN $(CLEAN_FILES) $(LIB_PATH) $(ALL_OBJS)
+	@rm -rf $(CLEAN_FILES) $(LIB_PATH) $(ALL_OBJS)
 
 .PHONY: distclean
 distclean: clean-subdirs
@@ -61,6 +61,10 @@ install: all
 	@mkdir -p $(SYS_INC_PATH)/BThreadPack
 	@cp -rf $(TARGET) $(SYS_LIB_PATH)
 	@cp -rf include/* $(SYS_INC_PATH)/BThreadPack
+	
+.PHONY: $(ALL_OBJS_DIR)
+$(ALL_OBJS_DIR):
+	@if [ -d $(ALL_OBJS_DIR) ]; then :; else mkdir $(ALL_OBJS_DIR) && echo "Folder obj doesn't exist, creating it."; fi
 
 # phony funcs
 .PHONY: find-all-objs
@@ -69,7 +73,7 @@ find-all-objs: build-subdirs
 
 .PHONY: show-info
 show-info:
-	@echo Building Project
+	@echo Building Project BThreadPack......
 
 # need to be placed at the end of the file
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))

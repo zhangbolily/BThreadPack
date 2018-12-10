@@ -33,6 +33,5 @@ clean-subdirs:
 
 # dependencies
 %.o: %.c*
-	@if [ -d $(OBJ_DIR) ]; then :; else mkdir $(OBJ_DIR) && echo "Folder obj doesn't exist, creating it."; fi
 	@echo -e "\t" CC $(OBJCCFLAG) $< -o $(OBJ_DIR)/$@
 	@$(CC) $(OBJCCFLAG) $< -o $(OBJ_DIR)/$@
