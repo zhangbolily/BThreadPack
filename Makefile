@@ -45,7 +45,7 @@ all: $(TARGET)
 	@echo Target $(TARGET) build finished.
 
 .PHONY: clean
-clean: clean-subdirs find-all-objs
+clean: clean-subdirs find-clean-objs
 	@echo CLEAN $(CLEAN_FILES) $(LIB_PATH) $(ALL_OBJS)
 	@rm -rf $(CLEAN_FILES) $(LIB_PATH) $(ALL_OBJS)
 
@@ -69,6 +69,10 @@ $(ALL_OBJS_DIR):
 # phony funcs
 .PHONY: find-all-objs
 find-all-objs: build-subdirs
+	$(eval ALL_OBJS += $(call rwildcard,$(ALL_OBJS_DIR),*.o))
+
+.PHONY: find-clean-objs
+find-clean-objs:
 	$(eval ALL_OBJS += $(call rwildcard,$(ALL_OBJS_DIR),*.o))
 
 .PHONY: show-info
