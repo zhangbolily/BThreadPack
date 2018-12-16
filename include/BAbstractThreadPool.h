@@ -7,12 +7,13 @@
 #ifndef _BABSTRACT_THREAD_POOL_H_
 #define _BABSTRACT_THREAD_POOL_H_
 
-#include <thread>
 #include <atomic>
-#include <queue>
-#include <vector>
-#include <functional>
 #include <condition_variable>
+#include <functional>
+#include <queue>
+#include <thread>
+#include <vector>
+
 #include "BThreadPack.h"
 
 using namespace std;
@@ -39,166 +40,155 @@ public:
     };
 
     /* @BAbstractThreadPool() - Constructor
-     * @_threadCap - The maximum number of threads this pool can create.
+     * @_thread_cap - The maximum number of threads this pool can create.
+    */
+    BAbstractThreadPool(unsigned int _thread_cap);
+    
+    /* @BAbstractThreadPool() - Constructor
+     * @_thread_cap - The maximum number of threads this pool can create.
      * @_mode - This thread pool will work in which mode.Work mode is defined in BThreadControlMode.
     */
-    BAbstractThreadPool(unsigned int _threadCap,
-                        BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadCapacity);
+    BAbstractThreadPool(unsigned int _thread_cap,
+                        BAbstractThreadPool::BThreadControlMode _mode);
     
-    /* @~BAbstractThreadPool() - Destructor
-     * Don't need any parameter
-    */
+    /* @~BAbstractThreadPool() - Destructor */
     ~BAbstractThreadPool();
     
     /* @mode - The thread pool is running in which mode.
-     * @return - return thread capacity number.
+     * @return - returns pool mode.
     */
     int mode();
     
-    /* @capacity - Get how many threads can be stored in this pool.
-     * @return - return thread capacity number.
+    /* @capacity - Get how many threads can be created in this pool.
+     * @return - returns thread capacity.
     */
     unsigned int capacity();
     
     /* @setCapacity - Set how many threads can be stored in this pool.
-     * If thread pool is running in DynamicThreadCapacity mode, the input _capacity is a reference value 
-     * for calculating the best solution of capacity value.
-     * @return - No return value.
+     * If thread pool is running in DynamicThreadCapacity mode, the input _capacity will only
+     * be a reference for calculating the best solution of capacity value.
     */
     void setCapacity(unsigned int _capacity);
     
-    /* @size - Get how many threads in this pool.
-     * @return - return thread size.
+    /* @size - Get how many threads in this pool. This size can be smaller than capacity.
+     * @return - returns thread size.
     */
     unsigned int size();
     
     /* @addThread - Add a thread to the thread pool.
      * You can add threads less than the thread pool capacity.
-     * @return - return current thread number.
+     * @return - Returns current thread size. Less than 0 means error occured.
     */
-    long long addThread(thread _newThread);
+    long long addThread(thread _new_thread);
     
     /* @removeThread - Remove a thread from the thread pool.
-     * You can remove the thread amount to 0.
-     * @_threadNum - Which thread you want to delete.
-     * @return - return none B_SUCCESS if error happens or return the current thread amount
+     * You can remove the thread number to 0.
+     * @_thread_num - Which thread you want to delete.
+     * @return - Returns none B_SUCCESS if error happens or return the current thread pool size
      * with positive value.
     */
-    long long removeThread(unsigned int _threadNum);
+    long long removeThread(unsigned int _thread_num);
     
     /* @detach - This function will detach all threads.
-     * @return - Return B_SUCCESS if operation success.
+     * @return - Returns B_SUCCESS if operation success.
     */
     int detach();
     
-    /* @detach - This function will detach the thread specified by _threadNum.
-     * @_threadNum - Which thread you want to detach.The first thread number is 0.
-     * @return - Return B_SUCCESS if operation success.
+    /* @detach - This function will detach the thread specified by _thread_num.
+     * @_thread_num - Which thread you want to detach.The first thread number is 0.
+     * @return - Returns B_SUCCESS if operation success.
     */
-    int detach(unsigned int _threadNum);
+    int detach(unsigned int _thread_num);
     
     /* @join - This function will join all threads.
-     * @return - Return B_SUCCESS if operation success.
+     * @return - Returns B_SUCCESS if operation success.
     */
     int join();
     
-    /* @join - This function will join the thread specified by _threadNum.
-     * @_threadNum - Which thread you want to join.The first thread number is 0.
-     * @return - Return B_SUCCESS if operation success.
+    /* @join - This function will join the thread specified by _thread_num.
+     * @_thread_num - Which thread you want to join.The first thread number is 0.
+     * @return - Returns B_SUCCESS if operation success.
     */
-    int join(unsigned int _threadNum);
+    int join(unsigned int _thread_num);
     
-    /* @wait - This function wait the signal of condition_variable. 
-     * No return value.
-    */
+    /* @wait - This function waits the signal of condition_variable. */
     void wait();
     
     /* @setStatus - Set the status of this thread pool.
      * @_status - New pool status value.
-     * No return value.
     */
     void setStatus(BThreadPoolStatus _status);
     
     /* @status - Get the status of this thread pool.
-     * @return the status of this thread pool.
+     * @Returns the status of this thread pool.
     */
     int status();
     
-    /* @startOneTask - This function will notify at least one thread to pop task queue.
+    /* @startOneTask - This function will notify at least one thread to process task.
      * If the task queue only has one task, this function behaves like start one task.
      * However, if the task queue has more than one task, the behaviour is undefined.
-     * Don't need any parameters.
-     * @return - return 0 if success
+     * @return - Returns B_SUCCESS if success
     */
     int startOneTask();
     
-    /* @startOneTasks - This function will notify all threads to pop task queue.
-     * @return - return 0 if success
+    /* @startOneTasks - This function will notify all threads to process task queue.
+     * @return - Returns B_SUCCESS if success
     */
     int startAllTasks();
 
     /* @kill - Kill all threads and release all resources.
-     * Don't need any parameters.
-     * @return - return 0 if success
+     * @return - Returns B_SUCCESS if success
     */
     int kill();
     
     /* @addTask - Add a task to the task queue.
-     * @_taskBuffer - A memory buffer that contains the task data.
-     * @return - return 0 if success
+     * @_task_buffer - A memory buffer that contains the task data.
+     * @return - Returns B_SUCCESS if success
     */
-    int addTask(void* _taskBuffer);
+    int addTask(void* _task_buffer);
     
     /* @getTask - Get a task from task queue.
-     * @return - return task buffer.
+     * @return - Returns task buffer.
     */
     void* getTask();
 
 private:
-    /* @_threadNum_ - The capacity of how many threads this pool can create.
-    */
-    atomic_uint _threadCap_;
+    /* @m_thread_capacity_ - The capacity of how many threads this pool can create. */
+    atomic_uint m_thread_capacity_;
     
-    /* @_threadVec_ - The vector contains all threads of this pool.
-    */
-    vector<thread> _threadVec_;
+    /* @m_thread_vec_ - The vector contains all threads of this pool. */
+    vector<thread> m_thread_vec_;
     
-    /* @_taskQueue_ - The queue of tasks.
-    */
-    queue<void *> _taskQueue_;
+    /* @m_task_queue_ - The queue of tasks. */
+    queue<void *> m_task_queue_;
     
-    /* @_poolMode_ - Control the running mode of this thread pool.
-    */
-    atomic_int _poolMode_;
+    /* @m_pool_mode_ - Control the running mode of this thread pool. */
+    atomic_int m_pool_mode_;
     
-    /* @_poolStatus_ - Control the status of this thread pool.
-    */
-    atomic_int _poolStatus_;
+    /* @m_pool_status_ - Control the status of this thread pool. */
+    atomic_int m_pool_status_;
     
-    /* @_taskQueueMut_ - Mutex for _taskQueue_.
-    */
-    mutex _taskMut_;
+    /* @m_task_mutex_ - Mutex for m_task_queue_. */
+    mutex m_task_mutex_;
     
-    /* @_startMut_ - Mutex for _startCond_.
-    */
-    mutex _startMut_;
+    /* @m_start_mutex_ - Mutex for m_start_condition_. */
+    mutex m_start_mutex_;
     
-    /* @_startCond_ - Determin whether start threads.
-    */
-    condition_variable _startCond_;
+    /* @m_start_condition_ - Determin whether start threads. */
+    condition_variable m_start_condition_;
     
     /* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
      * All threads will use this pointer to call public member in this class.
      * Mostly for task management purpose.
-     * @return - return 0 if success
+     * @return - return B_SUCCESS if success
     */
     virtual int _init_(BAbstractThreadPool* _this);
 
-    /* @_threadFunction_ - The function that threads will execute.
+    /* @m_threadFunction_ - The function that threads will execute.
      * @_buffer - Transfer data into thread.
     */
-    static void _threadFunction_(void* _buffer);
+    static void m_threadFunction_(void* _buffer);
 };
 
 };

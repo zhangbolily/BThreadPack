@@ -8,38 +8,44 @@
 
 namespace BThreadPack{
 
-BGeneralThreadPool::BGeneralThreadPool(unsigned int _threadCap,
-    BAbstractThreadPool::BThreadControlMode _mode)
-    :BAbstractThreadPool(_threadCap, _mode)
+BGeneralThreadPool::BGeneralThreadPool(unsigned int _thread_cap)
+    :BAbstractThreadPool(_thread_cap)
 {
-	this->_initThreads_(this);
+	m_init_(this);
+}
+
+BGeneralThreadPool::BGeneralThreadPool(unsigned int _thread_cap,
+    BAbstractThreadPool::BThreadControlMode _mode)
+    :BAbstractThreadPool(_thread_cap, _mode)
+{
+	m_init_(this);
 }
 
 BGeneralThreadPool::~BGeneralThreadPool()
 {
 }
 
-int BGeneralThreadPool::_initThreads_(BGeneralThreadPool* _this)
+int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this)
 {
-	this->setStatus(BThreadPoolStatus::ThreadPoolRunning);
+	setStatus(BThreadPoolStatus::ThreadPoolRunning);
 	
-    for (unsigned int i = 0; i < this->capacity(); ++i) {
-        if(this->addThread(thread(BGeneralThreadPool::_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
+    for (unsigned int i = 0; i < capacity(); ++i) {
+        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
             return B_THREAD_POOL_IS_FULL;
     }
     
-    this->detach();
+    detach();
     
     return B_SUCCESS;
 }
 
-void BGeneralThreadPool::_threadFunction_(BGeneralThreadPool* _this)
+void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
 {
     while(1)
     {
-        BGeneralTask* _pGeneralTask = (BGeneralTask*)_this->getTask();
+        BGeneralTask* p_general_task = (BGeneralTask*)_this->getTask();
         
-        if(_pGeneralTask == nullptr)
+        if(p_general_task == nullptr)
         {
             _this->wait();
             
@@ -50,15 +56,15 @@ void BGeneralThreadPool::_threadFunction_(BGeneralThreadPool* _this)
             	continue;
         }
         
-        _pGeneralTask->setStatus(BGeneralTask::BTaskStatus::TaskProcessing);
+        p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskProcessing);
         
-        int _retcode = _pGeneralTask->process();
+        int _retcode = p_general_task->process();
             
         if(_retcode == B_ERROR)
         {
-        	_pGeneralTask->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
+        	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
         }else{
-        	_pGeneralTask->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
+        	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
         }
     }
 }

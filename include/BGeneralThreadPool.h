@@ -18,27 +18,30 @@ class BGeneralThreadPool: public BAbstractThreadPool{
 
 public:
     /* @BAbstractThreadPool() - Constructor
-     * @_threadCap - How many threads can be created in this pool.
+     * @_thread_cap - How many threads can be created in this pool.
+    */
+    BGeneralThreadPool(unsigned int _thread_cap);
+    
+    /* @BAbstractThreadPool() - Constructor
+     * @_thread_cap - How many threads can be created in this pool.
      * @_mode - This thread pool will work in which mode.Work mode is defined in BThreadControlMode.
     */
-    BGeneralThreadPool(unsigned int _threadCap,
-                        BAbstractThreadPool::BThreadControlMode _mode = BAbstractThreadPool::BThreadControlMode::FixedThreadCapacity);
+    BGeneralThreadPool(unsigned int _thread_cap,
+                        BAbstractThreadPool::BThreadControlMode _mode);
     
-    /* @~BAbstractThreadPool() - Destructor
-     * Don't need any parameter
-    */
+    /* @~BAbstractThreadPool() - Destructor */
     ~BGeneralThreadPool();
     
 private:
-	/* @_initThreads_ - This function will initialize all threads.
+	/* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
      * All threads will use this pointer to call public member in this class.
      * Mostly for task management purpose.
-     * @return - return 0 if success
+     * @return - return B_SUCCESS if success
     */
-    int _initThreads_(BGeneralThreadPool* _this);
+    virtual int m_init_(BGeneralThreadPool* _this);
     
-    static void _threadFunction_(BGeneralThreadPool* _this);
+    static void m_threadFunction_(BGeneralThreadPool* _this);
 };
 
 };

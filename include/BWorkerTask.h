@@ -17,7 +17,6 @@ class BWorkerTask:public BAbstractTask{
 
 public:
     /* @BWorkerTask() - Constructor
-     * Don't need any parameter
     */    
     BWorkerTask();
     
@@ -27,9 +26,7 @@ public:
     */    
     BWorkerTask(void* _buffer, size_t _size);
 	
-    /* @~BWorkerTask() - Destructor
-     * Don't need any parameter
-    */
+    /* @~BWorkerTask() - Destructor */
     ~BWorkerTask();
 };
 
