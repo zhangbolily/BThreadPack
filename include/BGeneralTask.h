@@ -16,9 +16,7 @@ namespace BThreadPack{
 class BGeneralTask:public BAbstractTask{
 
 public:
-    /* @BGeneralTask() - Constructor
-     * Don't need any parameter
-    */    
+    /* @BGeneralTask() - Constructor */    
     BGeneralTask();
     
     /* @BGeneralTask() - Constructor
@@ -27,14 +25,10 @@ public:
     */    
     BGeneralTask(void* _buffer, size_t _size);
 	
-    /* @~BGeneralTask() - Destructor
-     * Don't need any parameter
-    */
+    /* @~BGeneralTask() - Destructor */
     ~BGeneralTask();
     
-    /* @process() - This function will call _taskFunction to process this task itself.
-     * No return value.
-    */
+    /* @process() - This function will call _taskFunction to process this task itself. */
     virtual int process();
 };
 
