@@ -43,7 +43,7 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
 {
     while(1)
     {
-        BGeneralTask* p_general_task = (BGeneralTask*)_this->getTask();
+        BGeneralTask* p_general_task = static_cast<BGeneralTask*>(_this->getTask());
         
         if(p_general_task == nullptr)
         {
