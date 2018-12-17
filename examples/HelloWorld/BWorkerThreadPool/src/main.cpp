@@ -1,13 +1,14 @@
-#include "BThreadPack/BThreadPack.h"
-#include "BThreadPack/BWorkerTask.h"
-#include "BThreadPack/BAbstractThreadPool.h"
-#include "task_data.pb.h"
 #include <iostream>
 #include <sstream>
 #include <queue>
 #include <unistd.h>
 #include <mutex>
 #include <condition_variable>
+
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BWorkerTask.h"
+#include "BThreadPack/BAbstractThreadPool.h"
+#include "task_data.pb.h"
 
 using namespace std;
 using namespace BThreadPack;
@@ -26,10 +27,10 @@ const char* language[LANGUAGES] = {"Chinese",
 
 class HelloWorldThreadPool: public BAbstractThreadPool{
 public:
-    HelloWorldThreadPool(int _threadNum)
-        :BAbstractThreadPool(_threadNum)
+    HelloWorldThreadPool(int _thread_num)
+        :BAbstractThreadPool(_thread_num)
     {
-    	this->initThreads(this);
+    	this->initThreads(static_cast<BAbstractThreadPool*>(this));
     }
     
     ~HelloWorldThreadPool()
@@ -53,7 +54,7 @@ private:
         {
             _this->wait();
             
-            BWorkerTask* p_hello_task = (BWorkerTask*)_this->getTask();
+            BWorkerTask* p_hello_task = static_cast<BWorkerTask*>(_this->getTask());
             
             if(p_hello_task == nullptr)
                 return;
@@ -144,11 +145,11 @@ int main(int argc, char** argv)
         task_data.set_taskid(i);
         
         buffer_size = task_data.ByteSizeLong();
-        task_buffer = (void*)malloc(buffer_size);
+        task_buffer = static_cast<void*>(malloc(buffer_size));
         
         if(task_buffer == nullptr)
         {
-            cerr<<"[Error]task_buffer memory allocated failed."<<endl;
+            cerr<<"[Error] task_buffer memory allocated failed."<<endl;
             return -1;
         }
         
@@ -164,7 +165,7 @@ int main(int argc, char** argv)
             return -1;
         }
         
-        hello_world_pool.addTask((void *)hello_world_task);
+        hello_world_pool.addTask(static_cast<void*>(hello_world_task));
     }      
     
     hello_world_pool.detach();

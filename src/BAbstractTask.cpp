@@ -15,7 +15,7 @@ BAbstractTask::BAbstractTask()
     m_input_buffer_size_ = 0;
     m_output_buffer_ = nullptr;
     m_output_buffer_size_ = 0;
-    m_task_status_ = (int)BTaskStatus::TaskInit;
+    m_task_status_ = static_cast<int>(BTaskStatus::TaskInit);
     m_creater_thread_id_ = this_thread::get_id();
     m_thread_ref_count_ = 1;
 }
@@ -31,12 +31,12 @@ BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractTask::BAbstractTask(void* _buffer, size_t _size) - setInputBuffer failed.")
 #endif
-        m_task_status_ = (int)BTaskStatus::TaskFailed;
+        m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
         return;
     }
     
     m_output_buffer_ = nullptr;
-    m_task_status_ = (int)BTaskStatus::TaskInit;
+    m_task_status_ = static_cast<int>(BTaskStatus::TaskInit);
 }
 
 BAbstractTask::~BAbstractTask()
@@ -65,7 +65,7 @@ int BAbstractTask::setStatus(BAbstractTask::BTaskStatus _status)
     
     if(m_isWorkerThread_(this_thread::get_id()) || (m_thread_ref_count_ == 1))
     {    
-        m_task_status_ = (int)_status;
+        m_task_status_ = static_cast<int>(_status);
         
         return B_SUCCESS;
     }else{

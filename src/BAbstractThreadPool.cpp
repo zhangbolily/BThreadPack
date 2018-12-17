@@ -160,7 +160,7 @@ void BAbstractThreadPool::wait()
 
 void BAbstractThreadPool::setStatus(BThreadPoolStatus _status)
 {
-	m_pool_status_ = (int)_status;
+	m_pool_status_ = static_cast<int>(_status);
 }
 
 int BAbstractThreadPool::status()
