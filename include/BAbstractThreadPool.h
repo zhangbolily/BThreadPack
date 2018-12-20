@@ -26,7 +26,7 @@ public:
 	enum BThreadPoolStatus{
         ThreadPoolError = -1,
         ThreadPoolStop = 0,
-        ThreadPoolRunning = 1,
+        ThreadPoolRunning = 1
     };
     
     enum BThreadControlMode{

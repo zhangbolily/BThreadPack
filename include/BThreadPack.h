@@ -17,6 +17,11 @@
  *  Definition of return code
 */
 
+/* If this function required running mode is not satisfied, this error code returned.
+*/
+
+#define B_MODE_INCORRECT	-7
+
 /* If you specified a thread number that doesn't exist, this error code returned.
 */
 
