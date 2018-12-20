@@ -9,6 +9,7 @@
 
 #include "BAbstractThreadPool.h"
 #include "BGeneralTask.h"
+#include "BTimer.h"
 
 using namespace std;
 
@@ -32,7 +33,24 @@ public:
     /* @~BAbstractThreadPool() - Destructor */
     ~BGeneralThreadPool();
     
+    /* @BOptimizer() - Find the minimum threads for maximum thread pool performance
+     * and the maximum threads for minimum single task processing time.
+     * Call this function need thread pool running in DynamicThreadCapacity mode.
+     * @_task_vec - The task for testing.
+     */
+    int BOptimizer(vector<BGeneralTask *> _task_vec);
+    
+    void notifyOptimizer();
+    
+    mutex m_task_time_mutex;
+    vector<unsigned long long> m_task_time_vec;
+    
 private:
+    unsigned int m_max_performance_threads_;
+    unsigned int m_min_time_threads_;
+    mutex m_timer_mutex_;
+    condition_variable m_timer_condition_;
+
 	/* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
      * All threads will use this pointer to call public member in this class.
@@ -42,6 +60,8 @@ private:
     virtual int m_init_(BGeneralThreadPool* _this);
     
     static void m_threadFunction_(BGeneralThreadPool* _this);
+    
+    int m_getMaximumThreadsforSingleTaskProcessing_(vector<BGeneralTask *> _task_vec);
 };
 
 };

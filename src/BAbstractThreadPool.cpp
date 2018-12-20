@@ -67,8 +67,8 @@ long long BAbstractThreadPool::addThread(thread _new_thread)
     if(this->capacity() == this->size())
     {
 #ifdef _B_DEBUG_
-            B_PRINT_DEBUG("BAbstractThreadPool::addThread - Thread number reach the thread pool capacity limitation.")
-            B_PRINT_DEBUG("BAbstractThreadPool::addThread - Current thread pool capacity number :"<<m_thread_capacity_)
+        B_PRINT_DEBUG("BAbstractThreadPool::addThread - Thread number reach the thread pool capacity limitation.")
+        B_PRINT_DEBUG("BAbstractThreadPool::addThread - Current thread pool capacity number :"<<m_thread_capacity_)
 #endif
         return B_THREAD_POOL_IS_FULL;
     }
@@ -84,7 +84,7 @@ long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
 	if(_thread_num > this->size())
     {
 #ifdef _B_DEBUG_
-            B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number "<<_thread_num<<" doesn't exist.")
+        B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
         return B_THREAD_NOT_EXISTS;
     }
@@ -120,7 +120,7 @@ int BAbstractThreadPool::join(unsigned int _thread_num)
     if(_thread_num > this->size())
     {
 #ifdef _B_DEBUG_
-            B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
+        B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
         return B_THREAD_NOT_EXISTS;
     }else
@@ -131,7 +131,7 @@ int BAbstractThreadPool::join(unsigned int _thread_num)
 
 int BAbstractThreadPool::detach()
 {
-	for (unsigned int i = 0; i < this->capacity(); ++i) {
+	for (unsigned int i = 0; i < this->size(); ++i) {
         m_thread_vec_[i].detach();
     }
     
@@ -143,7 +143,7 @@ int BAbstractThreadPool::detach(unsigned int _thread_num)
     if(_thread_num > this->size())
     {
 #ifdef _B_DEBUG_
-            B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
+        B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
         return B_THREAD_NOT_EXISTS;
     }else
