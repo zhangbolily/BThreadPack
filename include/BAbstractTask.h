@@ -85,6 +85,9 @@ public:
     */
     int outputBuffer(void** _buffer, size_t &_size);
     
+    /* Make sure this task can only be accessed by one thread at any time */
+    mutex m_task_mutex;
+    
 private:
 
     /* @m_task_status_ - store the status of task */
@@ -101,35 +104,6 @@ private:
     
     /* @m_output_buffer_size_ - store the size of output data buffer */
     atomic_size_t m_output_buffer_size_;
-    
-    /* @m_thread_ref_count_ - store how many threads are using this object */
-    atomic_int m_thread_ref_count_;
-    
-    /* @m_creater_thread_id_ - store which thread create this object */
-    thread::id m_creater_thread_id_;
-    
-    /* @m_worker_thread_id_ - store which thread use this object */
-    thread::id m_worker_thread_id_;
-    
-    /* @m_isCreaterThread_ - check whether this thread is work thread
-     * @_thread_id - thread id will be checked
-     * @return - returns true if the thread is creater thread
-    */
-    bool m_isCreaterThread_(thread::id _thread_id);
-    
-    /* @m_isWorkerThread_ - check whether this thread is work thread
-     * @_thread_id - thread id will be checked
-     * @return - returns true if the thread is worker thread
-    */
-    bool m_isWorkerThread_(thread::id _thread_id);
-    
-    /* @m_threadChanged_() - check whether this object has been moved to another thread */
-    bool m_threadChanged_();
-    
-    /* @m_threadSafe_() - check the thread status of this object and make sure this object is thread-safe
-     * Returned B_ONLY_SINGLE_THREAD error code if this object is running in multi-thread mode.
-    */
-    int m_threadSafe_();
 };
 
 };

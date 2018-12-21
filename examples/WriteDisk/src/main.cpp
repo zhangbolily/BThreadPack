@@ -48,8 +48,9 @@ BGeneralThreadPool hello_world_pool(num_threads, BAbstractThreadPool::BThreadCon
 int main(int argc, char** argv)
 {   
     vector<BGeneralTask *> task_vec;
+    int task_num = 200;
     //1. Add task into thread pool.
-    for(int i=0;i < 100;i++)
+    for(int i=0;i < task_num;i++)
     {
         WriteDiskTask* p_write_disk = new WriteDiskTask(i);
         task_vec.push_back(static_cast<BGeneralTask *>(p_write_disk));
@@ -62,7 +63,7 @@ int main(int argc, char** argv)
     
     hello_world_pool.kill();
     
-    for(int i=0;i < 100;i++)
+    for(int i=0;i < task_num;i++)
     {
         delete static_cast<WriteDiskTask*>(task_vec[i]);
     }
