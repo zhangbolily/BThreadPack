@@ -189,6 +189,12 @@ int BAbstractThreadPool::kill()
 	this->startAllTasks();
 	/*Delete all threads.*/
 	m_thread_vec_.clear();
+	/* Wait all threads exit. */
+	microseconds _us_time(500);
+	while(size() != 0)
+	{
+		this_thread::sleep_for(_us_time);
+	}
 	
     return B_SUCCESS;
 }

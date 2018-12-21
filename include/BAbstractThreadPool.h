@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <chrono>
 #include <functional>
 #include <queue>
 #include <thread>
@@ -17,6 +18,7 @@
 #include "BThreadPack.h"
 
 using namespace std;
+using namespace std::chrono;
 
 namespace BThreadPack {
 

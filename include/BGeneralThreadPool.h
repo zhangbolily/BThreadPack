@@ -18,6 +18,10 @@ namespace BThreadPack {
 class BGeneralThreadPool: public BAbstractThreadPool{
 
 public:
+	enum Optimizer {
+		PerformanceFirst = 0,
+		ProcessTimeFirst = 1
+	};
     /* @BAbstractThreadPool() - Constructor
      * @_thread_cap - How many threads can be created in this pool.
     */
@@ -33,12 +37,13 @@ public:
     /* @~BAbstractThreadPool() - Destructor */
     ~BGeneralThreadPool();
     
-    /* @BOptimizer() - Find the minimum threads for maximum thread pool performance
+    /* @optimizer() - Find the minimum threads for maximum thread pool performance
      * and the maximum threads for minimum single task processing time.
      * Call this function need thread pool running in DynamicThreadCapacity mode.
+     * @_op_type - Which optimizer you want to use.
      * @_task_vec - The task for testing.
      */
-    int BOptimizer(vector<BGeneralTask *> _task_vec);
+    int optimizer(vector<BGeneralTask *> _task_vec, Optimizer _op_type);
     
     void notifyOptimizer();
     
@@ -58,10 +63,9 @@ private:
      * @return - return B_SUCCESS if success
     */
     virtual int m_init_(BGeneralThreadPool* _this);
-    
+    virtual int m_init_(BGeneralThreadPool* _this, unsigned int _thread_num);
     static void m_threadFunction_(BGeneralThreadPool* _this);
-    
-    int m_getMaximumThreadsforSingleTaskProcessing_(vector<BGeneralTask *> _task_vec);
+    int m_normalOptimizer_(vector<BGeneralTask *> _task_vec);
 };
 
 };
