@@ -206,10 +206,10 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
     }
     
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - m_min_time_threads_ "<<m_min_time_threads_)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - _min_task_time "<<_min_task_time)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - m_max_performance_threads_ "<<m_max_performance_threads_)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - _min_pool_time "<<_min_pool_time)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - m_min_time_threads_ "<<m_min_time_threads_)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - _min_task_time "<<_min_task_time)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - m_max_performance_threads_ "<<m_max_performance_threads_)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - _min_pool_time "<<_min_pool_time)
 #endif
     
     return B_SUCCESS;
