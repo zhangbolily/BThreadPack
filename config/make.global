@@ -8,7 +8,7 @@ MAKEFLAG := -s --no-print-directory
 OBJ_DIR := ../obj
 
 # include file path
-INC_PATH := -I../include
+INC_PATH := -I./include
 
 # compile marcro
 CC := gcc
