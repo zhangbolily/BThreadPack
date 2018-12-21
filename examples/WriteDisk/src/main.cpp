@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unistd.h>
+#include <math.h>
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BGeneralTask.h"
@@ -27,9 +28,13 @@ public:
     virtual int process()
     {
     	ofstream out_file;
-    	string fname = "./data/" + to_string(m_task_id_);
+    	string fname = "./data/sin_result_task_" + to_string(m_task_id_) + ".btk";
     	out_file.open(fname);
-    	out_file<<"Hello World!\n";
+    	out_file<<"This file include many result of pow(tan(i), cos(i))/pow(sin(i), cos(i)).\n";
+    	for(int i=0;i < 40000;i++)
+    	{
+    		out_file<<to_string(pow(tan(i), cos(i))/pow(sin(i), cos(i)))<<"\n";
+    	}
         out_file.close();
     }
 
@@ -50,7 +55,8 @@ int main(int argc, char** argv)
         task_vec.push_back(static_cast<BGeneralTask *>(p_write_disk));
     }
     
-    hello_world_pool.BOptimizer(task_vec);
+    hello_world_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
+    cout << "Current threads: " << hello_world_pool.size() <<endl;
     
     getchar();
     

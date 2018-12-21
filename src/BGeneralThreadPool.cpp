@@ -27,9 +27,16 @@ BGeneralThreadPool::~BGeneralThreadPool()
 
 int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this)
 {
+	return m_init_(_this, capacity());
+}
+
+int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this, unsigned int _thread_num)
+{
+	kill();
+	
 	setStatus(BThreadPoolStatus::ThreadPoolRunning);
 	
-    for (unsigned int i = 0; i < capacity(); ++i) {
+    for (unsigned int i = 0; i < _thread_num; ++i) {
         if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
             return B_THREAD_POOL_IS_FULL;
     }
@@ -39,7 +46,7 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this)
     return B_SUCCESS;
 }
 
-int BGeneralThreadPool::BOptimizer(vector<BGeneralTask *> _task_vec)
+int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThreadPool::Optimizer _op_type)
 {
     if (mode() != BAbstractThreadPool::DynamicThreadCapacity)
     {
@@ -49,11 +56,42 @@ int BGeneralThreadPool::BOptimizer(vector<BGeneralTask *> _task_vec)
         return B_MODE_INCORRECT;
     }
     
-    if(m_getMaximumThreadsforSingleTaskProcessing_(_task_vec) != B_SUCCESS)
-    {
+    switch (_op_type) {
+    	case PerformanceFirst : {
+    		if(m_normalOptimizer_(_task_vec) != B_SUCCESS)
+    		{
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_getMaximumThreadsforSingleTaskProcessing_ failed.")
+        B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
+				return B_ERROR;
+    		} else {
+    			if (size() == m_max_performance_threads_)
+    			{
+    				return B_SUCCESS;
+    			} else {
+    				return m_init_(this, m_max_performance_threads_);
+    			}
+    		}
+    	}
+    	
+    	case ProcessTimeFirst : {
+    		if(m_normalOptimizer_(_task_vec) != B_SUCCESS)
+    		{
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_normalOptimizer_ failed.")
+#endif
+				return B_ERROR;
+    		} else {
+    			if (size() == m_min_time_threads_)
+    			{
+    				return B_SUCCESS;
+    			} else {
+    				return m_init_(this, m_min_time_threads_);
+    			}
+    		}
+    	}
+    	default:
+    		return B_ERROR;
     }
     
     return B_SUCCESS;
@@ -109,50 +147,24 @@ void BGeneralThreadPool::notifyOptimizer()
     m_timer_condition_.notify_one();
 }
 
-int BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_(vector<BGeneralTask *> _task_vec)
+int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
 {
     //Testing the maximum threads for minimum single task processing time first.
-    vector<unsigned long long> _task_processing_average_time;
+    vector<long long> _average_time;
+    vector<unsigned long long> _thread_pool_time;
     
-    unsigned int _threads_limit = capacity();
-    setCapacity(_threads_limit);
-    
-    kill();
-    while(size()!=0);
-    
-    for(unsigned int i=0;i < _threads_limit;i++)
+    for(unsigned int i=0;i < capacity();i++)
     {
-#ifdef _B_DEBUG_
-        //B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - Round "<<i<<".")
-#endif
-        unsigned long long _fake_time = 0;
-        _task_processing_average_time.push_back(_fake_time);
+		BTimer _pool_timer;
+        long long _fake_time = 0;
+        _average_time.push_back(_fake_time);
         // Find the average time of processing a single task with different threas
         while(getTask() != nullptr)
         {
             // Clear the task queue.The thread pool is waiting for start signal now.
         }
         
-        setStatus(BThreadPoolStatus::ThreadPoolRunning);
-        
-        if(size() < (i+1)){
-            while(1){
-                if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == B_SUCCESS)
-                {
-                    if(size() == (i+1))
-                        break;
-                }else {
-                    break;
-                }
-            }
-        }else if(size() > (i+1)){
-            while(1){
-                if(removeThread(size() - 1) == (i+1))
-                    break;
-            }
-        }
-        
-        detach();
+        m_init_(this, i+1);
         
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {
@@ -162,17 +174,17 @@ int BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_(vector<BGene
         
         startAllTasks();
         
+        _pool_timer.start();
         while(m_task_time_vec.size() != _task_vec.size()){
             unique_lock<std::mutex> lock(m_timer_mutex_);
             m_timer_condition_.wait(lock);
         }
-        
-        kill();
-        while(size()!=0);
+        _pool_timer.stop();
+        _thread_pool_time.push_back(_pool_timer.time());
         
         for(unsigned int j=0;j < m_task_time_vec.size();j++)
         {
-            _task_processing_average_time[i] += (m_task_time_vec[j] - _task_processing_average_time[i]) / (j+1);
+            _average_time[i] += (static_cast<long long>(m_task_time_vec[j]) - _average_time[i]) / (j+1);
         }
         
         m_task_time_vec.clear();
@@ -180,17 +192,24 @@ int BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_(vector<BGene
     // Finished finding the average time of processing a single task with different threas
     
     m_min_time_threads_ = 1;
-    unsigned long long _min_time = _task_processing_average_time[0];
+    m_max_performance_threads_ = 1;
+    long long _min_task_time = _average_time[0];
+    unsigned long long _min_pool_time = _thread_pool_time[0];
     
-    for(unsigned int i=1;i < _task_processing_average_time.size();i++)
+    for(unsigned int i=1;i < _average_time.size();i++)
     {
-        _min_time = _task_processing_average_time[i] <= (_min_time + 100)?_task_processing_average_time[i]:_min_time;
-        m_min_time_threads_ = _task_processing_average_time[i] <= (_min_time + 100)?(i+1):m_min_time_threads_;
+        _min_task_time = _average_time[i] <= (_min_task_time + 100)?_average_time[i]:_min_task_time;
+        m_min_time_threads_ = _average_time[i] <= (_min_task_time + 100)?(i+1):m_min_time_threads_;
+        
+        _min_pool_time = _thread_pool_time[i] <= (_min_pool_time)?_thread_pool_time[i]:_min_pool_time;
+        m_max_performance_threads_ = _thread_pool_time[i] <= (_min_pool_time)?(i+1):m_max_performance_threads_;
     }
     
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - m_min_time_threads_ "<<m_min_time_threads_)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - _min_time "<<_min_time)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - _min_task_time "<<_min_task_time)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - m_max_performance_threads_ "<<m_max_performance_threads_)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_getMaximumThreadsforSingleTaskProcessing_ - _min_pool_time "<<_min_pool_time)
 #endif
     
     return B_SUCCESS;
