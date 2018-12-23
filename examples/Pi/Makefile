@@ -15,7 +15,7 @@ INC_PATH :=
 LIBS := -lbthreadpack -lpthread
 
 # compile marcros
-TARGET_NAME := WriteDisk
+TARGET_NAME := Pi
 ifeq ($(OS),Windows_NT)
 	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
 endif

@@ -28,3 +28,9 @@ examples/WriteDisk/debug/data/
 examples/WriteDisk/bin/data/
 
 examples/WriteDisk/debug/
+
+examples/WriteDisk/bin/
+
+examples/Pi/bin/data/
+
+examples/Pi/bin/
