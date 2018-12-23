@@ -206,10 +206,20 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
     }
     
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - m_min_time_threads_ "<<m_min_time_threads_)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - _min_task_time "<<_min_task_time)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - m_max_performance_threads_ "<<m_max_performance_threads_)
-    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - _min_pool_time "<<_min_pool_time)
+    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - Threads for minimum single task processing time is "<<m_min_time_threads_<<".")
+    B_PRINT_DEBUG("Result of average task processing time:")
+    B_PRINT_DEBUG("Thread number| Average processing time")
+    for(unsigned int i=0;i < _average_time.size();i++)
+    {
+        B_PRINT_DEBUG("\t"<<i+1<<"\t| "<<_average_time[i]<<" us")
+    }
+    B_PRINT_DEBUG("BGeneralThreadPool::m_normalOptimizer_ - Threads for maximum thread pool performance is "<<m_max_performance_threads_<<".")
+    B_PRINT_DEBUG("Result of thread pool processing time:")
+    B_PRINT_DEBUG("Thread number| Processing time")
+    for(unsigned int i=0;i < _thread_pool_time.size();i++)
+    {
+        B_PRINT_DEBUG("\t"<<i+1<<"\t| "<<_thread_pool_time[i]<<" us")
+    }
 #endif
     
     return B_SUCCESS;

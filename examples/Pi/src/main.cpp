@@ -10,36 +10,53 @@
 #include "BThreadPack/BGeneralTask.h"
 #include "BThreadPack/BGeneralThreadPool.h"
 
+#define PRECISION 200000000
+
 using namespace std;
 using namespace BThreadPack;
 
-class WriteDiskTask: public BGeneralTask{
+class CalculatePiTask: public BGeneralTask{
 public:
-    WriteDiskTask(int _task_id)
+    CalculatePiTask(int _task_id)
         :BGeneralTask(),
         m_task_id_(_task_id)
     {
     }
     
-    ~WriteDiskTask()
+    ~CalculatePiTask()
     {
     }
     
     virtual int process()
     {
     	ofstream out_file;
-    	string fname = "./data/sin_result_task_" + to_string(m_task_id_) + ".btk";
+    	string fname = "./data/pi_result_" + to_string(m_task_id_) + ".b";
     	out_file.open(fname);
-    	out_file<<"This file include many result of pow(tan(i), cos(i))/pow(sin(i), cos(i)).\n";
-    	for(int i=0;i < 40000;i++)
+    	out_file<<"Different precision pi:\n";
+    	for(int i=(PRECISION-100);i < PRECISION;i++)
     	{
-    		out_file<<to_string(pow(tan(i), cos(i))/pow(sin(i), cos(i)))<<"\n";
+    		out_file<<to_string(pi(i))<<"\n";
     	}
         out_file.close();
+        cout<<"Pi is ready."<<endl;
     }
 
 private:
     int m_task_id_;
+    double pi(int _level)
+    {
+        bool sign = true;
+        double _pi = 0.0;
+        for(int i=0;i < _level;i++)
+        {
+            if(sign)
+                _pi += 4000000000000.0/(i*2 + 1);
+            else
+                _pi -= 4000000000000.0/(i*2 + 1);
+            sign = !sign;
+        }
+        return _pi;
+    }
 };
 
 int num_threads = 20;
@@ -48,16 +65,18 @@ BGeneralThreadPool hello_world_pool(num_threads, BAbstractThreadPool::BThreadCon
 int main(int argc, char** argv)
 {   
     vector<BGeneralTask *> task_vec;
-    int task_num = 200;
+    int task_num = 20;
     //1. Add task into thread pool.
     for(int i=0;i < task_num;i++)
     {
-        WriteDiskTask* p_write_disk = new WriteDiskTask(i);
+        CalculatePiTask* p_write_disk = new CalculatePiTask(i);
+        //hello_world_pool.addTask(static_cast<BGeneralTask *>(p_write_disk));
         task_vec.push_back(static_cast<BGeneralTask *>(p_write_disk));
     }
     
     hello_world_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
     cout << "Current threads: " << hello_world_pool.size() <<endl;
+    //hello_world_pool.startAllTasks();
     
     getchar();
     
@@ -65,7 +84,7 @@ int main(int argc, char** argv)
     
     for(int i=0;i < task_num;i++)
     {
-        delete static_cast<WriteDiskTask*>(task_vec[i]);
+        delete static_cast<CalculatePiTask*>(task_vec[i]);
     }
 	
     return 0;
