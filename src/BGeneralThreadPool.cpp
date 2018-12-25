@@ -134,17 +134,12 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
         }else{
         	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
-        	lock_guard<std::mutex> guard(_this->m_task_time_mutex);
-        	_this->m_task_time_vec.push_back(_task_timer.time());
-        	_this->notifyOptimizer();
+        	unsigned long long *_task_time = new unsigned long long;
+        	*_task_time = _task_timer.time();
+        	_this->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
         }
         // Finished check
     }
-}
-
-void BGeneralThreadPool::notifyOptimizer()
-{
-    m_timer_condition_.notify_one();
 }
 
 int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
@@ -175,9 +170,21 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         startAllTasks();
         
         _pool_timer.start();
-        while(m_task_time_vec.size() != _task_vec.size()){
-            unique_lock<std::mutex> lock(m_timer_mutex_);
-            m_timer_condition_.wait(lock);
+        while(m_task_time_vec.size() != _task_vec.size())
+        {
+        	unsigned long long *_task_time = nullptr;
+        	while(1)
+        	{
+        		_task_time = static_cast<unsigned long long *>(message(TASK_TIME_QUEUE));
+        		if(_task_time == nullptr)
+        		{
+        			break;
+        		} else {
+        			m_task_time_vec.push_back(*_task_time);
+        			delete _task_time;
+        			break;
+        		}
+        	}
         }
         _pool_timer.stop();
         _thread_pool_time.push_back(_pool_timer.time());

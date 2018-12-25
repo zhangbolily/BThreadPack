@@ -7,6 +7,8 @@
 #ifndef _BGENERAL_THREAD_POOL_H_
 #define _BGENERAL_THREAD_POOL_H_
 
+#define TASK_TIME_QUEUE	0
+
 #include "BAbstractThreadPool.h"
 #include "BGeneralTask.h"
 #include "BTimer.h"
@@ -45,16 +47,12 @@ public:
      */
     int optimizer(vector<BGeneralTask *> _task_vec, Optimizer _op_type);
     
-    void notifyOptimizer();
-    
     mutex m_task_time_mutex;
     vector<unsigned long long> m_task_time_vec;
     
 private:
     unsigned int m_max_performance_threads_;
     unsigned int m_min_time_threads_;
-    mutex m_timer_mutex_;
-    condition_variable m_timer_condition_;
 
 	/* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
