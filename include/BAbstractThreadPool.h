@@ -11,6 +11,7 @@
 #include <condition_variable>
 #include <chrono>
 #include <functional>
+#include <map>
 #include <queue>
 #include <thread>
 #include <vector>
@@ -153,31 +154,33 @@ public:
      * @return - Returns task buffer.
     */
     void* getTask();
+    
+    /* @sendMessage - Send a message to the message queue and notify thread subscribing this message.
+     * @_queue_num - You want to send message to which queue.
+     * @_message_buffer - A memory buffer that contains the message data.
+     * @return - Returns B_SUCCESS if success
+    */
+    int sendMessage(int _queue_num, void* _message_buffer);
+    
+    /* @message - Get a message from message queue. This function will be blocked until message arrived.
+     * @_queue_num - Which bus you want to subscribe.
+     * @return - Returns message buffer.
+    */
+    void* message(int _queue_num);
 
 private:
-    /* @m_thread_capacity_ - The capacity of how many threads this pool can create. */
     atomic_uint m_thread_capacity_;
-    
-    /* @m_thread_vec_ - The vector contains all threads of this pool. */
     vector<thread> m_thread_vec_;
-    
-    /* @m_task_queue_ - The queue of tasks. */
     queue<void *> m_task_queue_;
-    
-    /* @m_pool_mode_ - Control the running mode of this thread pool. */
     atomic_int m_pool_mode_;
-    
-    /* @m_pool_status_ - Control the status of this thread pool. */
     atomic_int m_pool_status_;
-    
-    /* @m_task_mutex_ - Mutex for m_task_queue_. */
     mutex m_task_mutex_;
-    
-    /* @m_start_mutex_ - Mutex for m_start_condition_. */
+    mutex m_message_mutex_;
     mutex m_start_mutex_;
-    
-    /* @m_start_condition_ - Determin whether start threads. */
     condition_variable m_start_condition_;
+    map<int, queue<void *>> m_message_queue_map_;
+    map<int, condition_variable> m_message_cond_map_;
+    map<int, mutex> m_message_mutex_map_;
     
     /* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.

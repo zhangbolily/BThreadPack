@@ -10,7 +10,7 @@
 #include "BThreadPack/BGeneralTask.h"
 #include "BThreadPack/BGeneralThreadPool.h"
 
-#define PRECISION 200000000
+#define PRECISION 2000
 
 using namespace std;
 using namespace BThreadPack;

@@ -211,7 +211,7 @@ void* BAbstractThreadPool::getTask()
 {
     lock_guard<std::mutex> guard(m_task_mutex_);
     
-    if(!m_task_queue_.size())
+    if(m_task_queue_.empty())
         return nullptr;
     else{
         void* _resultTask = m_task_queue_.front();
@@ -219,6 +219,68 @@ void* BAbstractThreadPool::getTask()
         
         return _resultTask;
     }
+}
+
+int BAbstractThreadPool::sendMessage(int _queue_num, void* _message_buffer)
+{
+	m_message_mutex_.lock();
+
+	if(m_message_queue_map_.find(_queue_num) == m_message_queue_map_.end())
+	{
+		m_message_queue_map_[_queue_num];
+		m_message_mutex_map_[_queue_num];
+		m_message_cond_map_[_queue_num];
+		m_message_mutex_.unlock();
+	} else {
+		m_message_mutex_.unlock();
+	}
+	
+	m_message_mutex_map_[_queue_num].lock();
+	m_message_queue_map_[_queue_num].push(_message_buffer);
+	m_message_mutex_map_[_queue_num].unlock();
+	m_message_cond_map_[_queue_num].notify_all();
+	
+	return B_SUCCESS;
+}
+
+void* BAbstractThreadPool::message(int _queue_num)
+{
+	m_message_mutex_.lock();
+	
+	if(m_message_queue_map_.find(_queue_num) == m_message_queue_map_.end())
+	{
+		m_message_queue_map_[_queue_num];
+		m_message_mutex_map_[_queue_num];
+		m_message_cond_map_[_queue_num];
+		m_message_mutex_.unlock();
+	} else {
+		m_message_mutex_.unlock();
+	}
+	
+	if(m_message_queue_map_[_queue_num].empty()){
+		unique_lock<mutex> lock(m_message_mutex_map_[_queue_num]);
+		m_message_cond_map_[_queue_num].wait(lock);
+		
+		if(m_message_queue_map_[_queue_num].empty())
+		{
+			m_message_mutex_map_[_queue_num].unlock();
+		    return nullptr;
+	    } else {
+		    void* _result_message = m_message_queue_map_[_queue_num].front();
+		    m_message_queue_map_[_queue_num].pop();
+		    
+		    m_message_mutex_map_[_queue_num].unlock();
+		    return _result_message;
+		}
+	} else {
+		m_message_mutex_map_[_queue_num].lock();
+		
+		void* _result_message = m_message_queue_map_[_queue_num].front();
+	    m_message_queue_map_[_queue_num].pop();
+	    
+		m_message_mutex_map_[_queue_num].unlock();
+	    return _result_message;
+	}
 }
 
 void BAbstractThreadPool::m_threadFunction_(void* _buffer)
