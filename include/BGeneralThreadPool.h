@@ -47,7 +47,6 @@ public:
      */
     int optimizer(vector<BGeneralTask *> _task_vec, Optimizer _op_type);
     
-    mutex m_task_time_mutex;
     vector<unsigned long long> m_task_time_vec;
     
 private:

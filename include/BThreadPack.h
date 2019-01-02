@@ -19,23 +19,23 @@
 
 /* If this function required running mode is not satisfied, this error code returned.
 */
-
 #define B_MODE_INCORRECT	-7
 
 /* If you specified a thread number that doesn't exist, this error code returned.
 */
-
 #define B_THREAD_NOT_EXISTS	-6
 
 /* If you have add threads more than the thread pool capacity, this error code will be returned.
 */
 #define B_THREAD_POOL_IS_FULL    -5
 
+//DEPRECATED
 /* If an object has been passed to a thread, some function might can only be called in
  * work thread. If you call member function in another thread, this error occurs.
 */
 #define B_NOT_IN_WORK_THREAD    -4
 
+//DEPRECATED
 /* If an object has been passed to a thread, some function might can only be called in
  * create thread. If you call member function in another thread, this error occurs.
 */
