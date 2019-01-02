@@ -28,7 +28,7 @@ public:
         TaskFinished = 2
     };
 
-    /* @BAbstractTask() - Constructor */    
+    /* @BAbstractTask() - Constructor */
     BAbstractTask();
     
     /* @BAbstractTask() - Constructor
@@ -47,10 +47,6 @@ public:
      * @parameter _status - the new value of m_task_status_
     */
     int setStatus(BTaskStatus _status);
-    
-    /* @setStatus() - set the m_task_status_
-     * @parameter _status - the new value of m_task_status_
-    */
     int setStatus(atomic_int _status);
     
     /* @setInputBufer() - set the m_input_buffer_ value
