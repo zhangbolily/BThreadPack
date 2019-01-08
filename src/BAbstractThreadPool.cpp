@@ -221,6 +221,12 @@ void* BAbstractThreadPool::getTask()
     }
 }
 
+int BAbstractThreadPool::taskQueueSize()
+{
+	lock_guard<std::mutex> guard(m_task_mutex_);
+	return m_task_queue_.size();
+}
+
 int BAbstractThreadPool::sendMessage(int _queue_num, void* _message_buffer)
 {
 	m_message_mutex_.lock();
