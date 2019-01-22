@@ -4,14 +4,17 @@ export MAKE := make
 # make flag
 MAKEFLAG := -s --no-print-directory
 
+# object dir
+OBJ_DIR := ../obj
+
 # include file path
-INC_PATH := -I../../include
+INC_PATH := -I./include
 
 # compile marcro
 CC := gcc
 
 # compile flags
-CCFLAG := --std=c++11 -g -fPIC -Wall $(INC_PATH)
+CCFLAG := --std=c++11 -g -fPIC -Wall $(INC_PATH) -D_B_DEBUG_
 OBJCCFLAG := $(CCFLAG) -c
 
 # recursive make and clean
@@ -30,5 +33,5 @@ clean-subdirs:
 
 # dependencies
 %.o: %.c*
-	@echo -e "\t" CC $(OBJCCFLAG) $< -o $@
-	@$(CC) $(OBJCCFLAG) $< -o $@
+	@echo -e "\t" CC $(OBJCCFLAG) $< -o $(OBJ_DIR)/$@
+	@$(CC) $(OBJCCFLAG) $< -o $(OBJ_DIR)/$@

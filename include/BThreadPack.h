@@ -5,13 +5,10 @@
 */
 #ifdef _B_DEBUG_
 #include <sstream>
+#include <iostream>
 #include <ctime>
 #include <thread>
 #endif
-
-#include "BAbstractTask.h"
-#include "BAbstractThread.h"
-#include "BWorkerThread.h"
 
 #ifndef _BTHREAD_PACK_H_
 #define _BTHREAD_PACK_H_
@@ -20,28 +17,16 @@
  *  Definition of return code
 */
 
-/* If an object has been passed to a thread, some function might can only be called in
- * work thread. If you call member function in another thread, this error occurs.
-*/
-#define B_NOT_IN_WORK_THREAD    -4
-
-/* If an object has been passed to a thread, some function might can only be called in
- * create thread. If you call member function in another thread, this error occurs.
-*/
-#define B_NOT_IN_CREATE_THREAD    -3
-
-/* If an object can only run in a single thread was used in
- * multi-thread mode, this error code will be returned.
-*/
-#define B_ONLY_SINGLE_THREAD    -2
-
-/*General error code.
-*/
-#define B_ERROR                 -1    
-
-/*General success code.
-*/                                   
-#define B_SUCCESS               0
+namespace BThreadPack{
+    enum ReturnCode{
+        BError = -1,
+        BSuccess = 0,
+        BOnlySingleThread = -2, //Accessed by more than one thread
+        BThreadPoolFull = -3,   //Threads more than the thread pool capacity
+        BThreadNotExists = -4,  //Specified thread number doesn't exist
+        BModeIncorrect = -5     //Required running mode is not satisfied
+    };
+};
 
 #ifdef _B_DEBUG_
 /*

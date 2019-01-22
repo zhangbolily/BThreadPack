@@ -2,86 +2,71 @@
 [![pipeline status](https://gitlab.com/zhangbolily/bthreadpack/badges/master/pipeline.svg)](https://gitlab.com/zhangbolily/bthreadpack/commits/master)
 [![coverage report](https://gitlab.com/zhangbolily/bthreadpack/badges/master/coverage.svg)](https://gitlab.com/zhangbolily/bthreadpack/commits/master)
 
+[中文版](./docs/README.zh_CN.md)
+
 A handful thread tool kit.
+
+## Features
+- Satisfied general task usage and specified task usage.
+- Full control of threads at any time.
+- Message queue mechanism for interthread communication.
+- Thread quantity optimization mechanism.
+- Every task is thread-safe.
+
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+If you want to use BThreadPack in your platform, these requirements need to be satisfied.
 
 ```
-gcc version > 4.8
+System: Linux (This project only be tested on this platform)
+gcc version > 4.8 (Need c++11 support)
 ```
 
 ### Source Code Structure
-- include: all .h files.
-- src: all .cpp files.
-- lib: dynamic linked files.
+- include: All header files.
+- src: All cpp source code files.
+- Examples: Some examples tell you how to use this library.
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+BThreadPack doesn't rellay on any third-party moudules(Only STL is required).
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
+##### Step1. Build target
 
 ```
-until finished
+make
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+##### Step2. Install into your system
+
+This step need root privilege.
+
+```
+make install
+```
+
+Then you can build project in Examples directory to test this library.
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+##### Examples
 
-### Break down into end to end tests
+This project contains some examples for a better understanding on how to use these components.
 
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Read [./examples/README.md](./examples/README.md) for more details.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+For the versions available, see the [tags on this repository](https://gitlab.com/zhangbolily/bthreadpack/tags).
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Ball Chang** - *Make the whole project*
 
 ## License
 
@@ -89,6 +74,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* GitLab
