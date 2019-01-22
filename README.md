@@ -4,9 +4,17 @@
 
 A handful thread tool kit.
 
+## Features
+- Satisfied general task usage and specified task usage.
+- Full control of threads at any time.
+- Message queue mechanism for interthread communication.
+- Thread quantity optimization mechanism.
+- Every task is thread-safe.
+
+
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
@@ -24,7 +32,7 @@ gcc version > 4.8 (Need c++11 support)
 
 ### Installing
 
-BThreadPack doesn't rellay on any third-party moudules.
+BThreadPack doesn't rellay on any third-party moudules(Only STL is required).
 
 ##### Step1. Build target
 
@@ -46,7 +54,7 @@ Then you can build project in Examples directory to test this library.
 
 ##### Examples
 
-This project contains some examples for a better understanding how to use these components.
+This project contains some examples for a better understanding on how to use these components.
 
 Read [./examples/README.md](./examples/README.md) for more details.
 
