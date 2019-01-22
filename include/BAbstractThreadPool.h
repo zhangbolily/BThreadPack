@@ -155,6 +155,10 @@ public:
     */
     void* getTask();
     
+    /* @taskQueueSize - Get the size of task queue.
+    */
+    int taskQueueSize();
+    
     /* @sendMessage - Send a message to the message queue and notify thread subscribing this message.
      * @_queue_num - You want to send message to which queue.
      * @_message_buffer - A memory buffer that contains the message data.
