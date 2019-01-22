@@ -46,7 +46,7 @@ int BAbstractTask::status()
 {
     if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
 	m_task_mutex.unlock();
         
@@ -57,33 +57,33 @@ int BAbstractTask::setStatus(BAbstractTask::BTaskStatus _status)
 {
 	if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
 
     m_task_status_ = static_cast<int>(_status);
 	m_task_mutex.unlock();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractTask::setStatus(atomic_int _status)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
     
     m_task_status_.store(_status);
 	m_task_mutex.unlock();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
        
     if(_buffer == nullptr)
@@ -91,7 +91,7 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setInputBufer input pointer is nullptr. ")
 #endif
-        return B_ERROR;
+        return ReturnCode::BError;
     } else {
         m_input_buffer_ = _buffer;
     }
@@ -102,21 +102,21 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
         B_PRINT_ERROR("BAbstractTask::setInputBufer input buffer size is 0. ")
 #endif
         m_input_buffer_ = nullptr;
-        return B_ERROR;
+        return ReturnCode::BError;
     } else {
         m_input_buffer_size_.store(_size);
     }
         
 	m_task_mutex.unlock();
         
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractTask::inputBuffer(void** _buffer, size_t &_size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
     
     *_buffer = m_input_buffer_;
@@ -124,14 +124,14 @@ int BAbstractTask::inputBuffer(void** _buffer, size_t &_size)
     
 	m_task_mutex.unlock();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
     
     if(_buffer == nullptr)
@@ -140,7 +140,7 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
         B_PRINT_ERROR("BAbstractTask::setOutputBuffer input pointer is nullptr.")
 #endif
         cerr<<"[Error]  "<<endl;
-        return B_ERROR;
+        return ReturnCode::BError;
     } else {
         m_output_buffer_ = _buffer;
     }
@@ -151,21 +151,21 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
         B_PRINT_ERROR("BAbstractTask::setOutputBuffer input buffer size is 0. ")
 #endif
         m_output_buffer_ = nullptr;
-        return B_ERROR;
+        return ReturnCode::BError;
     } else {
         m_output_buffer_size_.store(_size);
     }
         
 	m_task_mutex.unlock();
         
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractTask::outputBuffer(void** _buffer, size_t &_size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return B_ONLY_SINGLE_THREAD;
+    	return ReturnCode::BOnlySingleThread;
     }
         
     *_buffer = m_output_buffer_;
@@ -173,6 +173,6 @@ int BAbstractTask::outputBuffer(void** _buffer, size_t &_size)
     
 	m_task_mutex.unlock();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 };

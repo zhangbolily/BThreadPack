@@ -25,7 +25,7 @@ BGeneralTask::~BGeneralTask()
 int BGeneralTask::process()
 {
     //Define how to process this task
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 };

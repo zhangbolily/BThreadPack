@@ -70,13 +70,13 @@ long long BAbstractThreadPool::addThread(thread _new_thread)
         B_PRINT_DEBUG("BAbstractThreadPool::addThread - Thread number reach the thread pool capacity limitation.")
         B_PRINT_DEBUG("BAbstractThreadPool::addThread - Current thread pool capacity number :"<<m_thread_capacity_)
 #endif
-        return B_THREAD_POOL_IS_FULL;
+        return ReturnCode::BThreadPoolFull;
     }
     else{
         m_thread_vec_.push_back(std::move(_new_thread));
         return this->size();
     }
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
@@ -86,13 +86,13 @@ long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
-        return B_THREAD_NOT_EXISTS;
+        return ReturnCode::BThreadNotExists;
     }
     else{
         m_thread_vec_.erase(m_thread_vec_.begin() + _thread_num);
         return this->size();
     }
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
@@ -103,7 +103,7 @@ int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
         this->addThread(thread(BAbstractThreadPool::m_threadFunction_, ref(_this)));
     }
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::join()
@@ -112,7 +112,7 @@ int BAbstractThreadPool::join()
         m_thread_vec_[i].join();
     }
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::join(unsigned int _thread_num)
@@ -122,11 +122,11 @@ int BAbstractThreadPool::join(unsigned int _thread_num)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
-        return B_THREAD_NOT_EXISTS;
+        return ReturnCode::BThreadNotExists;
     }else
         m_thread_vec_[_thread_num].join();
         
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::detach()
@@ -135,7 +135,7 @@ int BAbstractThreadPool::detach()
         m_thread_vec_[i].detach();
     }
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::detach(unsigned int _thread_num)
@@ -145,11 +145,11 @@ int BAbstractThreadPool::detach(unsigned int _thread_num)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
-        return B_THREAD_NOT_EXISTS;
+        return ReturnCode::BThreadNotExists;
     }else
         m_thread_vec_[_thread_num].detach();
         
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 void BAbstractThreadPool::wait()
@@ -172,18 +172,19 @@ int BAbstractThreadPool::startOneTask()
 {
     m_start_condition_.notify_one();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::startAllTasks()
 {
     m_start_condition_.notify_all();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::kill()
 {
+    //TODO Set timeout for zombie threads.
 	this->setStatus(BThreadPoolStatus::ThreadPoolStop);
 	/* Notify all threads to get the status flag, then thread will exit.*/
 	this->startAllTasks();
@@ -196,7 +197,7 @@ int BAbstractThreadPool::kill()
 		this_thread::sleep_for(_us_time);
 	}
 	
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::addTask(void* _task_buffer)
@@ -204,7 +205,7 @@ int BAbstractThreadPool::addTask(void* _task_buffer)
     lock_guard<std::mutex> guard(m_task_mutex_);
     m_task_queue_.push(_task_buffer);
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 void* BAbstractThreadPool::getTask()
@@ -246,7 +247,7 @@ int BAbstractThreadPool::sendMessage(int _queue_num, void* _message_buffer)
 	m_message_mutex_map_[_queue_num].unlock();
 	m_message_cond_map_[_queue_num].notify_all();
 	
-	return B_SUCCESS;
+	return ReturnCode::BSuccess;
 }
 
 void* BAbstractThreadPool::message(int _queue_num)
