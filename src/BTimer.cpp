@@ -33,7 +33,7 @@ long long BTimer::time()
 {
     if (m_stop_time_us < m_start_time_us)
     {
-        return B_ERROR;
+        return ReturnCode::BError;
     }else
         return duration_cast<microseconds>(m_stop_time_us - m_start_time_us).count();
 }

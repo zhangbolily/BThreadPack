@@ -37,13 +37,13 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this, unsigned int _thread_
 	setStatus(BThreadPoolStatus::ThreadPoolRunning);
 	
     for (unsigned int i = 0; i < _thread_num; ++i) {
-        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _this)) == B_THREAD_POOL_IS_FULL)
-            return B_THREAD_POOL_IS_FULL;
+        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _this)) == ReturnCode::BThreadPoolFull)
+            return ReturnCode::BThreadPoolFull;
     }
     
     detach();
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThreadPool::Optimizer _op_type)
@@ -53,21 +53,21 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - Thread mode "<<mode()<<" is incorrect for BOptimizer.")
 #endif
-        return B_MODE_INCORRECT;
+        return ReturnCode::BModeIncorrect;
     }
     
     switch (_op_type) {
     	case PerformanceFirst : {
-    		if(m_normalOptimizer_(_task_vec) != B_SUCCESS)
+    		if(m_normalOptimizer_(_task_vec) != ReturnCode::BSuccess)
     		{
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
-				return B_ERROR;
+				return ReturnCode::BError;
     		} else {
     			if (size() == m_max_performance_threads_)
     			{
-    				return B_SUCCESS;
+    				return ReturnCode::BSuccess;
     			} else {
     				return m_init_(this, m_max_performance_threads_);
     			}
@@ -75,26 +75,26 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
     	}
     	
     	case ProcessTimeFirst : {
-    		if(m_normalOptimizer_(_task_vec) != B_SUCCESS)
+    		if(m_normalOptimizer_(_task_vec) != ReturnCode::BSuccess)
     		{
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
-				return B_ERROR;
+				return ReturnCode::BError;
     		} else {
     			if (size() == m_min_time_threads_)
     			{
-    				return B_SUCCESS;
+    				return ReturnCode::BSuccess;
     			} else {
     				return m_init_(this, m_min_time_threads_);
     			}
     		}
     	}
     	default:
-    		return B_ERROR;
+    		return ReturnCode::BError;
     }
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
@@ -129,7 +129,7 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         // Stop processing
         
         // Check if this task has been processed successfully
-        if(_retcode == B_ERROR)
+        if(_retcode == ReturnCode::BError)
         {
         	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
         }else{
@@ -164,7 +164,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {
             if(addTask(static_cast<void*>(*it)) < 0)
-                return B_ERROR;
+                return ReturnCode::BError;
         }
         
         startAllTasks();
@@ -229,7 +229,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
     }
 #endif
     
-    return B_SUCCESS;
+    return ReturnCode::BSuccess;
 }
 
 };
