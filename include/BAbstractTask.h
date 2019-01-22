@@ -8,11 +8,11 @@
 #define _BABSTRACT_TASK_H_
 
 #include <atomic>
+#include <condition_variable>
+#include <iostream>
 #include <map>
 #include <mutex>
-#include <condition_variable>
 #include <thread>
-#include <iostream>
 
 using namespace std;
 
@@ -21,133 +21,85 @@ namespace BThreadPack {
 class BAbstractTask{
 
 public:
-    enum class BTaskStatus{
+    enum BTaskStatus{
         TaskFailed = -1,
         TaskInit = 0,
-        TaskDoing = 1,
+        TaskProcessing = 1,
         TaskFinished = 2
     };
 
-    /* @BAbstractTask() - Constructor
-     * Don't need any parameter
-    */    
+    /* @BAbstractTask() - Constructor */
     BAbstractTask();
     
     /* @BAbstractTask() - Constructor
      * @_buffer - the task data buffer
-     * @_size - the size of buffer
+     * @_size - size of the buffer
     */    
     BAbstractTask(void* _buffer, size_t _size);
 	
-    /* @~BAbstractTask() - Destructor
-     * Don't need any parameter
-    */
+    /* @~BAbstractTask() - Destructor */
     ~BAbstractTask();
 
-    /* @getTaskStatus() - Return the _taskStatus_ value
-     * Don't need any parameter
-    */
-    int getTaskStatus();
+    /* @status() - Return the value of m_task_status_ */
+    int status();
 
-    /* @setTaskStatus() - set the _taskStatus_ value
-     * @parameter status - the new value of _taskStatus_
+    /* @setStatus() - set the m_task_status_
+     * @parameter _status - the new value of m_task_status_
     */
-    int setTaskStatus(BTaskStatus _status);
+    int setStatus(BTaskStatus _status);
+    int setStatus(atomic_int _status);
     
-    /* @setTaskStatus() - set the _taskStatus_ value
-     * @parameter status - the new value of _taskStatus_ with type atomic_int
-    */
-    int setTaskStatus(atomic_int _status);
-    
-    /* @setInputBufer() - set the _inputBuffer_ value
+    /* @setInputBufer() - set the m_input_buffer_ value
+     *  This function only works in creater thread
      * @_buffer - the task input buffer
-     * @_size - the size of buffer
-     * @return - return 0 if success
+     * @_size - size of the buffer
+     * @return - returns B_SUCCESS if success
     */
     int setInputBuffer(void* _buffer, size_t _size);
     
-    /* @getInputBufer() - get the _inputBuffer_ value
-     * @_buffer - the task output buffer
+    /* @inputBuffer() - get the m_input_buffer_ address
+     *  This function only works in worker thread
+     * @_buffer - the task input buffer
      * @_size - the size of buffer
+     * @return - returns B_SUCCESS if success
     */
-    int getInputBuffer(void** _buffer, size_t &_size);
+    int inputBuffer(void** _buffer, size_t &_size);
     
-    /* @setOutputBufer() - set the _outputBuffer_ value
+    /* @setOutputBufer() - set the m_output_buffer_ value
+     *  This function only works in worker thread
      * @_buffer - the task output buffer
-     * @_size - the size of buffer
-     * @return - return 0 if success
+     * @_size - size of the buffer
+     * @return - returns B_SUCCESS if success
     */
     int setOutputBuffer(void* _buffer, size_t _size);
     
-    /* @getOutputBufer() - get the _outputBuffer_ value
+    /* @outputBuffer() - get the m_output_buffer_ value
+     *  This function only works in creater thread
      * @_buffer - the task output buffer
      * @_size - the size of buffer
+     * @return - returns B_SUCCESS if success
     */
-    int getOutputBuffer(void** _buffer, size_t &_size);
+    int outputBuffer(void** _buffer, size_t &_size);
+    
+    /* Make sure this task can only be accessed by one thread at any time */
+    mutex m_task_mutex;
     
 private:
 
-    /* @_taskStatus_ - store the status of task
-     *
-    */
-    atomic_int _taskStatus_;
+    /* @m_task_status_ - store the status of task */
+    atomic_int m_task_status_;
     
-    /* @_inputBuffer - store the buffer of input data
-     *
-    */
-    void* _inputBuffer_;
+    /* @m_input_buffer_ - store the buffer of input data */
+    void* m_input_buffer_;
     
-    /* @_inputBufferSize - store the size of input data buffer
-     *
-    */
-    atomic_size_t _inputBufferSize_;
+    /* @m_input_buffer_size_ - store the size of input data buffer */
+    atomic_size_t m_input_buffer_size_;
     
-    /* @_outputBuffer_ - store the buffer of output data
-     *
-    */
-    void* _outputBuffer_;
+    /* @m_output_buffer_ - store the buffer of output data */
+    void* m_output_buffer_;
     
-    /* @_outputBuffer_ - store the size of output data buffer
-     *
-    */
-    atomic_size_t _outputBufferSize_;
-    
-    /* @_threadRefCount_ - store how many threads are using this object
-     *
-    */
-    atomic_int _threadRefCount_;
-    
-    /* @_createThreadID_ - store which thread create this object
-     *
-    */
-    thread::id _createThreadID_;
-    
-    /* @_workThreadID_ - store which thread use this object
-     *
-    */
-    thread::id _workThreadID_;
-    
-    /* @_isCreateThread_ - check whether this thread is work thread
-     * @_threadID - thread id will be checked
-    */
-    bool _isCreateThread_(thread::id _threadID);
-    
-    /* @_isWorkThread_ - check whether this thread is work thread
-     * @_threadID - thread id will be checked
-    */
-    bool _isWorkThread_(thread::id _threadID);
-    
-    /* @_threadChanged() - check whether this object has beed moved to another thread
-     * Don't need any parameterr
-    */
-    bool _threadChanged();
-    
-    /* @_threadSafe() - check the thread status of this object and make sure this object is thread-safe
-     * Don't need any parameterr
-     * Returned B_ONLY_SINGLE_THREAD error code if this object is running in multi-thread mode.
-    */
-    int _threadSafe();
-
+    /* @m_output_buffer_size_ - store the size of output data buffer */
+    atomic_size_t m_output_buffer_size_;
 };
 
 };
