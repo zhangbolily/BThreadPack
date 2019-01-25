@@ -3,6 +3,9 @@ LIB_PATH := lib
 SYS_LIB_PATH := /usr/local/lib
 SYS_INC_PATH := /usr/local/include
 
+# libraries
+LIBS := -lrt
+
 # target marcros
 TARGET_NAME := libbthreadpack
 ifeq ($(OS),Windows_NT)
@@ -35,9 +38,9 @@ default: show-info all
 
 # non-phony targets
 $(TARGET): $(ALL_OBJS_DIR) $(OBJS)
-	@echo -e "\t" CC $(CCFLAG) $(OBJS) -shared -o $@
+	@echo -e "\t" CC $(CCFLAG) $(OBJS) $(LIBS) -shared -o $@
 	@if [ -d $(LIB_PATH) ]; then :; else mkdir $(LIB_PATH) && echo "Folder lib doesn't exist, creating it."; fi
-	@$(CC) $(CCFLAG) $(OBJS) -shared -o $@
+	@$(CC) $(CCFLAG) $(OBJS) $(LIBS) -shared -o $@
 
 $(ALL_OBJS_DIR)%.o: $(DIRS)/%.c*
 	@echo -e "\t" CC $(OBJCCFLAG) $< -o $@   
