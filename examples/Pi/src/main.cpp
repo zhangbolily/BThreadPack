@@ -18,7 +18,7 @@ using namespace BThreadPack;
 class CalculatePiTask: public BGeneralTask{
 public:
     CalculatePiTask(int _task_id)
-        :BGeneralTask(),
+        :BGeneralTask(false),
         m_task_id_(_task_id)
     {
     }

@@ -36,3 +36,5 @@ examples/Pi/bin/data/
 examples/Pi/bin/
 
 examples/Timer/bin/
+
+examples/Timer/debug/

@@ -38,14 +38,6 @@ int main(int argc, char** argv)
     getchar();
     
     hello_world_pool.kill();
-    
-    delete p_chinese_hello;
-    delete p_english_hello;
-    delete p_french_hello;
-    delete p_spanish_hello;
-    delete p_russian_hello;
-	delete p_japanese_hello;
-	delete p_korean_hello;
 	
     return 0;
 }

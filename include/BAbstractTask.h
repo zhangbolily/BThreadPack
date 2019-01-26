@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include <mutex>
@@ -30,15 +31,17 @@ public:
 
     /* @BAbstractTask() - Constructor */
     BAbstractTask();
+    BAbstractTask(bool _autodestroy);
     
     /* @BAbstractTask() - Constructor
      * @_buffer - the task data buffer
      * @_size - size of the buffer
     */    
     BAbstractTask(void* _buffer, size_t _size);
+    BAbstractTask(bool _autodestroy, void* _buffer, size_t _size);
 	
     /* @~BAbstractTask() - Destructor */
-    ~BAbstractTask();
+    virtual ~BAbstractTask();
 
     /* @status() - Return the value of m_task_status_ */
     int status();
@@ -81,6 +84,8 @@ public:
     */
     int outputBuffer(void** _buffer, size_t &_size);
     
+    bool destroyable();
+    
     /* Make sure this task can only be accessed by one thread at any time */
     mutex m_task_mutex;
     
@@ -88,15 +93,16 @@ private:
 
     /* @m_task_status_ - store the status of task */
     atomic_int m_task_status_;
+    atomic_bool m_task_autodestroy;
     
     /* @m_input_buffer_ - store the buffer of input data */
-    void* m_input_buffer_;
+    char* m_input_buffer_;
     
     /* @m_input_buffer_size_ - store the size of input data buffer */
     atomic_size_t m_input_buffer_size_;
     
     /* @m_output_buffer_ - store the buffer of output data */
-    void* m_output_buffer_;
+    char* m_output_buffer_;
     
     /* @m_output_buffer_size_ - store the size of output data buffer */
     atomic_size_t m_output_buffer_size_;

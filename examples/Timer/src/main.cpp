@@ -67,11 +67,17 @@ void jumpAction(int signum, siginfo_t* _sig, void* context)
     longjmp(*(static_cast<jmp_buf*>(_sig->si_ptr)), 1);
 }
 
-int num_threads = 4;
+int num_threads = 6;
 BGeneralThreadPool signal_task_pool(num_threads);
 
 int main(int argc, char** argv)
 {
+    if(signal_task_pool.removeThread(1) == ReturnCode::BThreadNotExists)
+    {
+        cout<<"Try to remove a none exist thread."<<endl;
+    }
+    cout<<signal_task_pool.size()<<endl;
+    
     int task_num = 4;
     for(int i=0;i < task_num;i++)
     {

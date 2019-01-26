@@ -44,7 +44,7 @@ void BAbstractThreadPool::setCapacity(unsigned int _capacity)
             break;
         };
         case BThreadControlMode::DynamicThreadCapacity:{
-            unsigned int _tempCapcity = thread::hardware_concurrency() * 2;
+            unsigned int _tempCapcity = thread::hardware_concurrency();
             m_thread_capacity_ = _tempCapcity > _capacity?_capacity:_tempCapcity;
 #ifdef _B_DEBUG_
             B_PRINT_DEBUG("BAbstractThreadPool::setCapacity - Calculating dynamic thread capacity number.")

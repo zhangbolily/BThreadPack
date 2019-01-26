@@ -11,16 +11,27 @@ namespace BThreadPack{
 
 BAbstractTask::BAbstractTask()
 {
+    BAbstractTask(true);
+}
+
+BAbstractTask::BAbstractTask(bool _autodestroy)
+{
     m_input_buffer_ = nullptr;
     m_input_buffer_size_ = 0;
     m_output_buffer_ = nullptr;
     m_output_buffer_size_ = 0;
+    m_task_autodestroy = _autodestroy;
     m_task_status_ = static_cast<int>(BTaskStatus::TaskInit);
 }
-   
+
 BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
 {
-    BAbstractTask();
+    BAbstractTask(true, _buffer, _size);
+}
+
+BAbstractTask::BAbstractTask(bool _autodestroy, void* _buffer, size_t _size)
+{
+    BAbstractTask(std::forward<bool>(_autodestroy));
     
     if(setInputBuffer(_buffer, _size))
     {
@@ -39,7 +50,14 @@ BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
 
 BAbstractTask::~BAbstractTask()
 {
-
+    if (m_input_buffer_ != nullptr)
+    {
+        delete m_input_buffer_;
+    }
+    if (m_output_buffer_ != nullptr)
+    {
+        delete m_output_buffer_;
+    }
 }
 
 int BAbstractTask::status()
@@ -92,23 +110,24 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
         B_PRINT_ERROR("BAbstractTask::setInputBufer input pointer is nullptr. ")
 #endif
         return ReturnCode::BError;
-    } else {
-        m_input_buffer_ = _buffer;
     }
-        
+    
     if(!_size)
     {
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setInputBufer input buffer size is 0. ")
 #endif
-        m_input_buffer_ = nullptr;
         return ReturnCode::BError;
-    } else {
-        m_input_buffer_size_.store(_size);
     }
+    
+    //Start transaction
+    m_input_buffer_ = static_cast<char*>(new(0) char[_size]);
+    std::memcpy(m_input_buffer_, _buffer, _size);
+    m_input_buffer_size_.store(_size);
+    //Commit
         
 	m_task_mutex.unlock();
-        
+
     return ReturnCode::BSuccess;
 }
 
@@ -139,10 +158,7 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setOutputBuffer input pointer is nullptr.")
 #endif
-        cerr<<"[Error]  "<<endl;
         return ReturnCode::BError;
-    } else {
-        m_output_buffer_ = _buffer;
     }
         
     if(!_size)
@@ -150,11 +166,14 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setOutputBuffer input buffer size is 0. ")
 #endif
-        m_output_buffer_ = nullptr;
         return ReturnCode::BError;
-    } else {
-        m_output_buffer_size_.store(_size);
     }
+    
+    //Start transaction
+    m_output_buffer_ = static_cast<char*>(new(0) char[_size]);
+    std::memcpy(m_output_buffer_, _buffer, _size);
+    m_output_buffer_size_.store(_size);
+    //Commit
         
 	m_task_mutex.unlock();
         
@@ -174,5 +193,10 @@ int BAbstractTask::outputBuffer(void** _buffer, size_t &_size)
 	m_task_mutex.unlock();
     
     return ReturnCode::BSuccess;
+}
+
+bool BAbstractTask::destroyable()
+{
+    return m_task_autodestroy.load();
 }
 };

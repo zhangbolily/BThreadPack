@@ -137,6 +137,9 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         	unsigned long long *_task_time = new unsigned long long;
         	*_task_time = _task_timer.time();
         	_this->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
+        	
+        	if (p_general_task->destroyable())
+        	    delete p_general_task;
         }
         // Finished check
     }
