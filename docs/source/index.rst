@@ -8,8 +8,9 @@ Welcome to BThreadPack's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-
+   :caption: BThreadPack
+   
+   README.zh_CN.md
 
 
 Indices and tables
