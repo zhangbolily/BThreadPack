@@ -2,7 +2,7 @@
 [![pipeline status](https://gitlab.com/zhangbolily/bthreadpack/badges/master/pipeline.svg)](https://gitlab.com/zhangbolily/bthreadpack/commits/master)
 [![coverage report](https://gitlab.com/zhangbolily/bthreadpack/badges/master/coverage.svg)](https://gitlab.com/zhangbolily/bthreadpack/commits/master)
 
-[中文版](./docs/README.zh_CN.md)
+[中文版](./README.zh_CN.md)
 
 A handful thread tool kit.
 
