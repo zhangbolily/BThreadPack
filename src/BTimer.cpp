@@ -16,6 +16,7 @@ BTimer::BTimer()
     m_timeout_call_flag(false)
 {
     memset(&m_timer_event, 0, sizeof(sigevent));
+    memset(&m_timer_action, 0, sizeof(struct sigaction));
     memset(&m_timer_initial_value, 0, sizeof(itimerspec));
 }
 
