@@ -13,7 +13,7 @@ BGeneralTask 继承自BAbstractTask，提供通用的任务模型。:ref:`更多
 ========    ===================================================================
 头文件       #include <BGeneralTask.h>
 最低版本      0.1.1-alpha
-继承自       BAbstractTask
+继承自       :ref:`BAbstractTask <babstracttask_rst>`
 ========    ===================================================================
 
 .. Note::
