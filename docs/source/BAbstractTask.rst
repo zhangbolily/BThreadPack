@@ -1,12 +1,12 @@
 .. -*- coding: utf-8 -*-
 
-.. _rst:
+.. _babstracttask_rst:
 
 =============
 BAbstractTask
 =============
 
-BAbstractTask 提供了所有任务类的底层抽象，任何运行于线程池中的任务都是继承自这个类。:ref:`更多.. <detailed_description>`
+BAbstractTask 提供了所有任务类的底层抽象，任何运行于线程池中的任务都是继承自这个类。:ref:`更多.. <babstracttask_detailed_description>`
 
 ========    ===================================================================
 属性         值
@@ -50,7 +50,7 @@ int             :ref:`setStatus(atomic_int _status) <setstatus>`
 int             :ref:`status() <status>`
 =========       ============================================================
 
-.. _detailed_description:
+.. _babstracttask_detailed_description:
 
 ----------------------------
 详细描述：

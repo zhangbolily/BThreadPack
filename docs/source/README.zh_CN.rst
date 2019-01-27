@@ -1,6 +1,6 @@
 .. -*- coding: utf-8 -*-
 
-.. _rst:
+.. _readme_zh_cn_rst:
 
 ==============
 BThreadPack

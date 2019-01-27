@@ -1,12 +1,12 @@
 .. -*- coding: utf-8 -*-
 
-.. _rst:
+.. _bgeneraltask_rst:
 
 =============
 BGeneralTask
 =============
 
-BGeneralTask 继承自BAbstractTask，提供通用的任务模型。:ref:`更多.. <detailed_description>`
+BGeneralTask 继承自BAbstractTask，提供通用的任务模型。:ref:`更多.. <bgeneraltask_detailed_description>`
 
 ========    ===================================================================
 属性         值
@@ -33,7 +33,7 @@ virtual             :ref:`~BGeneralTask() <d_bgeneraltask>`
 virtual int         :ref:`process() <process>`
 =============       ============================================================
 
-.. _detailed_description:
+.. _bgeneraltask_detailed_description:
 
 ----------------------------
 详细描述：
