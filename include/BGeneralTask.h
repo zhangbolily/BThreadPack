@@ -28,7 +28,7 @@ public:
     BGeneralTask(bool _autodestroy, void* _buffer, size_t _size);
 	
     /* @~BGeneralTask() - Destructor */
-    ~BGeneralTask();
+    virtual ~BGeneralTask();
     
     /* @process() - This function will call _taskFunction to process this task itself. */
     virtual int process();

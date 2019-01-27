@@ -10,7 +10,9 @@ Welcome to BThreadPack's documentation!
    :maxdepth: 2
    :caption: BThreadPack
    
-   README.zh_CN.md
+   README.zh_CN
+   BAbstractTask
+   BGeneralTask
 
 
 Indices and tables
