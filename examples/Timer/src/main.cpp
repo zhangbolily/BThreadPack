@@ -72,7 +72,7 @@ BGeneralThreadPool signal_task_pool(num_threads);
 
 int main(int argc, char** argv)
 {
-    if(signal_task_pool.removeThread(1) == ReturnCode::BThreadNotExists)
+    if(signal_task_pool.removeThread(2) == ReturnCode::BThreadNotExists)
     {
         cout<<"Try to remove a none exist thread."<<endl;
     }

@@ -92,6 +92,12 @@ public:
     */
     long long removeThread(unsigned int _thread_num);
     
+    bool isRemove();
+    
+    void threadExit(std::thread::id _tid);
+    
+    bool isThreadExit(std::thread::id _tid);
+    
     /* @detach - This function will detach all threads.
      * @return - Returns B_SUCCESS if operation success.
     */
@@ -175,16 +181,20 @@ public:
 private:
     atomic_uint m_thread_capacity_;
     vector<thread> m_thread_vec_;
+    vector<std::thread::id> m_thread_id_vec;
     queue<void *> m_task_queue_;
     atomic_int m_pool_mode_;
     atomic_int m_pool_status_;
+    atomic_int m_remove_count;
     mutex m_task_mutex_;
     mutex m_message_mutex_;
     mutex m_start_mutex_;
+    mutex m_thread_exit_mutex;
     condition_variable m_start_condition_;
     map<int, queue<void *>> m_message_queue_map_;
     map<int, condition_variable> m_message_cond_map_;
     map<int, mutex> m_message_mutex_map_;
+    map<std::thread::id, bool> m_thread_exit_map;
     
     /* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.

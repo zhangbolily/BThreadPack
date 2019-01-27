@@ -110,8 +110,10 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         {
             _this->wait();
             
-            if(_this->status() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop)
+            if(_this->status() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop
+                or _this->isRemove())
             {
+                _this->threadExit(std::this_thread::get_id());
             	return;
             }else
             	continue;

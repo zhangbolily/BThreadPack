@@ -74,6 +74,11 @@ long long BAbstractThreadPool::addThread(thread _new_thread)
     }
     else{
         m_thread_vec_.push_back(std::move(_new_thread));
+        m_thread_id_vec.push_back(m_thread_vec_.back().get_id());
+        m_thread_exit_map[m_thread_vec_.back().get_id()] = false;
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BAbstractThreadPool::addThread - Added a new thread, id is "<<m_thread_vec_.back().get_id())
+#endif
         return this->size();
     }
     return ReturnCode::BSuccess;
@@ -84,15 +89,57 @@ long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
 	if(_thread_num > this->size())
     {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number "<<_thread_num<<" doesn't exist.")
+        B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number overload.")
 #endif
         return ReturnCode::BThreadNotExists;
     }
     else{
-        m_thread_vec_.erase(m_thread_vec_.begin() + _thread_num);
+        m_remove_count.store(_thread_num);
+        startAllTasks();
+        //Wait 500ms
+        microseconds _ms_time(500);
+        this_thread::sleep_for(_ms_time);
+        
+        for(unsigned int i=0;i < m_thread_vec_.size();)
+        {
+            if(isThreadExit(m_thread_id_vec[i]))
+            {
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Removed a thread, id is "<<m_thread_id_vec[i])
+#endif
+                m_thread_exit_map.erase(m_thread_id_vec[i]);
+                m_thread_vec_.erase(m_thread_vec_.begin() + i);
+                m_thread_id_vec.erase(m_thread_id_vec.begin() + i);
+            }
+            else
+                i++;
+        }
         return this->size();
     }
     return ReturnCode::BSuccess;
+}
+
+bool BAbstractThreadPool::isRemove()
+{
+    if (m_remove_count)
+    {
+        m_remove_count--;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void BAbstractThreadPool::threadExit(std::thread::id _tid)
+{
+    lock_guard<std::mutex> guard(m_thread_exit_mutex);
+    m_thread_exit_map[_tid] = true;
+}
+
+bool BAbstractThreadPool::isThreadExit(std::thread::id _tid)
+{
+    lock_guard<std::mutex> guard(m_thread_exit_mutex);
+    return m_thread_exit_map[_tid];
 }
 
 int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
@@ -190,11 +237,11 @@ int BAbstractThreadPool::kill()
 	this->startAllTasks();
 	/*Delete all threads.*/
 	m_thread_vec_.clear();
-	/* Wait all threads exit. */
-	microseconds _us_time(500);
+	/* Wait until all threads exit. */
+	microseconds _ms_time(500);
 	while(size() != 0)
 	{
-		this_thread::sleep_for(_us_time);
+		this_thread::sleep_for(_ms_time);
 	}
 	
     return ReturnCode::BSuccess;
