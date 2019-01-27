@@ -156,7 +156,8 @@ int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
 int BAbstractThreadPool::join()
 {
 	for (unsigned int i = 0; i < this->size(); ++i) {
-        m_thread_vec_[i].join();
+	    if (m_thread_vec_[i].joinable())
+            m_thread_vec_[i].join();
     }
     
     return ReturnCode::BSuccess;
@@ -170,8 +171,10 @@ int BAbstractThreadPool::join(unsigned int _thread_num)
         B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
         return ReturnCode::BThreadNotExists;
-    }else
-        m_thread_vec_[_thread_num].join();
+    }else{
+        if (m_thread_vec_[_thread_num].joinable())
+            m_thread_vec_[_thread_num].join();
+    }    
         
     return ReturnCode::BSuccess;
 }
@@ -179,7 +182,8 @@ int BAbstractThreadPool::join(unsigned int _thread_num)
 int BAbstractThreadPool::detach()
 {
 	for (unsigned int i = 0; i < this->size(); ++i) {
-        m_thread_vec_[i].detach();
+	    if (m_thread_vec_[i].joinable())
+            m_thread_vec_[i].detach();
     }
     
     return ReturnCode::BSuccess;
@@ -193,8 +197,10 @@ int BAbstractThreadPool::detach(unsigned int _thread_num)
         B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
         return ReturnCode::BThreadNotExists;
-    }else
-        m_thread_vec_[_thread_num].detach();
+    }else {
+        if (m_thread_vec_[_thread_num].joinable())
+            m_thread_vec_[_thread_num].detach();
+    }
         
     return ReturnCode::BSuccess;
 }

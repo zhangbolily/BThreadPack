@@ -46,6 +46,26 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this, unsigned int _thread_
     return ReturnCode::BSuccess;
 }
 
+unsigned int BGeneralThreadPool::resize(unsigned int _size)
+{
+    if (_size < size())
+    {
+        return removeThread(size() - _size);
+    }
+    else if (_size > size())
+    {
+        unsigned int _thread_num = _size - size();
+        for (unsigned int i = 0; i < _thread_num; ++i) {
+        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == ReturnCode::BThreadPoolFull)
+            return ReturnCode::BThreadPoolFull;
+        }
+        detach();
+        return size();
+    }
+    else
+        return size();
+}
+
 int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThreadPool::Optimizer _op_type)
 {
     if (mode() != BAbstractThreadPool::DynamicThreadCapacity)
@@ -69,7 +89,7 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
     			{
     				return ReturnCode::BSuccess;
     			} else {
-    				return m_init_(this, m_max_performance_threads_);
+    				return resize(m_max_performance_threads_);
     			}
     		}
     	}
@@ -86,7 +106,7 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
     			{
     				return ReturnCode::BSuccess;
     			} else {
-    				return m_init_(this, m_min_time_threads_);
+    				return resize(m_min_time_threads_);
     			}
     		}
     	}
@@ -164,7 +184,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
             // Clear the task queue.The thread pool is waiting for start signal now.
         }
         
-        m_init_(this, i+1);
+        resize(i+1);
         
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {

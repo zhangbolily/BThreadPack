@@ -47,6 +47,8 @@ public:
      */
     int optimizer(vector<BGeneralTask *> _task_vec, Optimizer _op_type);
     
+    virtual unsigned int resize(unsigned int _size);
+    
     vector<unsigned long long> m_task_time_vec;
     
 private:

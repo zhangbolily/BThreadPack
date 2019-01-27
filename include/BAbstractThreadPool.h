@@ -78,6 +78,8 @@ public:
     */
     unsigned int size();
     
+    virtual unsigned int resize(unsigned int _size)=0;
+    
     /* @addThread - Add a thread to the thread pool.
      * You can add threads less than the thread pool capacity.
      * @return - Returns current thread size. Less than 0 means error occured.
