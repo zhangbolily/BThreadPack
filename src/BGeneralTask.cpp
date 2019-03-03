@@ -10,6 +10,7 @@
 namespace BThreadPack{
    
 BGeneralTask::BGeneralTask()
+    :BAbstractTask()
 {
 }
 

@@ -9,16 +9,39 @@
 namespace BThreadPack{
 
 BAbstractThreadPool::BAbstractThreadPool(unsigned int _thread_cap)
-    :m_pool_mode_(BAbstractThreadPool::BThreadControlMode::FixedThreadCapacity)
+    :m_thread_capacity_(_thread_cap),
+    m_priority_task_queue(PriorityNum),
+    m_task_bitmap(PriorityNum),
+    m_task_counter(PriorityNum),
+    m_priority_state((PriorityNum+1)/2),
+    m_pool_mode_(BAbstractThreadPool::BThreadControlMode::FixedThreadCapacity)
 {
     this->setCapacity(_thread_cap);
+    
+    for(int i=0;i < PriorityNum;i++)
+    {
+        m_task_bitmap[i] = 0;
+        m_task_counter[i] = 0;
+    }
 }
 
 BAbstractThreadPool::BAbstractThreadPool(unsigned int _thread_cap,
     BAbstractThreadPool::BThreadControlMode _mode)
-    :m_pool_mode_(_mode)
+    :m_thread_capacity_(_thread_cap),
+    m_priority_task_queue(PriorityNum),
+    m_task_bitmap(PriorityNum),
+    m_task_counter(PriorityNum),
+    m_priority_state((PriorityNum+1)/2),
+    m_pool_mode_(_mode)
+    
 {
     this->setCapacity(_thread_cap);
+    
+    for(int i=0;i < PriorityNum;i++)
+    {
+        m_task_bitmap[i] = 0;
+        m_task_counter[i] = 0;
+    }
 }
 
 BAbstractThreadPool::~BAbstractThreadPool()
@@ -256,7 +279,35 @@ int BAbstractThreadPool::kill()
 int BAbstractThreadPool::addTask(void* _task_buffer)
 {
     lock_guard<std::mutex> guard(m_task_mutex_);
+    /*TODO:This part will be deprecated
     m_task_queue_.push(_task_buffer);
+    */
+    
+    BAbstractTask* _abstract_task = static_cast<BAbstractTask*>(_task_buffer);
+    int _priority = _abstract_task->priority();
+    m_priority_task_queue[_priority - 1].push(_task_buffer);
+    m_task_bitmap[_priority - 1] = true;
+    
+    if(m_priority_task_queue[m_priority_state - 1].empty() && _priority < m_priority_state.load())
+    {
+        m_task_bitmap[m_priority_state - 1] = false;
+        bool _has_task = false;
+        
+        for(int i= m_priority_state - 1;i > 0;i--)
+        {
+            if(m_task_bitmap[i-1])
+            {
+                _has_task = true;
+                m_priority_state = i;
+                break;
+            }
+        }
+        
+        // No task in task queue. Reset m_priority_state to default value.
+        if(!_has_task)
+            m_priority_state = (PriorityNum+1)/2;
+    } else
+        m_priority_state = _priority > m_priority_state.load()?_priority:m_priority_state.load();
     
     return ReturnCode::BSuccess;
 }
@@ -265,6 +316,7 @@ void* BAbstractThreadPool::getTask()
 {
     lock_guard<std::mutex> guard(m_task_mutex_);
     
+    /*TODO: This part will be deprecated.
     if(m_task_queue_.empty())
         return nullptr;
     else{
@@ -272,6 +324,47 @@ void* BAbstractThreadPool::getTask()
         m_task_queue_.pop();
         
         return _resultTask;
+    }*/
+    
+    std::chrono::milliseconds _ms(10);
+    std::this_thread::sleep_for(_ms);
+    
+    bool _has_task = false;
+    
+    for(int i=0;i < PriorityNum;i++)
+    {
+        _has_task |= m_task_bitmap[i];
+    }
+    
+    if(_has_task)
+    {
+        void* _resultTask = m_priority_task_queue[m_priority_state - 1].front();
+        m_priority_task_queue[m_priority_state - 1].pop();
+        
+        // Current priority queue is empty, change the priority state.
+        if(m_priority_task_queue[m_priority_state - 1].empty())
+        {
+            m_task_bitmap[m_priority_state - 1] = false;
+            _has_task = false;
+            
+            for(int i= m_priority_state - 1;i > 0;i--)
+            {
+                if(m_task_bitmap[i-1])
+                {
+                    _has_task = true;
+                    m_priority_state = i;
+                    break;
+                }
+            }
+            
+            // No task in task queue. Reset m_priority_state to default value.
+            if(!_has_task)
+                m_priority_state = (PriorityNum+1)/2;
+        }
+        
+        return _resultTask;
+    }else{
+        return nullptr;
     }
 }
 

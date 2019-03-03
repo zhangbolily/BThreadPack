@@ -19,6 +19,8 @@
 
 using namespace std;
 
+extern const int PriorityNum;
+
 namespace BThreadPack {
 
 class BAbstractTask: private NoneCopy{
@@ -86,6 +88,10 @@ public:
     */
     int outputBuffer(void** _buffer, size_t &_size);
     
+    void setPriority(int);
+    
+    int priority() const;
+    
     bool destroyable() const;
     
     /* Make sure this task can only be accessed by one thread at any time */
@@ -94,6 +100,7 @@ public:
 private:
 
     /* @m_task_status_ - store the status of task */
+    atomic_int m_task_priority;
     atomic_int m_task_status_;
     atomic_bool m_task_autodestroy;
     

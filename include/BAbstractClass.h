@@ -11,8 +11,8 @@ namespace BThreadPack {
 
 class NoneCopy{
 protected:
-    NoneCopy();
-    ~NoneCopy();
+    NoneCopy(){}
+    ~NoneCopy(){}
     
 private:
     NoneCopy(const NoneCopy&);

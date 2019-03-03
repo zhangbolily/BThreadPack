@@ -7,9 +7,11 @@ int main(int argc, char** argv)
 {   
     //1. Add task into thread pool.
     ChineseHelloWorldTask* p_chinese_hello = new ChineseHelloWorldTask();
+    p_chinese_hello->setPriority(5);
     hello_world_pool.addTask(static_cast<void*>(p_chinese_hello));
     
     EnglishHelloWorldTask* p_english_hello = new EnglishHelloWorldTask();
+    p_english_hello->setPriority(5);
     hello_world_pool.addTask(static_cast<void*>(p_english_hello));
     
     FrenchHelloWorldTask* p_french_hello = new FrenchHelloWorldTask();
@@ -22,9 +24,11 @@ int main(int argc, char** argv)
     hello_world_pool.addTask(static_cast<void*>(p_russian_hello));
     
     EmojiHelloWorldTask* p_emoji_hello = new EmojiHelloWorldTask();
+    p_emoji_hello->setPriority(4);
     hello_world_pool.addTask(static_cast<void*>(p_emoji_hello));
     
     IndianHelloWorldTask* p_indian_hello = new IndianHelloWorldTask();
+    p_indian_hello->setPriority(4);
     hello_world_pool.addTask(static_cast<void*>(p_indian_hello));
     
     JapaneseHelloWorldTask* p_japanese_hello = new JapaneseHelloWorldTask();

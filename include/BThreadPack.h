@@ -28,6 +28,8 @@ namespace BThreadPack{
     };
 };
 
+const int PriorityNum = 5;
+
 #ifdef _B_DEBUG_
 /*
  *  Definition of print debug info

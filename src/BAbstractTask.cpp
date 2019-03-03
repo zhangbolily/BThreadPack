@@ -10,29 +10,35 @@
 namespace BThreadPack{
 
 BAbstractTask::BAbstractTask()
+    :m_task_priority((PriorityNum+1)/2),
+    m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
+    m_task_autodestroy(true),
+    m_input_buffer_(nullptr),
+    m_input_buffer_size_(0),
+    m_output_buffer_(nullptr),
+    m_output_buffer_size_(0)
 {
-    BAbstractTask(true);
 }
 
 BAbstractTask::BAbstractTask(bool _autodestroy)
+    :m_task_priority((PriorityNum+1)/2),
+    m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
+    m_task_autodestroy(_autodestroy),
+    m_input_buffer_(nullptr),
+    m_input_buffer_size_(0),
+    m_output_buffer_(nullptr),
+    m_output_buffer_size_(0)
 {
-    m_input_buffer_ = nullptr;
-    m_input_buffer_size_ = 0;
-    m_output_buffer_ = nullptr;
-    m_output_buffer_size_ = 0;
-    m_task_autodestroy = _autodestroy;
-    m_task_status_ = static_cast<int>(BTaskStatus::TaskInit);
+
 }
 
 BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
+    :m_task_priority((PriorityNum+1)/2),
+    m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
+    m_task_autodestroy(true),
+    m_output_buffer_(nullptr),
+    m_output_buffer_size_(0)
 {
-    BAbstractTask(true, _buffer, _size);
-}
-
-BAbstractTask::BAbstractTask(bool _autodestroy, void* _buffer, size_t _size)
-{
-    BAbstractTask(std::forward<bool>(_autodestroy));
-    
     if(setInputBuffer(_buffer, _size))
     {
         //TODO
@@ -43,9 +49,25 @@ BAbstractTask::BAbstractTask(bool _autodestroy, void* _buffer, size_t _size)
         m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
         return;
     }
-    
-    m_output_buffer_ = nullptr;
-    m_task_status_ = static_cast<int>(BTaskStatus::TaskInit);
+}
+
+BAbstractTask::BAbstractTask(bool _autodestroy, void* _buffer, size_t _size)
+    :m_task_priority((PriorityNum+1)/2),
+    m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
+    m_task_autodestroy(_autodestroy),
+    m_output_buffer_(nullptr),
+    m_output_buffer_size_(0)
+{   
+    if(setInputBuffer(_buffer, _size))
+    {
+        //TODO
+        //SetInputBuffer failed. This object won't be created.
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BAbstractTask::BAbstractTask(void* _buffer, size_t _size) - setInputBuffer failed.")
+#endif
+        m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
+        return;
+    }
 }
 
 BAbstractTask::~BAbstractTask()
@@ -193,6 +215,16 @@ int BAbstractTask::outputBuffer(void** _buffer, size_t &_size)
 	m_task_mutex.unlock();
     
     return ReturnCode::BSuccess;
+}
+
+void BAbstractTask::setPriority(int _priority)
+{
+    m_task_priority = _priority;
+}
+    
+int BAbstractTask::priority() const
+{
+    return m_task_priority.load();
 }
 
 bool BAbstractTask::destroyable() const

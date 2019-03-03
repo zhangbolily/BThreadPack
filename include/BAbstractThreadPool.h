@@ -18,9 +18,12 @@
 
 #include "BThreadPack.h"
 #include "BAbstractClass.h"
+#include "BAbstractTask.h"
 
 using namespace std;
 using namespace std::chrono;
+
+extern const int PriorityNum;
 
 namespace BThreadPack {
 
@@ -185,6 +188,10 @@ private:
     atomic_uint m_thread_capacity_;
     vector<thread> m_thread_vec_;
     vector<std::thread::id> m_thread_id_vec;
+    vector<queue<void *>> m_priority_task_queue;
+    vector<atomic_bool> m_task_bitmap;
+    vector<int> m_task_counter;
+    atomic_int m_priority_state;
     queue<void *> m_task_queue_;
     atomic_int m_pool_mode_;
     atomic_int m_pool_status_;
