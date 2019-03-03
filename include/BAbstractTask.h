@@ -15,11 +15,13 @@
 #include <mutex>
 #include <thread>
 
+#include "BAbstractClass.h"
+
 using namespace std;
 
 namespace BThreadPack {
 
-class BAbstractTask{
+class BAbstractTask: private NoneCopy{
 
 public:
     enum BTaskStatus{
@@ -84,7 +86,7 @@ public:
     */
     int outputBuffer(void** _buffer, size_t &_size);
     
-    bool destroyable();
+    bool destroyable() const;
     
     /* Make sure this task can only be accessed by one thread at any time */
     mutex m_task_mutex;

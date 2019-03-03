@@ -26,12 +26,12 @@ BAbstractThreadPool::~BAbstractThreadPool()
     this->kill();
 }
 
-int BAbstractThreadPool::mode()
+int BAbstractThreadPool::mode() const
 {
     return m_pool_mode_;
 }
 
-unsigned int BAbstractThreadPool::capacity()
+unsigned int BAbstractThreadPool::capacity() const
 {
     return m_thread_capacity_;
 }
@@ -57,7 +57,7 @@ void BAbstractThreadPool::setCapacity(unsigned int _capacity)
     }
 }
 
-unsigned int BAbstractThreadPool::size()
+unsigned int BAbstractThreadPool::size() const
 {
     return m_thread_vec_.size();
 }
@@ -216,7 +216,7 @@ void BAbstractThreadPool::setStatus(BThreadPoolStatus _status)
 	m_pool_status_ = static_cast<int>(_status);
 }
 
-int BAbstractThreadPool::status()
+int BAbstractThreadPool::status() const
 {
 	return m_pool_status_;
 }

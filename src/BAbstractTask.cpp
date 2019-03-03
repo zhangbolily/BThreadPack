@@ -195,7 +195,7 @@ int BAbstractTask::outputBuffer(void** _buffer, size_t &_size)
     return ReturnCode::BSuccess;
 }
 
-bool BAbstractTask::destroyable()
+bool BAbstractTask::destroyable() const
 {
     return m_task_autodestroy.load();
 }

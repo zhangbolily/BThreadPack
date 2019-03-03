@@ -17,13 +17,14 @@
 #include <vector>
 
 #include "BThreadPack.h"
+#include "BAbstractClass.h"
 
 using namespace std;
 using namespace std::chrono;
 
 namespace BThreadPack {
 
-class BAbstractThreadPool{
+class BAbstractThreadPool: private NoneCopy{
 
 public:
 	enum BThreadPoolStatus{
@@ -60,12 +61,12 @@ public:
     /* @mode - The thread pool is running in which mode.
      * @return - returns pool mode.
     */
-    int mode();
+    int mode() const;
     
     /* @capacity - Get how many threads can be created in this pool.
      * @return - returns thread capacity.
     */
-    unsigned int capacity();
+    unsigned int capacity() const;
     
     /* @setCapacity - Set how many threads can be stored in this pool.
      * If thread pool is running in DynamicThreadCapacity mode, the input _capacity will only
@@ -76,7 +77,7 @@ public:
     /* @size - Get how many threads in this pool. This size can be smaller than capacity.
      * @return - returns thread size.
     */
-    unsigned int size();
+    unsigned int size() const;
     
     virtual unsigned int resize(unsigned int _size)=0;
     
@@ -133,7 +134,7 @@ public:
     /* @status - Get the status of this thread pool.
      * @Returns the status of this thread pool.
     */
-    int status();
+    int status() const;
     
     /* @startOneTask - This function will notify at least one thread to process task.
      * If the task queue only has one task, this function behaves like start one task.
