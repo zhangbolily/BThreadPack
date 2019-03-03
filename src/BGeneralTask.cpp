@@ -19,12 +19,12 @@ BGeneralTask::BGeneralTask(bool _autodestroy)
 {
 }
    
-BGeneralTask::BGeneralTask(void* _buffer, size_t _size)
+BGeneralTask::BGeneralTask(const void* _buffer, size_t _size)
     :BAbstractTask(_buffer, _size)
 {
 }
 
-BGeneralTask::BGeneralTask(bool _autodestroy, void* _buffer, size_t _size)
+BGeneralTask::BGeneralTask(bool _autodestroy, const void* _buffer, size_t _size)
     :BAbstractTask(_autodestroy, _buffer, _size)
 {
 }

@@ -24,8 +24,8 @@ public:
      * @_buffer - the task data buffer
      * @_size - the size of buffer
     */    
-    BGeneralTask(void* _buffer, size_t _size);
-    BGeneralTask(bool _autodestroy, void* _buffer, size_t _size);
+    BGeneralTask(const void* _buffer, size_t _size);
+    BGeneralTask(bool _autodestroy, const void* _buffer, size_t _size);
 	
     /* @~BGeneralTask() - Destructor */
     virtual ~BGeneralTask();

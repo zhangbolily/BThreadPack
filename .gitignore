@@ -40,3 +40,5 @@ examples/Timer/bin/
 examples/Timer/debug/
 
 docs/build/
+
+examples/HelloWorld/BGeneralThreadPool/memory_leak\.log

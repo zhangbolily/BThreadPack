@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <unistd.h>
 
 #include "BThreadPack/BThreadPack.h"
@@ -180,6 +181,34 @@ public:
     {
     	std::ostringstream _os;
     	_os<<"\033[32m"<<"你好，世界！"<<"\033[0m\n";
+        cout<<_os.str();
+    }
+};
+
+class GeneralHelloWorldTask: public BGeneralTask{
+public:
+    GeneralHelloWorldTask()
+        :BGeneralTask()
+    {
+    }
+    
+    GeneralHelloWorldTask(const void* _buffer, size_t _size)
+        :BGeneralTask(_buffer, _size)
+    {
+    }
+    
+    ~GeneralHelloWorldTask()
+    {
+    }
+    
+    virtual int process()
+    {
+        void* hello_world_str;
+        size_t length = 0;
+        inputBuffer(&hello_world_str, length);
+        static_cast<char*>(hello_world_str)[length - 1] = '\0';
+    	std::ostringstream _os;
+    	_os<<"\033[32m"<<static_cast<char*>(hello_world_str)<<"\033[0m\n";
         cout<<_os.str();
     }
 };

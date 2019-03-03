@@ -37,6 +37,53 @@ int main(int argc, char** argv)
     KoreanHelloWorldTask* p_korean_hello = new KoreanHelloWorldTask();
     hello_world_pool.addTask(static_cast<void*>(p_korean_hello));
     
+    //A different way to print multi-language hello world.
+    std::string hello_world_str;
+    hello_world_str = "Hello World!";
+    GeneralHelloWorldTask* p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(1);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "Bonjour le monde!";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(2);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "Hola Mundo!";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(3);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "Привет, мир!";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(4);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "नमस्ते दुनिया!";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(5);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "🙋  🌎";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(1);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "こんにちは世界";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(2);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "안녕하세요!";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(3);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
+    hello_world_str = "你好，世界！";
+    p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
+    p_general_hello->setPriority(4);
+    hello_world_pool.addTask(static_cast<void*>(p_general_hello));
+    
     hello_world_pool.startAllTasks();
     
     getchar();

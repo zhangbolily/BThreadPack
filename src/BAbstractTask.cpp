@@ -32,7 +32,7 @@ BAbstractTask::BAbstractTask(bool _autodestroy)
 
 }
 
-BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
+BAbstractTask::BAbstractTask(const void* _buffer, size_t _size)
     :m_task_priority((PriorityNum+1)/2),
     m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
     m_task_autodestroy(true),
@@ -51,7 +51,7 @@ BAbstractTask::BAbstractTask(void* _buffer, size_t _size)
     }
 }
 
-BAbstractTask::BAbstractTask(bool _autodestroy, void* _buffer, size_t _size)
+BAbstractTask::BAbstractTask(bool _autodestroy, const void* _buffer, size_t _size)
     :m_task_priority((PriorityNum+1)/2),
     m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
     m_task_autodestroy(_autodestroy),
@@ -119,7 +119,7 @@ int BAbstractTask::setStatus(atomic_int _status)
     return ReturnCode::BSuccess;
 }
 
-int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
+int BAbstractTask::setInputBuffer(const void* _buffer, size_t _size)
 {
     if(!m_task_mutex.try_lock())
     {
@@ -143,7 +143,7 @@ int BAbstractTask::setInputBuffer(void* _buffer, size_t _size)
     }
     
     //Start transaction
-    m_input_buffer_ = static_cast<char*>(new(0) char[_size]);
+    m_input_buffer_ = static_cast<char*>(new char[_size]);
     std::memcpy(m_input_buffer_, _buffer, _size);
     m_input_buffer_size_.store(_size);
     //Commit
@@ -202,7 +202,7 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
     return ReturnCode::BSuccess;
 }
 
-int BAbstractTask::outputBuffer(void** _buffer, size_t &_size)
+int BAbstractTask::outputBuffer(const void** _buffer, size_t &_size)
 {
     if(!m_task_mutex.try_lock())
     {

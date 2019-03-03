@@ -41,8 +41,8 @@ public:
      * @_buffer - the task data buffer
      * @_size - size of the buffer
     */    
-    BAbstractTask(void* _buffer, size_t _size);
-    BAbstractTask(bool _autodestroy, void* _buffer, size_t _size);
+    BAbstractTask(const void* _buffer, size_t _size);
+    BAbstractTask(bool _autodestroy, const void* _buffer, size_t _size);
 	
     /* @~BAbstractTask() - Destructor */
     virtual ~BAbstractTask();
@@ -62,7 +62,7 @@ public:
      * @_size - size of the buffer
      * @return - returns B_SUCCESS if success
     */
-    int setInputBuffer(void* _buffer, size_t _size);
+    int setInputBuffer(const void* _buffer, size_t _size);
     
     /* @inputBuffer() - get the m_input_buffer_ address
      *  This function only works in worker thread
@@ -86,7 +86,7 @@ public:
      * @_size - the size of buffer
      * @return - returns B_SUCCESS if success
     */
-    int outputBuffer(void** _buffer, size_t &_size);
+    int outputBuffer(const void** _buffer, size_t &_size);
     
     void setPriority(int);
     
