@@ -8,10 +8,13 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install build-essential
+    - apt update && apt -y install build-essential cmake
   script:
+    - mkdir build && cd build
+    - cmake ..
     - make -j 4
-  # after_script:
+    - make install
+    # after_script:
 
 # run tests using the binary built before
 # test:
