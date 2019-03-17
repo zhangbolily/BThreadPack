@@ -42,3 +42,5 @@ examples/Timer/debug/
 docs/build/
 
 examples/HelloWorld/BGeneralThreadPool/memory_leak\.log
+
+examples/Pi/debug/

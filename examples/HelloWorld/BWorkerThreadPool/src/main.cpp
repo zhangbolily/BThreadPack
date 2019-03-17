@@ -165,7 +165,7 @@ int main(int argc, char** argv)
             return -1;
         }
         
-        hello_world_pool.addTask(static_cast<void*>(hello_world_task));
+        hello_world_pool.pushTask(static_cast<void*>(hello_world_task));
     }      
     
     hello_world_pool.detach();

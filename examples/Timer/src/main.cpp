@@ -82,7 +82,7 @@ int main(int argc, char** argv)
     for(int i=0;i < task_num;i++)
     {
         SignalTask* _task = new SignalTask();
-        signal_task_pool.addTask(_task);
+        signal_task_pool.pushTask(_task);
     }
     
     signal_task_pool.startAllTasks();

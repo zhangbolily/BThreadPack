@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     for(int i=0;i < task_num;i++)
     {
         CalculatePiTask* p_write_disk = new CalculatePiTask(i);
-        //hello_world_pool.addTask(static_cast<BGeneralTask *>(p_write_disk));
+        //hello_world_pool.pushTask(static_cast<BGeneralTask *>(p_write_disk));
         task_vec.push_back(static_cast<BGeneralTask *>(p_write_disk));
     }
     

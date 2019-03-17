@@ -188,7 +188,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {
-            if(addTask(static_cast<void*>(*it)) < 0)
+            if(pushTask(static_cast<void*>(*it)) < 0)
                 return ReturnCode::BError;
         }
         

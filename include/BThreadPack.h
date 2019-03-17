@@ -24,7 +24,8 @@ namespace BThreadPack{
         BOnlySingleThread = -2, //Accessed by more than one thread
         BThreadPoolFull = -3,   //Threads more than the thread pool capacity
         BThreadNotExists = -4,  //Specified thread number doesn't exist
-        BModeIncorrect = -5     //Required running mode is not satisfied
+        BModeIncorrect = -5,     //Required running mode is not satisfied
+        BParameterOutOfRange = -6
     };
 };
 

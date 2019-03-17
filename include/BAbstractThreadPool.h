@@ -90,6 +90,14 @@ public:
     */
     long long addThread(thread _new_thread);
     
+    /* @setAffinity - Pinning each thread to a single known CPU core.
+    */
+    long long setAffinity();
+    
+    /* @setAffinity - Pinning a thread to a single known CPU core.
+    */
+    long long setAffinity(unsigned int _thread_num);
+    
     /* @removeThread - Remove a thread from the thread pool.
      * You can remove the thread number to 0.
      * @_thread_num - Which thread you want to delete.
@@ -156,11 +164,11 @@ public:
     */
     int kill();
     
-    /* @addTask - Add a task to the task queue.
+    /* @pushTask - Push a task to the task queue.
      * @_task_buffer - A memory buffer that contains the task data.
      * @return - Returns B_SUCCESS if success
     */
-    int addTask(void* _task_buffer);
+    int pushTask(void* _task_buffer);
     
     /* @getTask - Get a task from task queue.
      * @return - Returns task buffer.
@@ -186,11 +194,11 @@ public:
 
 private:
     atomic_uint m_thread_capacity_;
-    vector<thread> m_thread_vec_;
-    vector<std::thread::id> m_thread_id_vec;
-    vector<queue<void *>> m_priority_task_queue;
-    vector<atomic_bool> m_task_bitmap;
-    vector<int> m_task_counter;
+    std::vector<std::thread> m_thread_vec_;
+    std::vector<std::thread::id> m_thread_id_vec;
+    std::vector<std::queue<void *>> m_priority_task_queue;
+    std::vector<atomic_bool> m_task_bitmap;
+    std::vector<int> m_task_counter;
     atomic_int m_priority_state;
     queue<void *> m_task_queue_;
     atomic_int m_pool_mode_;

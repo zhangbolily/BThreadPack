@@ -107,6 +107,43 @@ long long BAbstractThreadPool::addThread(thread _new_thread)
     return ReturnCode::BSuccess;
 }
 
+long long BAbstractThreadPool::setAffinity()
+{
+    int _retcode = 0;
+    
+    for(unsigned int i=0;i < size();i++)
+    {
+        _retcode = setAffinity(i);
+        
+        if(_retcode < 0)
+            return _retcode;
+    }
+    
+    return _retcode;
+}
+
+long long BAbstractThreadPool::setAffinity(unsigned int _thread_num)
+{
+    if(_thread_num >= size())
+        return BParameterOutOfRange;
+    
+    cpu_set_t _cpuset;
+    CPU_ZERO(&_cpuset);
+    
+    int _retcode = 0;
+    unsigned int _cpus = thread::hardware_concurrency();
+    unsigned int _cpu_num = _thread_num % _cpus;
+    
+    CPU_SET(_cpu_num, &_cpuset);
+    
+    _retcode = pthread_setaffinity_np(m_thread_vec_[_thread_num].native_handle(),
+                                    sizeof(cpu_set_t), &_cpuset);
+    if(_retcode != 0)
+        return BError;
+    else
+        return BSuccess;
+}
+
 long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
 {
 	if(_thread_num > this->size())
@@ -276,7 +313,7 @@ int BAbstractThreadPool::kill()
     return ReturnCode::BSuccess;
 }
 
-int BAbstractThreadPool::addTask(void* _task_buffer)
+int BAbstractThreadPool::pushTask(void* _task_buffer)
 {
     lock_guard<std::mutex> guard(m_task_mutex_);
     /*TODO:This part will be deprecated
