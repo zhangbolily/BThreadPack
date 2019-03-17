@@ -44,3 +44,5 @@ docs/build/
 examples/HelloWorld/BGeneralThreadPool/memory_leak\.log
 
 examples/Pi/debug/
+
+build/
