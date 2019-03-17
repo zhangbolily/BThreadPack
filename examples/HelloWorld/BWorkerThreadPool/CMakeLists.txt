@@ -21,9 +21,8 @@
 # SOFTWARE.
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS task_data.proto)
-
 aux_source_directory (src DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS}/task_data.proto)
 add_executable (WorkerThreadPool_HelloWorld ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS} ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries (WorkerThreadPool_HelloWorld bthreadpack ${PROTOBUF_LIBRARIES} ${EXTRA_LIBS})
 
