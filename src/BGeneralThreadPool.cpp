@@ -141,11 +141,11 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         // Finished validate
         
         // Processing this task and recording time
-        p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskProcessing);
+        p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
         
         _task_timer.start();
         
-        int _retcode = p_general_task->process();
+        int _retcode = p_general_task->execute();
         
         _task_timer.stop();
         // Stop processing

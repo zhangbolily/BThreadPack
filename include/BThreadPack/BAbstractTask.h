@@ -29,7 +29,7 @@ public:
     enum BTaskStatus{
         TaskFailed = -1,
         TaskInit = 0,
-        TaskProcessing = 1,
+        TaskExecuting = 1,
         TaskFinished = 2
     };
 

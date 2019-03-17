@@ -25,7 +25,7 @@ BAbstractTask 提供了所有任务类的底层抽象，任何运行于线程池
 ========    ===================================================================
 
 ========    ===================================================================
-enum        BTaskStatus { TaskFailed, TaskInit, TaskProcessing, TaskFinished }
+enum        BTaskStatus { TaskFailed, TaskInit, TaskExecuting, TaskFinished }
 ========    ===================================================================
 
 公有成员

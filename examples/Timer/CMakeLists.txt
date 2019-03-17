@@ -20,8 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+project (Timer)
+
+SET (EXECUTABLE_OUTPUT_PATH ${BThreadPack_BINARY_DIR}/bin)
+
 aux_source_directory (src DIR_EXAMPLES_TIMER_SRCS)
-add_executable (Timer ${DIR_EXAMPLES_TIMER_SRCS})
-target_link_libraries (Timer bthreadpack)
-target_link_libraries (Timer ${EXTRA_LIBS})
+link_directories (${BThreadPack_BINARY_DIR})
+add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_TIMER_SRCS})
+target_link_libraries (${PROJECT_NAME} bthreadpack)
+target_link_libraries (${PROJECT_NAME} ${EXTRA_LIBS})
 

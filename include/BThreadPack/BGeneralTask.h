@@ -30,8 +30,8 @@ public:
     /* @~BGeneralTask() - Destructor */
     virtual ~BGeneralTask();
     
-    /* @process() - This function will call _taskFunction to process this task itself. */
-    virtual int process();
+    /* @execute() - This function will call _taskFunction to execute this task itself. */
+    virtual int execute();
 };
 
 };

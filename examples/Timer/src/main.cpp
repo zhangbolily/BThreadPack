@@ -18,7 +18,7 @@ void jumpAction(int signum, siginfo_t* _sig, void* context);
 
 class SignalTask: public BGeneralTask{
 public:
-    virtual int process()
+    virtual int execute()
     {
 	    BTimer timer;
 	    jmp_buf context_buf;

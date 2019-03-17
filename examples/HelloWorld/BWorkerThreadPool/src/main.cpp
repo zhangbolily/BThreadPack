@@ -30,7 +30,7 @@ public:
     HelloWorldThreadPool(int _thread_num)
         :BAbstractThreadPool(_thread_num)
     {
-    	this->initThreads(static_cast<BAbstractThreadPool*>(this));
+    	HelloWorldThreadPool::initThreads(static_cast<BAbstractThreadPool*>(this));
     }
     
     ~HelloWorldThreadPool()
@@ -116,12 +116,6 @@ private:
 		        cout<<_os.str();
             }
             
-            if(task_buffer != nullptr)
-            {
-                free(task_buffer);
-                task_buffer = nullptr;
-            }
-            
             if(p_hello_task != nullptr)
             {
                 delete p_hello_task;
@@ -169,6 +163,8 @@ int main(int argc, char** argv)
             cerr<<"[Error] hello_world_task.setInputBuffer failed."<<endl;
             return -1;
         }
+        
+        free(task_buffer);
         
         hello_world_pool.pushTask(static_cast<void*>(hello_world_task));
     }      

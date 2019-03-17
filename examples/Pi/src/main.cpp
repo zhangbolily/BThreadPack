@@ -27,7 +27,7 @@ public:
     {
     }
     
-    virtual int process()
+    virtual int execute()
     {
     	ofstream out_file;
     	string fname = "./data/pi_result_" + to_string(m_task_id_) + ".b";

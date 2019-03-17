@@ -19,10 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+project (WorkerThreadPool_HelloWorld)
+
+SET (EXECUTABLE_OUTPUT_PATH ${BThreadPack_BINARY_DIR}/bin)
+
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+link_directories (${BThreadPack_BINARY_DIR})
 aux_source_directory (src DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS)
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS src/task_data.proto)
-add_executable (WorkerThreadPool_HelloWorld ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS} ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries (WorkerThreadPool_HelloWorld bthreadpack ${PROTOBUF_LIBRARIES} ${EXTRA_LIBS})
+add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS} ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries (${PROJECT_NAME} bthreadpack ${PROTOBUF_LIBRARIES} ${EXTRA_LIBS})
 

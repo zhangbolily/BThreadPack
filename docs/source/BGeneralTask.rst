@@ -30,7 +30,7 @@ BGeneralTask 继承自BAbstractTask，提供通用的任务模型。:ref:`更多
 ..                  :ref:`BGeneralTask(void* _buffer, size_t _size) <bgeneraltask>`
 ..                  :ref:`BGeneralTask(bool _autodestroy, void* _buffer, size_t _size) <bgeneraltask>`
 virtual             :ref:`~BGeneralTask() <d_bgeneraltask>`
-virtual int         :ref:`process() <process>`
+virtual int         :ref:`execute() <execute>`
 =============       ============================================================
 
 .. _bgeneraltask_detailed_description:
@@ -83,9 +83,9 @@ virtual ~BGeneralTask()
 
 析构BGeneralTask对象。
 
-.. _process:
+.. _execute:
 
 --------------------------
-virtual int process()
+virtual int execute()
 --------------------------
 

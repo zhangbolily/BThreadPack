@@ -20,8 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+project (GeneralThreadPool_HelloWorld)
+
+SET (EXECUTABLE_OUTPUT_PATH ${BThreadPack_BINARY_DIR}/bin)
+
 aux_source_directory (src DIR_EXAMPLES_HELLO_WORLD_BGT_SRCS)
-add_executable (GeneralThreadPool_HelloWorld ${DIR_EXAMPLES_HELLO_WORLD_BGT_SRCS})
+link_directories (${BThreadPack_BINARY_DIR})
+MESSAGE(STATUS "Parent project name is = ${BThreadPack_BINARY_DIR}.")
+add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_HELLO_WORLD_BGT_SRCS})
 target_link_libraries (GeneralThreadPool_HelloWorld bthreadpack)
 target_link_libraries (GeneralThreadPool_HelloWorld ${EXTRA_LIBS})
 

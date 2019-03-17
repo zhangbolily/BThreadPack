@@ -25,11 +25,28 @@ project (BThreadPack)
 
 aux_source_directory (src DIR_SRCS)
 include_directories ("${PROJECT_SOURCE_DIR}/include")
+include_directories ("${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}")
 
+# Build examples
 add_subdirectory (examples)
 
 set (EXTRA_LIBS ${EXTRA_LIBS} rt)
 set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
+SET (LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
 add_library (bthreadpack SHARED ${DIR_SRCS})
 target_link_libraries (bthreadpack ${EXTRA_LIBS})
 
+install (TARGETS bthreadpack DESTINATION lib)
+install (
+    FILES
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BAbstractClass.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BAbstractTask.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BAbstractThreadPool.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralTask.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralThreadPool.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BThreadPack.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BTimer.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BWorkerTask.h"
+    DESTINATION include/${PROJECT_NAME}
+)

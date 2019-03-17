@@ -147,14 +147,14 @@ public:
     */
     int status() const;
     
-    /* @startOneTask - This function will notify at least one thread to process task.
+    /* @startOneTask - This function will notify at least one thread to execute task.
      * If the task queue only has one task, this function behaves like start one task.
      * However, if the task queue has more than one task, the behaviour is undefined.
      * @return - Returns B_SUCCESS if success
     */
     int startOneTask();
     
-    /* @startOneTasks - This function will notify all threads to process task queue.
+    /* @startOneTasks - This function will notify all threads to execute task queue.
      * @return - Returns B_SUCCESS if success
     */
     int startAllTasks();

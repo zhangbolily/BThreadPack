@@ -33,9 +33,9 @@ BGeneralTask::~BGeneralTask()
 {
 }
 
-int BGeneralTask::process()
+int BGeneralTask::execute()
 {
-    //Define how to process this task
+    //Define how to execute this task
     return ReturnCode::BSuccess;
 }
 
