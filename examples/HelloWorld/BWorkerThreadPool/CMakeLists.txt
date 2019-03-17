@@ -19,10 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS task_data.proto)
 
 aux_source_directory (src DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS)
-add_executable (WorkerThreadPool_HelloWorld ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS})
-target_link_libraries (WorkerThreadPool_HelloWorld bthreadpack)
-target_link_libraries (WorkerThreadPool_HelloWorld protobuf)
-target_link_libraries (WorkerThreadPool_HelloWorld ${EXTRA_LIBS})
+add_executable (WorkerThreadPool_HelloWorld ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS} ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries (WorkerThreadPool_HelloWorld bthreadpack ${PROTOBUF_LIBRARIES} ${EXTRA_LIBS})
 
