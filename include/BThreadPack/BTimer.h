@@ -16,7 +16,7 @@
 #include <sstream>
 #include <thread>
 
-#include "BThreadPack.h"
+#include "BThreadPack/BThreadPack.h"
 
 #define MILLIAN 1000000
 
@@ -46,7 +46,7 @@ public:
     void setInterval(std::chrono::milliseconds _msec);
     
     /* @time - Get how many milliseconds have beed recorded or remained */
-    long long time();
+    long long time() const;
     
     template<class Function>
     void callOnTimeout(Function&& _f, void* _arg)

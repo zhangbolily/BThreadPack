@@ -29,6 +29,36 @@ BGeneralTask::BGeneralTask(bool _autodestroy, const void* _buffer, size_t _size)
 {
 }
 
+void BGeneralTask::startExecutionTiming()
+{
+    m_execute_timer.start();
+}
+
+void BGeneralTask::stopExecutionTiming()
+{
+    m_execute_timer.stop();
+}
+
+long long BGeneralTask::executionTime()
+{
+    return m_execute_timer.time();
+}
+
+void BGeneralTask::startRealTiming()
+{
+    m_real_timer.start();
+}
+
+void BGeneralTask::stopRealTiming()
+{
+     m_real_timer.stop();
+}
+
+long long BGeneralTask::realTime()
+{
+    return m_real_timer.time();
+}
+
 BGeneralTask::~BGeneralTask()
 {
 }

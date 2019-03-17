@@ -105,7 +105,7 @@ void BTimer::setInterval(std::chrono::milliseconds _msec)
     setInterval(_msec.count());
 }
 
-long long BTimer::time()
+long long BTimer::time() const
 {
     if (m_stop_time_us < m_start_time_us)
     {
