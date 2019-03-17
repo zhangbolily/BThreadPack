@@ -15,6 +15,11 @@
 using namespace std;
 using namespace BThreadPack;
 
+const double multiple = 400000000.0;
+std::condition_variable g_result_cond;
+std::mutex g_result_mutex;
+std::vector<double> g_pi_slice_result;
+
 class CalculatePiTask: public BGeneralTask{
 public:
     CalculatePiTask(int _task_id)
@@ -29,63 +34,97 @@ public:
     
     virtual int execute()
     {
-    	ofstream out_file;
-    	string fname = "./data/pi_result_" + to_string(m_task_id_) + ".b";
-    	out_file.open(fname);
-    	out_file<<"Different precision pi:\n";
-    	for(int i=(PRECISION-100);i < PRECISION;i++)
-    	{
-    		out_file<<to_string(pi(i))<<"\n";
-    	}
-        out_file.close();
-        cout<<"Pi is ready."<<endl;
+        std::ostringstream _os;
+        _os << "Pi slice #" << m_task_id_ << ": is calculating on CPU " << sched_getcpu() << "\n";
+        std::cout << _os.str();
+        double _pi_slice_result = pi(m_task_id_);
+        
+        if(g_result_mutex.try_lock())
+        {
+        	if(g_pi_slice_result.size() > m_task_id_){
+                g_pi_slice_result[m_task_id_] = _pi_slice_result;
+                g_result_mutex.unlock();
+                g_result_cond.notify_all();
+            } else {
+                g_pi_slice_result.push_back(_pi_slice_result);
+                g_result_mutex.unlock();
+                g_result_cond.notify_all();
+            }
+        } else {
+            std::unique_lock<std::mutex> lock(g_result_mutex);
+            g_result_cond.wait(lock);
+            if(g_pi_slice_result.size() > m_task_id_){
+                g_pi_slice_result[m_task_id_] = _pi_slice_result;
+                lock.unlock();
+                g_result_cond.notify_all();
+            } else {
+                g_pi_slice_result.push_back(_pi_slice_result);
+                lock.unlock();
+                g_result_cond.notify_all();
+            }
+        }
+            
+        return 0;
     }
 
 private:
+    const unsigned long long m_range = 400000000;
     int m_task_id_;
-    double pi(int _level)
+    
+    double pi(int _offset)
     {
+        _offset;
         bool sign = true;
         double _pi = 0.0;
-        for(int i=0;i < _level;i++)
+        for(unsigned long long i = 0;i < m_range;i++)
         {
             if(sign)
-                _pi += 4000000000000.0/(i*2 + 1);
+                _pi += multiple/((i + _offset * m_range)*2 + 1);
             else
-                _pi -= 4000000000000.0/(i*2 + 1);
+                _pi -= multiple/((i + _offset * m_range)*2 + 1);
             sign = !sign;
         }
         return _pi;
     }
 };
 
-int num_threads = 20;
-BGeneralThreadPool hello_world_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
+int num_threads = 8;
+BGeneralThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
 
 int main(int argc, char** argv)
 {   
     vector<BGeneralTask *> task_vec;
-    int task_num = 20;
+    int slice_num = 16;
     //1. Add task into thread pool.
-    for(int i=0;i < task_num;i++)
+    for(int i = 0;i < slice_num;i++)
     {
-        CalculatePiTask* p_write_disk = new CalculatePiTask(i);
+        CalculatePiTask* p_slice_pi = new CalculatePiTask(i);
         //hello_world_pool.pushTask(static_cast<BGeneralTask *>(p_write_disk));
-        task_vec.push_back(static_cast<BGeneralTask *>(p_write_disk));
+        task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
     }
     
-    hello_world_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
-    cout << "Current threads: " << hello_world_pool.size() <<endl;
+    pi_slice_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
+    cout << "Current threads: " << pi_slice_pool.size() <<endl;
     //hello_world_pool.startAllTasks();
+    
+    //2. Calculate pi
+    double Pi = 0.0;
+    
+    for(int i=0;i < slice_num;i++)
+    {
+        Pi += g_pi_slice_result[i];
+        std::cout << "Pi slice result is : " << g_pi_slice_result[i] << std::endl;
+    }
+    
+    Pi /= multiple/4;
+    
+    std::cout.setf(ios::showpoint);
+    std::cout.precision(12);
+    std::cout << "Pi is : " << Pi << std::endl;
     
     getchar();
     
-    hello_world_pool.kill();
-    
-    for(int i=0;i < task_num;i++)
-    {
-        delete static_cast<CalculatePiTask*>(task_vec[i]);
-    }
+    pi_slice_pool.kill();
 	
     return 0;
 }

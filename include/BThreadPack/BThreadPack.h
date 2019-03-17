@@ -3,6 +3,9 @@
  * @File        : BThreadPack.h
  * @Date        : 2018-11-17
 */
+
+#define _B_DEBUG_
+
 #ifdef _B_DEBUG_
 #include <sstream>
 #include <iostream>

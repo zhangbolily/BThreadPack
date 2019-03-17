@@ -41,6 +41,9 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
             return ReturnCode::BThreadPoolFull;
     }
     
+    // Attention: This function call can be removed.
+    setAffinity();
+    
     detach();
     
     return ReturnCode::BSuccess;
@@ -63,8 +66,10 @@ unsigned int BGeneralThreadPool::resize(unsigned int _size)
     {
         unsigned int _thread_num = _size - size();
         for (unsigned int i = 0; i < _thread_num; ++i) {
-        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == ReturnCode::BThreadPoolFull)
-            return ReturnCode::BThreadPoolFull;
+            if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == ReturnCode::BThreadPoolFull)
+                return ReturnCode::BThreadPoolFull;
+                
+            setAffinity(i + size());
         }
         detach();
         return size();
@@ -180,15 +185,17 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
                 unsigned long long *_task_time = new unsigned long long;
             	*_task_time = p_general_task->executionTime();
             	_thread_pool_handle->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
+            	break;
             };
             
             case ProcessTimeFirst:{
                 unsigned long long *_task_time = new unsigned long long;
             	*_task_time = p_general_task->executionTime();
             	_thread_pool_handle->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
+            	break;
             };
             
-            default:;
+            default:break;
         }
         
     	if (p_general_task->destroyable())
