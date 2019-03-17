@@ -21,8 +21,9 @@ class BGeneralThreadPool: public BAbstractThreadPool{
 
 public:
 	enum Optimizer {
-		PerformanceFirst = 0,
-		ProcessTimeFirst = 1
+	    None = 0,
+		PerformanceFirst = 1,
+		ProcessTimeFirst = 2
 	};
     /* @BAbstractThreadPool() - Constructor
      * @_thread_cap - How many threads can be created in this pool.
@@ -39,21 +40,28 @@ public:
     /* @~BAbstractThreadPool() - Destructor */
     ~BGeneralThreadPool();
     
+    /* Overload pushTask */
+    int pushTask(void* _task_buffer);
+    
     /* @optimizer() - Find the minimum threads for maximum thread pool performance
      * and the maximum threads for minimum single task processing time.
      * Call this function need thread pool running in DynamicThreadCapacity mode.
      * @_op_type - Which optimizer you want to use.
      * @_task_vec - The task for testing.
      */
-    int optimizer(vector<BGeneralTask *> _task_vec, Optimizer _op_type);
+    int optimizer(vector<BGeneralTask *> _task_vec, BGeneralThreadPool::Optimizer _op_type);
     
     virtual unsigned int resize(unsigned int _size);
+    
+    void setOptimizePolicy(BGeneralThreadPool::Optimizer _policy);
+    const BGeneralThreadPool::Optimizer optimizePolicy() const;
     
     vector<unsigned long long> m_task_time_vec;
     
 private:
     unsigned int m_max_performance_threads_;
     unsigned int m_min_time_threads_;
+    BGeneralThreadPool::Optimizer m_optimize_policy;
 
 	/* @_init_ - This function will initialize all threads.
      * @_this - Pass a fake this pointer into thread.
@@ -61,9 +69,9 @@ private:
      * Mostly for task management purpose.
      * @return - return B_SUCCESS if success
     */
-    virtual int m_init_(BGeneralThreadPool* _this);
-    virtual int m_init_(BGeneralThreadPool* _this, unsigned int _thread_num);
-    static void m_threadFunction_(BGeneralThreadPool* _this);
+    virtual int m_init_(BGeneralThreadPool* _thread_pool_handle);
+    virtual int m_init_(BGeneralThreadPool* _thread_pool_handle, unsigned int _thread_num);
+    static void m_threadFunction_(BGeneralThreadPool* _thread_pool_handle);
     int m_normalOptimizer_(vector<BGeneralTask *> _task_vec);
 };
 

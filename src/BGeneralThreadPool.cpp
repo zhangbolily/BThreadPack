@@ -25,25 +25,32 @@ BGeneralThreadPool::~BGeneralThreadPool()
 {
 }
 
-int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this)
+int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle)
 {
-	return m_init_(_this, capacity());
+	return m_init_(_thread_pool_handle, capacity());
 }
 
-int BGeneralThreadPool::m_init_(BGeneralThreadPool* _this, unsigned int _thread_num)
+int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigned int _thread_num)
 {
 	kill();
 	
 	setStatus(BThreadPoolStatus::ThreadPoolRunning);
 	
     for (unsigned int i = 0; i < _thread_num; ++i) {
-        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _this)) == ReturnCode::BThreadPoolFull)
+        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _thread_pool_handle)) == ReturnCode::BThreadPoolFull)
             return ReturnCode::BThreadPoolFull;
     }
     
     detach();
     
     return ReturnCode::BSuccess;
+}
+
+int BGeneralThreadPool::pushTask(void* _task_buffer)
+{
+    static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
+    
+    return BAbstractThreadPool::pushTask(_task_buffer);
 }
 
 unsigned int BGeneralThreadPool::resize(unsigned int _size)
@@ -66,7 +73,17 @@ unsigned int BGeneralThreadPool::resize(unsigned int _size)
         return size();
 }
 
-int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThreadPool::Optimizer _op_type)
+void BGeneralThreadPool::setOptimizePolicy(BGeneralThreadPool::Optimizer _policy)
+{
+    m_optimize_policy = _policy;
+}
+
+const BGeneralThreadPool::Optimizer BGeneralThreadPool::optimizePolicy() const
+{
+    return m_optimize_policy;
+}
+
+int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThreadPool::Optimizer _op_policy)
 {
     if (mode() != BAbstractThreadPool::DynamicThreadCapacity)
     {
@@ -76,7 +93,9 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
         return ReturnCode::BModeIncorrect;
     }
     
-    switch (_op_type) {
+    BGeneralThreadPool::setOptimizePolicy(_op_policy);
+    
+    switch (_op_policy) {
     	case PerformanceFirst : {
     		if(m_normalOptimizer_(_task_vec) != ReturnCode::BSuccess)
     		{
@@ -117,23 +136,21 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
     return ReturnCode::BSuccess;
 }
 
-void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
-{
-    BTimer _task_timer;
-    
+void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_handle)
+{   
     while(1)
     {
         // Get task and validate this task
-        BGeneralTask* p_general_task = static_cast<BGeneralTask*>(_this->getTask());
+        BGeneralTask* p_general_task = static_cast<BGeneralTask*>(_thread_pool_handle->getTask());
         
         if(p_general_task == nullptr)
         {
-            _this->wait();
+            _thread_pool_handle->wait();
             
-            if(_this->status() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop
-                or _this->isRemove())
+            if(_thread_pool_handle->status() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop
+                or _thread_pool_handle->isRemove())
             {
-                _this->threadExit(std::this_thread::get_id());
+                _thread_pool_handle->threadExit(std::this_thread::get_id());
             	return;
             }else
             	continue;
@@ -142,12 +159,12 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         
         // Processing this task and recording time
         p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
-        
-        _task_timer.start();
+        p_general_task->startExecutionTiming();
         
         int _retcode = p_general_task->execute();
         
-        _task_timer.stop();
+        p_general_task->stopExecutionTiming();
+    	p_general_task->stopRealTiming();
         // Stop processing
         
         // Check if this task has been processed successfully
@@ -156,13 +173,26 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _this)
         	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
         }else{
         	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
-        	unsigned long long *_task_time = new unsigned long long;
-        	*_task_time = _task_timer.time();
-        	_this->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
-        	
-        	if (p_general_task->destroyable())
-        	    delete p_general_task;
         }
+        
+        switch(_thread_pool_handle->optimizePolicy()){
+            case PerformanceFirst:{
+                unsigned long long *_task_time = new unsigned long long;
+            	*_task_time = p_general_task->executionTime();
+            	_thread_pool_handle->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
+            };
+            
+            case ProcessTimeFirst:{
+                unsigned long long *_task_time = new unsigned long long;
+            	*_task_time = p_general_task->executionTime();
+            	_thread_pool_handle->sendMessage(TASK_TIME_QUEUE, static_cast<void*>(_task_time));
+            };
+            
+            default:;
+        }
+        
+    	if (p_general_task->destroyable())
+    	    delete p_general_task;
         // Finished check
     }
 }
