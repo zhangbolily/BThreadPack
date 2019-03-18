@@ -15,10 +15,10 @@
 using namespace std;
 using namespace BThreadPack;
 
-const double multiple = 4000000000000.0;
+const long long multiple = 4000000000000000000;
 std::condition_variable g_result_cond;
 std::mutex g_result_mutex;
-std::vector<double> g_pi_slice_result;
+std::vector<long long> g_pi_slice_result;
 
 class CalculatePiTask: public BGeneralTask{
 public:
@@ -37,21 +37,14 @@ public:
         std::ostringstream _os;
         _os << "Pi slice #" << m_task_id_ << ": is calculating on CPU " << sched_getcpu() << "\n";
         std::cout << _os.str();
-        double _pi_slice_result = pi(m_task_id_);
+        long long _pi_slice_result = pi(m_task_id_);
         
         if(g_result_mutex.try_lock())
         {
-        	if(g_pi_slice_result.size() > m_task_id_){
-                g_pi_slice_result[m_task_id_] = _pi_slice_result;
-                g_result_mutex.unlock();
-                g_result_cond.notify_all();
-                return 0;
-            } else {
-                g_pi_slice_result.push_back(_pi_slice_result);
-                g_result_mutex.unlock();
-                g_result_cond.notify_all();
-                return 0;
-            }
+            g_pi_slice_result.push_back(_pi_slice_result);
+            g_result_mutex.unlock();
+            g_result_cond.notify_all();
+            return 0;
         }
         
         while(1)
@@ -60,17 +53,10 @@ public:
             g_result_cond.wait(lock);
             if(g_result_mutex.try_lock())
             {
-            	if(g_pi_slice_result.size() > m_task_id_){
-                    g_pi_slice_result[m_task_id_] = _pi_slice_result;
-                    g_result_mutex.unlock();
-                    g_result_cond.notify_all();
-                    return 0;
-                } else {
-                    g_pi_slice_result.push_back(_pi_slice_result);
-                    g_result_mutex.unlock();
-                    g_result_cond.notify_all();
-                    return 0;
-                }
+                g_pi_slice_result.push_back(_pi_slice_result);
+                g_result_mutex.unlock();
+                g_result_cond.notify_all();
+                return 0;
             }
         }
             
@@ -78,14 +64,14 @@ public:
     }
 
 private:
-    const unsigned long long m_range = 400000000;
+    const unsigned long long m_range = 4000000000;
     int m_task_id_;
     
-    double pi(int _offset)
+    long long pi(int _offset)
     {
         _offset;
         bool sign = true;
-        double _pi = 0.0;
+        long long _pi = 0;
         for(unsigned long long i = 0;i < m_range;i++)
         {
             if(sign)
@@ -121,6 +107,7 @@ int main(int argc, char** argv)
     pi_slice_pool.startAllTasks();
     
     //2. Calculate pi
+    long long ll_Pi = 0;
     double Pi = 0.0;
     
     while(g_pi_slice_result.size() != slice_num)
@@ -131,15 +118,15 @@ int main(int argc, char** argv)
     
     for(int i=0;i < slice_num;i++)
     {
-        Pi += g_pi_slice_result[i];
+        ll_Pi += g_pi_slice_result[i];
         std::cout << "Pi slice result is : " << g_pi_slice_result[i] << std::endl;
     }
     
     std::cout.setf(ios::showpoint);
     std::cout.precision(64);
     
-    std::cout << "Interger Pi is : " << Pi << std::endl;
-    Pi /= multiple/4;
+    std::cout << "Interger Pi is : " << ll_Pi << std::endl;
+    Pi = ll_Pi/(multiple/4.0);
     std::cout << "Pi is : " << Pi << std::endl;
     
     getchar();
