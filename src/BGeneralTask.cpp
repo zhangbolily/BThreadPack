@@ -63,10 +63,19 @@ BGeneralTask::~BGeneralTask()
 {
 }
 
-int BGeneralTask::execute()
+void BGeneralTask::setName(const char* _name)
 {
-    //Define how to execute this task
-    return ReturnCode::BSuccess;
+    m_name = _name;
+}
+
+void BGeneralTask::setName(std::string _name)
+{
+    m_name = _name;
+}
+
+const std::string& BGeneralTask::name() const
+{
+    return m_name;
 }
 
 };

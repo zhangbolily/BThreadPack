@@ -7,10 +7,10 @@
 #ifndef _BGENERAL_TASK_H_
 #define _BGENERAL_TASK_H_
 
+#include <string>
+
 #include "BThreadPack/BAbstractTask.h"
 #include "BThreadPack/BTimer.h"
-
-using namespace std;
 
 namespace BThreadPack{
 
@@ -20,6 +20,9 @@ public:
     /* @BGeneralTask() - Constructor */    
     BGeneralTask();
     BGeneralTask(bool _autodestroy);
+    
+    /* @~BGeneralTask() - Destructor */
+    virtual ~BGeneralTask();
     
     /* @BGeneralTask() - Constructor
      * @_buffer - the task data buffer
@@ -37,16 +40,19 @@ public:
     void startRealTiming();
     void stopRealTiming();
     long long realTime();
-	
-    /* @~BGeneralTask() - Destructor */
-    virtual ~BGeneralTask();
+    
+    /* Set the task name. This name will be shown on thread name. */
+    void setName(const char* _name);
+    void setName(std::string _name);
+    const std::string& name() const;
     
     /* @execute() - This function will call _taskFunction to execute this task itself. */
-    virtual int execute();
+    virtual int execute() = 0;
 
 private:
     BTimer m_real_timer;
     BTimer m_execute_timer;
+    std::string m_name;
 };
 
 };

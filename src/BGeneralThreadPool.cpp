@@ -162,6 +162,14 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
         }
         // Finished validate
         
+        // Set this thread namespace
+        if (p_general_task->name().empty())
+        {
+            BGeneralThreadPool::m_setThreadName("BThreadPack");
+        } else {
+            BGeneralThreadPool::m_setThreadName(p_general_task->name());
+        }
+        
         // Processing this task and recording time
         p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
         p_general_task->startExecutionTiming();
@@ -292,6 +300,16 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
 #endif
     
     return ReturnCode::BSuccess;
+}
+
+void BGeneralThreadPool::m_setThreadName(const char* _name)
+{
+    prctl(PR_SET_NAME, _name);
+}
+
+void BGeneralThreadPool::m_setThreadName(const std::string _name)
+{
+    BGeneralThreadPool::m_setThreadName(_name.c_str());
 }
 
 };

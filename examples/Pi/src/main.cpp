@@ -109,6 +109,9 @@ int main(int argc, char** argv)
     for(int i = 0;i < slice_num;i++)
     {
         CalculatePiTask* p_slice_pi = new CalculatePiTask(i);
+        std::string _slice_name = "Pi slice #";
+        _slice_name += std::to_string(i);
+        p_slice_pi->setName(_slice_name);
         pi_slice_pool.pushTask(static_cast<void *>(p_slice_pi));
         //task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
     }

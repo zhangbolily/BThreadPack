@@ -9,6 +9,9 @@
 
 #define TASK_TIME_QUEUE	0
 
+#include <string>
+#include <sys/prctl.h>
+
 #include "BAbstractThreadPool.h"
 #include "BGeneralTask.h"
 #include "BTimer.h"
@@ -71,8 +74,11 @@ private:
     */
     virtual int m_init_(BGeneralThreadPool* _thread_pool_handle);
     virtual int m_init_(BGeneralThreadPool* _thread_pool_handle, unsigned int _thread_num);
-    static void m_threadFunction_(BGeneralThreadPool* _thread_pool_handle);
     int m_normalOptimizer_(vector<BGeneralTask *> _task_vec);
+    
+    static void m_threadFunction_(BGeneralThreadPool* _thread_pool_handle);
+    static void m_setThreadName(const char* _name);
+    static void m_setThreadName(const std::string _name);
 };
 
 };
