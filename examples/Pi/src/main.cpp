@@ -15,7 +15,7 @@
 using namespace std;
 using namespace BThreadPack;
 
-const double multiple = 400000000.0;
+const double multiple = 4000000000000.0;
 std::condition_variable g_result_cond;
 std::mutex g_result_mutex;
 std::vector<double> g_pi_slice_result;
@@ -45,22 +45,32 @@ public:
                 g_pi_slice_result[m_task_id_] = _pi_slice_result;
                 g_result_mutex.unlock();
                 g_result_cond.notify_all();
+                return 0;
             } else {
                 g_pi_slice_result.push_back(_pi_slice_result);
                 g_result_mutex.unlock();
                 g_result_cond.notify_all();
+                return 0;
             }
-        } else {
+        }
+        
+        while(1)
+        {
             std::unique_lock<std::mutex> lock(g_result_mutex);
             g_result_cond.wait(lock);
-            if(g_pi_slice_result.size() > m_task_id_){
-                g_pi_slice_result[m_task_id_] = _pi_slice_result;
-                lock.unlock();
-                g_result_cond.notify_all();
-            } else {
-                g_pi_slice_result.push_back(_pi_slice_result);
-                lock.unlock();
-                g_result_cond.notify_all();
+            if(g_result_mutex.try_lock())
+            {
+            	if(g_pi_slice_result.size() > m_task_id_){
+                    g_pi_slice_result[m_task_id_] = _pi_slice_result;
+                    g_result_mutex.unlock();
+                    g_result_cond.notify_all();
+                    return 0;
+                } else {
+                    g_pi_slice_result.push_back(_pi_slice_result);
+                    g_result_mutex.unlock();
+                    g_result_cond.notify_all();
+                    return 0;
+                }
             }
         }
             
@@ -93,22 +103,28 @@ BGeneralThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadContro
 
 int main(int argc, char** argv)
 {   
-    vector<BGeneralTask *> task_vec;
-    int slice_num = 16;
+    //vector<BGeneralTask *> task_vec;
+    int slice_num = 24;
     //1. Add task into thread pool.
     for(int i = 0;i < slice_num;i++)
     {
         CalculatePiTask* p_slice_pi = new CalculatePiTask(i);
-        //hello_world_pool.pushTask(static_cast<BGeneralTask *>(p_write_disk));
-        task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
+        pi_slice_pool.pushTask(static_cast<void *>(p_slice_pi));
+        //task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
     }
     
-    pi_slice_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
+    //pi_slice_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
     cout << "Current threads: " << pi_slice_pool.size() <<endl;
-    //hello_world_pool.startAllTasks();
+    pi_slice_pool.startAllTasks();
     
     //2. Calculate pi
     double Pi = 0.0;
+    
+    while(g_pi_slice_result.size() != slice_num)
+    {
+        std::cout << "Current result size: " << g_pi_slice_result.size() << std::endl;
+        sleep(1);
+    }
     
     for(int i=0;i < slice_num;i++)
     {
@@ -116,10 +132,11 @@ int main(int argc, char** argv)
         std::cout << "Pi slice result is : " << g_pi_slice_result[i] << std::endl;
     }
     
-    Pi /= multiple/4;
-    
     std::cout.setf(ios::showpoint);
-    std::cout.precision(12);
+    std::cout.precision(64);
+    
+    std::cout << "Interger Pi is : " << Pi << std::endl;
+    Pi /= multiple/4;
     std::cout << "Pi is : " << Pi << std::endl;
     
     getchar();
