@@ -55,6 +55,7 @@ set (LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 add_library (bthreadpack SHARED ${DIR_SRCS})
 target_link_libraries (bthreadpack ${EXTRA_LIBS})
 
+# Set install files
 install (TARGETS bthreadpack DESTINATION lib)
 install (
     FILES
