@@ -74,11 +74,11 @@ BAbstractTask::~BAbstractTask()
 {
     if (m_input_buffer_ != nullptr)
     {
-        delete m_input_buffer_;
+        delete [] m_input_buffer_;
     }
     if (m_output_buffer_ != nullptr)
     {
-        delete m_output_buffer_;
+        delete [] m_output_buffer_;
     }
 }
 

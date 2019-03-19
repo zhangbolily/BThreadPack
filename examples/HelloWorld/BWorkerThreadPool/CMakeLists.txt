@@ -24,12 +24,9 @@ project (WorkerThreadPool_HelloWorld)
 
 SET (EXECUTABLE_OUTPUT_PATH ${BThreadPack_BINARY_DIR}/bin)
 
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 link_directories (${BThreadPack_BINARY_DIR})
 aux_source_directory (src DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS src/task_data.proto)
-add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS} ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries (${PROJECT_NAME} bthreadpack ${PROTOBUF_LIBRARIES} ${EXTRA_LIBS})
+add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_HELLO_WORLD_BWT_SRCS})
+target_link_libraries (${PROJECT_NAME} bthreadpack ${EXTRA_LIBS})
 

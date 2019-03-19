@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <queue>
+#include <string>
 #include <unistd.h>
 #include <mutex>
 #include <condition_variable>
@@ -8,12 +9,11 @@
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BWorkerTask.h"
 #include "BThreadPack/BAbstractThreadPool.h"
-#include "task_data.pb.h"
 
 using namespace std;
 using namespace BThreadPack;
 
-#define LANGUAGES 9
+const int LANGUAGES = 9;
 const char* language[LANGUAGES] = {"Chinese",
 									"English",
 									"French",
@@ -75,42 +75,41 @@ private:
                 return;
             }
             
-            TaskData task_data;
-            task_data.ParseFromArray(task_buffer, task_buffer_size);
+            std::string language_str(static_cast<const char *>(task_buffer));
             
-            if(task_data.language() == language[0])
+            if(language_str == language[0])
             {
             	_os<<"\033[32m"<<"你好，世界！"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[1])
+            }else if(language_str == language[1])
             {
             	_os<<"\033[32m"<<"Hello World!"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[2])
+            }else if(language_str == language[2])
             {
             	_os<<"\033[32m"<<"Bonjour le monde!"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[3])
+            }else if(language_str == language[3])
             {
             	_os<<"\033[32m"<<"Hola Mundo!"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[4])
+            }else if(language_str == language[4])
             {
             	_os<<"\033[32m"<<"नमस्ते दुनिया!"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[5])
+            }else if(language_str == language[5])
             {
             	_os<<"\033[32m"<<"Привет, мир!"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[6])
+            }else if(language_str == language[6])
             {
             	_os<<"\033[32m"<<"こんにちは世界"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[7])
+            }else if(language_str == language[7])
             {
             	_os<<"\033[32m"<<"안녕하세요!"<<"\033[0m\n";
 		        cout<<_os.str();
-            }else if(task_data.language() == language[8])
+            }else if(language_str == language[8])
             {
             	_os<<"\033[32m"<<"🙋  🌎"<<"\033[0m\n";
 		        cout<<_os.str();
@@ -127,7 +126,7 @@ private:
     }
 };
 
-int num_threads = 20;
+int num_threads = 12;
 HelloWorldThreadPool hello_world_pool(num_threads);
 
 int main(int argc, char** argv)
@@ -135,37 +134,14 @@ int main(int argc, char** argv)
     //1. Make task data
     for(int i=0;i < LANGUAGES;i++)
     {
-        size_t buffer_size = 0;
-        void* task_buffer = nullptr;
         BWorkerTask* hello_world_task = new BWorkerTask();
         
-        TaskData task_data;
-        task_data.set_language(language[i]);
-        task_data.set_taskid(i);
-        
-        buffer_size = task_data.ByteSizeLong();
-        task_buffer = static_cast<void*>(malloc(buffer_size));
-        
-        if(task_buffer == nullptr)
-        {
-            cerr<<"[Error] task_buffer memory allocated failed."<<endl;
-            return -1;
-        }
-        
-        if(!task_data.SerializeToArray(task_buffer, buffer_size))
-        {
-            cerr<<"[Error] task_data SerializeToArray failed."<<endl;
-            return -1;
-        }
-        
-        if(hello_world_task->setInputBuffer(task_buffer, buffer_size))
+        if(hello_world_task->setInputBuffer(language[i], strlen(language[i]) + 1))
         {
             cerr<<"[Error] hello_world_task.setInputBuffer failed."<<endl;
             return -1;
         }
-        
-        free(task_buffer);
-        
+
         hello_world_pool.pushTask(static_cast<void*>(hello_world_task));
     }      
     
