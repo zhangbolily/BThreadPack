@@ -30,9 +30,27 @@ include_directories ("${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}")
 # Build examples
 add_subdirectory (examples)
 
+# Build deb package
+# Package file name prefix
+set (CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set (CPACK_DEBIAN_PACKAGE_NAME ${PROJECT_NAME})
+set (CPACK_GENERATOR "DEB")
+set (CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+set (MAJOR_VERSION 0)
+set (MINOR_VERSION 1)
+set (PATCH_VERSION 2-alpha)
+set (CPACK_PACKAGE_VERSION_MAJOR "${MAJOR_VERSION}")
+set (CPACK_PACKAGE_VERSION_MINOR "${MINOR_VERSION}")
+set (CPACK_PACKAGE_VERSION_PATCH "${PATCH_VERSION}")
+set (CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libstdc++6")
+set (CPACK_PACKAGE_DESCRIPTION "High effeciency multi-thread task framework.")
+set (CPACK_PACKAGE_CONTACT "zhangbolily@gmail.com")
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Ball Chang")
+include(CPack)
+
 set (EXTRA_LIBS ${EXTRA_LIBS} rt)
 set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
-SET (LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+set (LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 add_library (bthreadpack SHARED ${DIR_SRCS})
 target_link_libraries (bthreadpack ${EXTRA_LIBS})
@@ -45,6 +63,7 @@ install (
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BAbstractThreadPool.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralTask.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralThreadPool.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGroupTask.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BThreadPack.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BTimer.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BWorkerTask.h"
