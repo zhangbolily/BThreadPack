@@ -4,7 +4,7 @@
  * @Date        : 2018-12-2
 */
 
-#include "BGeneralThreadPool.h"
+#include "BThreadPack/BGeneralThreadPool.h"
 
 namespace BThreadPack{
 
@@ -37,8 +37,8 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
 	setStatus(BThreadPoolStatus::ThreadPoolRunning);
 	
     for (unsigned int i = 0; i < _thread_num; ++i) {
-        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _thread_pool_handle)) == ReturnCode::BThreadPoolFull)
-            return ReturnCode::BThreadPoolFull;
+        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _thread_pool_handle)) == BCore::ReturnCode::BThreadPoolFull)
+            return BCore::ReturnCode::BThreadPoolFull;
     }
     
     // Attention: This function call can be removed.
@@ -46,7 +46,7 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
     
     detach();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BGeneralThreadPool::pushTask(void* _task_buffer)
@@ -66,8 +66,8 @@ unsigned int BGeneralThreadPool::resize(unsigned int _size)
     {
         unsigned int _thread_num = _size - size();
         for (unsigned int i = 0; i < _thread_num; ++i) {
-            if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == ReturnCode::BThreadPoolFull)
-                return ReturnCode::BThreadPoolFull;
+            if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == BCore::ReturnCode::BThreadPoolFull)
+                return BCore::ReturnCode::BThreadPoolFull;
                 
             setAffinity(i + size());
         }
@@ -95,23 +95,23 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - Thread mode "<<mode()<<" is incorrect for BOptimizer.")
 #endif
-        return ReturnCode::BModeIncorrect;
+        return BCore::ReturnCode::BModeIncorrect;
     }
     
     BGeneralThreadPool::setOptimizePolicy(_op_policy);
     
     switch (_op_policy) {
     	case PerformanceFirst : {
-    		if(m_normalOptimizer_(_task_vec) != ReturnCode::BSuccess)
+    		if(m_normalOptimizer_(_task_vec) != BCore::ReturnCode::BSuccess)
     		{
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
-				return ReturnCode::BError;
+				return BCore::ReturnCode::BError;
     		} else {
     			if (size() == m_max_performance_threads_)
     			{
-    				return ReturnCode::BSuccess;
+    				return BCore::ReturnCode::BSuccess;
     			} else {
     				return resize(m_max_performance_threads_);
     			}
@@ -119,26 +119,26 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
     	}
     	
     	case ProcessTimeFirst : {
-    		if(m_normalOptimizer_(_task_vec) != ReturnCode::BSuccess)
+    		if(m_normalOptimizer_(_task_vec) != BCore::ReturnCode::BSuccess)
     		{
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BGeneralThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
-				return ReturnCode::BError;
+				return BCore::ReturnCode::BError;
     		} else {
     			if (size() == m_min_time_threads_)
     			{
-    				return ReturnCode::BSuccess;
+    				return BCore::ReturnCode::BSuccess;
     			} else {
     				return resize(m_min_time_threads_);
     			}
     		}
     	}
     	default:
-    		return ReturnCode::BError;
+    		return BCore::ReturnCode::BError;
     }
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_handle)
@@ -181,7 +181,7 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
         // Stop processing
         
         // Check if this task has been processed successfully
-        if(_retcode == ReturnCode::BError)
+        if(_retcode == BCore::ReturnCode::BError)
         {
         	p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
         }else{
@@ -234,7 +234,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {
             if(pushTask(static_cast<void*>(*it)) < 0)
-                return ReturnCode::BError;
+                return BCore::ReturnCode::BError;
         }
         
         startAllTasks();
@@ -299,7 +299,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
     }
 #endif
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 void BGeneralThreadPool::m_setThreadName(const char* _name)

@@ -4,8 +4,7 @@
  * @Date        : 2018-12-3
 */
 
-#include "BThreadPack.h"
-#include "BGeneralTask.h"
+#include "BThreadPack/BGeneralTask.h"
 
 namespace BThreadPack{
    

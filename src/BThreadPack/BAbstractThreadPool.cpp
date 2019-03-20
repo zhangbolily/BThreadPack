@@ -4,7 +4,7 @@
  * @Date        : 2018-12-2
 */
 
-#include "BAbstractThreadPool.h"
+#include "BThreadPack/BAbstractThreadPool.h"
 
 namespace BThreadPack{
 
@@ -93,7 +93,7 @@ long long BAbstractThreadPool::addThread(thread _new_thread)
         B_PRINT_DEBUG("BAbstractThreadPool::addThread - Thread number reach the thread pool capacity limitation.")
         B_PRINT_DEBUG("BAbstractThreadPool::addThread - Current thread pool capacity number :"<<m_thread_capacity_)
 #endif
-        return ReturnCode::BThreadPoolFull;
+        return BCore::ReturnCode::BThreadPoolFull;
     }
     else{
         m_thread_vec_.push_back(std::move(_new_thread));
@@ -104,7 +104,7 @@ long long BAbstractThreadPool::addThread(thread _new_thread)
 #endif
         return this->size();
     }
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 long long BAbstractThreadPool::setAffinity()
@@ -125,7 +125,7 @@ long long BAbstractThreadPool::setAffinity()
 long long BAbstractThreadPool::setAffinity(unsigned int _thread_num)
 {
     if(_thread_num >= size())
-        return BParameterOutOfRange;
+        return BCore::ReturnCode::BParameterOutOfRange;
     
     cpu_set_t _cpuset;
     CPU_ZERO(&_cpuset);
@@ -139,9 +139,9 @@ long long BAbstractThreadPool::setAffinity(unsigned int _thread_num)
     _retcode = pthread_setaffinity_np(m_thread_vec_[_thread_num].native_handle(),
                                     sizeof(cpu_set_t), &_cpuset);
     if(_retcode != 0)
-        return BError;
+        return BCore::ReturnCode::BError;
     else
-        return BSuccess;
+        return BCore::ReturnCode::BSuccess;
 }
 
 long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
@@ -151,7 +151,7 @@ long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::removeThread - Thread number overload.")
 #endif
-        return ReturnCode::BThreadNotExists;
+        return BCore::ReturnCode::BThreadNotExists;
     }
     else{
         m_remove_count.store(_thread_num);
@@ -176,7 +176,7 @@ long long BAbstractThreadPool::removeThread(unsigned int _thread_num)
         }
         return this->size();
     }
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 bool BAbstractThreadPool::isRemove()
@@ -210,7 +210,7 @@ int BAbstractThreadPool::_init_(BAbstractThreadPool* _this)
         this->addThread(thread(BAbstractThreadPool::m_threadFunction_, ref(_this)));
     }
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::join()
@@ -220,7 +220,7 @@ int BAbstractThreadPool::join()
             m_thread_vec_[i].join();
     }
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::join(unsigned int _thread_num)
@@ -230,13 +230,13 @@ int BAbstractThreadPool::join(unsigned int _thread_num)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
-        return ReturnCode::BThreadNotExists;
+        return BCore::ReturnCode::BThreadNotExists;
     }else{
         if (m_thread_vec_[_thread_num].joinable())
             m_thread_vec_[_thread_num].join();
     }    
         
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::detach()
@@ -246,7 +246,7 @@ int BAbstractThreadPool::detach()
             m_thread_vec_[i].detach();
     }
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::detach(unsigned int _thread_num)
@@ -256,13 +256,13 @@ int BAbstractThreadPool::detach(unsigned int _thread_num)
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::join - Thread number "<<_thread_num<<" doesn't exist.")
 #endif
-        return ReturnCode::BThreadNotExists;
+        return BCore::ReturnCode::BThreadNotExists;
     }else {
         if (m_thread_vec_[_thread_num].joinable())
             m_thread_vec_[_thread_num].detach();
     }
         
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 void BAbstractThreadPool::wait()
@@ -285,14 +285,14 @@ int BAbstractThreadPool::startOneTask()
 {
     m_start_condition_.notify_one();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::startAllTasks()
 {
     m_start_condition_.notify_all();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::kill()
@@ -310,7 +310,7 @@ int BAbstractThreadPool::kill()
 		this_thread::sleep_for(_ms_time);
 	}
 	
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractThreadPool::pushTask(void* _task_buffer)
@@ -346,7 +346,7 @@ int BAbstractThreadPool::pushTask(void* _task_buffer)
     } else
         m_priority_state = _priority > m_priority_state.load()?_priority:m_priority_state.load();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 void* BAbstractThreadPool::getTask()
@@ -430,7 +430,7 @@ int BAbstractThreadPool::sendMessage(int _queue_num, void* _message_buffer)
 	m_message_mutex_map_[_queue_num].unlock();
 	m_message_cond_map_[_queue_num].notify_all();
 	
-	return ReturnCode::BSuccess;
+	return BCore::ReturnCode::BSuccess;
 }
 
 void* BAbstractThreadPool::message(int _queue_num)

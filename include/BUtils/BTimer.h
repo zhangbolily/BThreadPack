@@ -16,7 +16,8 @@
 #include <sstream>
 #include <thread>
 
-#include "BThreadPack/BThreadPack.h"
+#include "BCore/BCore.h"
+#include "BCore/BDebug.h"
 
 #define MILLIAN 1000000
 
@@ -87,9 +88,9 @@ public:
         
         if (sigaction(SIGRTMIN, &m_timer_action, nullptr) == -1)
         {
-            return ReturnCode::BError;
+            return BCore::ReturnCode::BError;
         } else {
-            return ReturnCode::BSuccess;
+            return BCore::ReturnCode::BSuccess;
         }
     }
     
@@ -114,9 +115,9 @@ public:
         
         if (sigaction(SIGRTMIN, &m_timer_action, nullptr) == -1)
         {
-            return ReturnCode::BError;
+            return BCore::ReturnCode::BError;
         } else {
-            return ReturnCode::BSuccess;
+            return BCore::ReturnCode::BSuccess;
         }
     }
     

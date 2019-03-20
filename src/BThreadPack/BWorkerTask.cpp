@@ -4,8 +4,7 @@
  * @Date        : 2018-12-2
 */
 
-#include "BThreadPack.h"
-#include "BWorkerTask.h"
+#include "BThreadPack/BWorkerTask.h"
 
 namespace BThreadPack{
 

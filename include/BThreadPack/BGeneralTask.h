@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractTask.h"
 
 namespace BThreadPack{

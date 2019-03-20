@@ -7,7 +7,8 @@
 #ifndef _BWORKER_TASK_H_
 #define _BWORKER_TASK_H_
 
-#include "BAbstractTask.h"
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BAbstractTask.h"
 
 using namespace std;
 

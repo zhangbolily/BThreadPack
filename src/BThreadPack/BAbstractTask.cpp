@@ -4,8 +4,7 @@
  * @Date        : 2018-11-12
 */
 
-#include "BThreadPack.h"
-#include "BAbstractTask.h"
+#include "BThreadPack/BAbstractTask.h"
 
 namespace BThreadPack{
 
@@ -86,7 +85,7 @@ int BAbstractTask::status()
 {
     if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
 	m_task_mutex.unlock();
         
@@ -97,33 +96,33 @@ int BAbstractTask::setStatus(BAbstractTask::BTaskStatus _status)
 {
 	if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
 
     m_task_status_ = static_cast<int>(_status);
 	m_task_mutex.unlock();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractTask::setStatus(atomic_int _status)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
     
     m_task_status_.store(_status);
 	m_task_mutex.unlock();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractTask::setInputBuffer(const void* _buffer, size_t _size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
        
     if(_buffer == nullptr)
@@ -131,7 +130,7 @@ int BAbstractTask::setInputBuffer(const void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setInputBufer input pointer is nullptr. ")
 #endif
-        return ReturnCode::BError;
+        return BCore::ReturnCode::BError;
     }
     
     if(!_size)
@@ -139,7 +138,7 @@ int BAbstractTask::setInputBuffer(const void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setInputBufer input buffer size is 0. ")
 #endif
-        return ReturnCode::BError;
+        return BCore::ReturnCode::BError;
     }
     
     //Start transaction
@@ -150,14 +149,14 @@ int BAbstractTask::setInputBuffer(const void* _buffer, size_t _size)
         
 	m_task_mutex.unlock();
 
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractTask::inputBuffer(void** _buffer, size_t &_size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
     
     *_buffer = m_input_buffer_;
@@ -165,14 +164,14 @@ int BAbstractTask::inputBuffer(void** _buffer, size_t &_size)
     
 	m_task_mutex.unlock();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
     
     if(_buffer == nullptr)
@@ -180,7 +179,7 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setOutputBuffer input pointer is nullptr.")
 #endif
-        return ReturnCode::BError;
+        return BCore::ReturnCode::BError;
     }
         
     if(!_size)
@@ -188,7 +187,7 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
 #ifdef _B_DEBUG_
         B_PRINT_ERROR("BAbstractTask::setOutputBuffer input buffer size is 0. ")
 #endif
-        return ReturnCode::BError;
+        return BCore::ReturnCode::BError;
     }
     
     //Start transaction
@@ -199,14 +198,14 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
         
 	m_task_mutex.unlock();
         
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BAbstractTask::outputBuffer(const void** _buffer, size_t &_size)
 {
     if(!m_task_mutex.try_lock())
     {
-    	return ReturnCode::BOnlySingleThread;
+    	return BCore::ReturnCode::BOnlySingleThread;
     }
         
     *_buffer = m_output_buffer_;
@@ -214,7 +213,7 @@ int BAbstractTask::outputBuffer(const void** _buffer, size_t &_size)
     
 	m_task_mutex.unlock();
     
-    return ReturnCode::BSuccess;
+    return BCore::ReturnCode::BSuccess;
 }
 
 void BAbstractTask::setPriority(int _priority)

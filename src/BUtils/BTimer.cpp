@@ -4,7 +4,7 @@
  * @Date        : 2018-12-19
 */
 
-#include "BTimer.h"
+#include "BUtils/BTimer.h"
 
 using namespace std;
 using namespace chrono;
@@ -51,17 +51,17 @@ int BTimer::start(long long _msec)
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
 #endif
-        return ReturnCode::BError;
+        return BCore::ReturnCode::BError;
 	} else if (timer_settime(m_timer_id, 0, &m_timer_initial_value, nullptr) == -1){
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
 #endif
-	    return ReturnCode::BError;
+	    return BCore::ReturnCode::BError;
 	} else {
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
 #endif
-	    return ReturnCode::BSuccess;
+	    return BCore::ReturnCode::BSuccess;
 	}
 }
 
@@ -79,14 +79,14 @@ int BTimer::stop()
         case BTimerMode::AlarmMode:{
             if (m_timer_id != nullptr) {
                 if(timer_delete(m_timer_id) == -1)
-                    return ReturnCode::BError;
+                    return BCore::ReturnCode::BError;
                 else {
                     m_timer_id = nullptr;
-                    return ReturnCode::BSuccess;
+                    return BCore::ReturnCode::BSuccess;
                 }
             }
         };
-        default:return ReturnCode::BSuccess;
+        default:return BCore::ReturnCode::BSuccess;
     }
 }
 
@@ -109,7 +109,7 @@ long long BTimer::time() const
 {
     if (m_stop_time_us < m_start_time_us)
     {
-        return ReturnCode::BError;
+        return BCore::ReturnCode::BError;
     }else
         return duration_cast<microseconds>(m_stop_time_us - m_start_time_us).count();
 }

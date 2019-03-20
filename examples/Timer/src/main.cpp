@@ -6,8 +6,8 @@
 #include <setjmp.h>
 #include <sys/syscall.h>
 
+#include "BUtils/BTimer.h"
 #include "BThreadPack/BThreadPack.h"
-#include "BThreadPack/BTimer.h"
 #include "BThreadPack/BGeneralTask.h"
 #include "BThreadPack/BGeneralThreadPool.h"
 
@@ -26,13 +26,13 @@ public:
 	    cout<<syscall(__NR_gettid)<<endl;
 	    
 	    if(setjmp(context_buf) == 0){
-	        if (timer.callOnTimeout(jumpAction, static_cast<void*>(&context_buf), syscall(__NR_gettid)) != ReturnCode::BSuccess)
+	        if (timer.callOnTimeout(jumpAction, static_cast<void*>(&context_buf), syscall(__NR_gettid)) != BCore::ReturnCode::BSuccess)
 	        {
 	            fprintf(stderr, "callOnTimeout failed! Error with msg is: %s\n",strerror(errno));
 	            return -1;
 	        }
 	        timer.setInterval(0);
-	        if (timer.start(1000) != ReturnCode::BSuccess)
+	        if (timer.start(1000) != BCore::ReturnCode::BSuccess)
 	        {
 	            fprintf(stderr, "Start timer failed! Error with msg is: %s\n",strerror(errno));
 	            return -1;
@@ -72,7 +72,7 @@ BGeneralThreadPool signal_task_pool(num_threads);
 
 int main(int argc, char** argv)
 {
-    if(signal_task_pool.removeThread(2) == ReturnCode::BThreadNotExists)
+    if(signal_task_pool.removeThread(2) == BCore::ReturnCode::BThreadNotExists)
     {
         cout<<"Try to remove a none exist thread."<<endl;
     }

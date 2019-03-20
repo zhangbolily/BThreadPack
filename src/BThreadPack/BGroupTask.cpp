@@ -27,8 +27,7 @@
  * @Date        : 2019-3-17
 */
 
-#include "BThreadPack.h"
-#include "BGroupTask.h"
+#include "BThreadPack/BGroupTask.h"
 
 namespace BThreadPack{
 

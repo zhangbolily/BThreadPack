@@ -16,9 +16,9 @@
 #include <thread>
 #include <vector>
 
-#include "BThreadPack.h"
-#include "BAbstractClass.h"
-#include "BAbstractTask.h"
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BAbstractClass.h"
+#include "BThreadPack/BAbstractTask.h"
 
 using namespace std;
 using namespace std::chrono;

@@ -40,8 +40,8 @@ public:
     int initThreads(BAbstractThreadPool* _this)
     {    
         for (unsigned int i = 0; i < this->capacity(); ++i) {
-            if(this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this)) == BThreadPack::BThreadPoolFull)
-                return BThreadPack::BThreadPoolFull;
+            if(this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this)) == BCore::ReturnCode::BThreadPoolFull)
+                return BCore::ReturnCode::BThreadPoolFull;
         }
         
         return 0;
@@ -68,7 +68,7 @@ private:
             size_t task_buffer_size;
             std::ostringstream _os;
             
-            if(p_hello_task->inputBuffer(&task_buffer, task_buffer_size) == BThreadPack::BOnlySingleThread)
+            if(p_hello_task->inputBuffer(&task_buffer, task_buffer_size) == BCore::ReturnCode::BOnlySingleThread)
             {
                 _os<<"[Error] Get task input buffer failed.\n";
                 cerr<<_os.str();

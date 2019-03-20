@@ -32,8 +32,9 @@
 
 #include <vector>
 
+#include "BUtils/BTimer.h"
+#include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BGeneralTask.h"
-#include "BThreadPack/BTimer.h"
 
 namespace BThreadPack{
 
@@ -54,12 +55,12 @@ public:
     int removeTask(unsigned int _task_id)
     {
         if(_task_id >= size())
-            return ReturnCode::BError;
+            return BCore::ReturnCode::BError;
         else {
             typename std::vector<group_task_type*>::iterator it = m_task_vec.begin();
             m_task_vec.erase(it + _task_id);
             
-            return ReturnCode::BSuccess;
+            return BCore::ReturnCode::BSuccess;
         }
     }
     

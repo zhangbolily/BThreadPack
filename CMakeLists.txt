@@ -23,9 +23,10 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (BThreadPack)
 
-aux_source_directory (src DIR_SRCS)
+aux_source_directory (src/BCore DIR_SRCS)
+aux_source_directory (src/BUtils DIR_SRCS)
+aux_source_directory (src/BThreadPack DIR_SRCS)
 include_directories ("${PROJECT_SOURCE_DIR}/include")
-include_directories ("${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}")
 
 # Set build environment
 set (CMAKE_CXX_STANDARD_REQUIRED "11")
@@ -69,7 +70,20 @@ install (
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralThreadPool.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGroupTask.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BThreadPack.h"
-    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BTimer.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BWorkerTask.h"
     DESTINATION include/${PROJECT_NAME}
+)
+
+install (
+    FILES
+    "${PROJECT_SOURCE_DIR}/include/BCore/BCore.h"
+    "${PROJECT_SOURCE_DIR}/include/BCore/BDebug.h"
+    DESTINATION include/BCore
+)
+
+install (
+    FILES
+    "${PROJECT_SOURCE_DIR}/include/BUtils/BTimer.h"
+    "${PROJECT_SOURCE_DIR}/include/BUtils/BUtils.h"
+    DESTINATION include/BUtils
 )

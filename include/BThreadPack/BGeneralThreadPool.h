@@ -12,9 +12,10 @@
 #include <string>
 #include <sys/prctl.h>
 
-#include "BAbstractThreadPool.h"
-#include "BGeneralTask.h"
-#include "BTimer.h"
+#include "BUtils/BTimer.h"
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BAbstractThreadPool.h"
+#include "BThreadPack/BGeneralTask.h"
 
 using namespace std;
 

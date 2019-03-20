@@ -15,9 +15,10 @@
 #include <mutex>
 #include <thread>
 
+#include "BUtils/BTimer.h"
+#include "BUtils/BUtils.h"
+#include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractClass.h"
-#include "BThreadPack/BTimer.h"
-#include "BThreadPack/BUtils.h"
 
 using namespace std;
 
