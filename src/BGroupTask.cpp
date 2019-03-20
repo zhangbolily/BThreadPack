@@ -31,4 +31,5 @@
 #include "BGroupTask.h"
 
 namespace BThreadPack{
+
 };

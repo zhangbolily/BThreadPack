@@ -227,6 +227,68 @@ int BAbstractTask::priority() const
     return m_task_priority.load();
 }
 
+void BAbstractTask::startExecutionTiming()
+{
+    m_execute_timer.start();
+}
+
+void BAbstractTask::stopExecutionTiming()
+{
+    m_execute_timer.stop();
+}
+
+long long BAbstractTask::executionTime()
+{
+    return m_execute_timer.time();
+}
+
+void BAbstractTask::startRealTiming()
+{
+    m_real_timer.start();
+}
+
+void BAbstractTask::stopRealTiming()
+{
+     m_real_timer.stop();
+}
+
+long long BAbstractTask::realTime()
+{
+    return m_real_timer.time();
+}
+
+void BAbstractTask::setUUID()
+{
+    if(!BUtils::isUUID4(m_uuid))
+        m_uuid = BUtils::generateUUID4();
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BAbstractTask::setUUID - UUID is " << m_uuid << " .")
+#endif
+}
+void BAbstractTask::setUUID(std::string &_uuid)
+{
+    m_uuid = _uuid;
+}
+const std::string BAbstractTask::UUID()
+{
+    return m_uuid;
+}
+
+void BAbstractTask::setName(const char* _name)
+{
+    m_name = _name;
+}
+
+void BAbstractTask::setName(std::string _name)
+{
+    m_name = _name;
+}
+
+const std::string& BAbstractTask::name() const
+{
+    return m_name;
+}
+
 bool BAbstractTask::destroyable() const
 {
     return m_task_autodestroy.load();

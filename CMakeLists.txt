@@ -27,6 +27,9 @@ aux_source_directory (src DIR_SRCS)
 include_directories ("${PROJECT_SOURCE_DIR}/include")
 include_directories ("${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}")
 
+# Set build environment
+set (CMAKE_CXX_STANDARD_REQUIRED "11")
+
 # Build examples
 add_subdirectory (examples)
 

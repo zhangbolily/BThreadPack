@@ -30,17 +30,89 @@
 #ifndef _BGROUP_TASK_H_
 #define _BGROUP_TASK_H_
 
+#include <vector>
+
 #include "BThreadPack/BGeneralTask.h"
 #include "BThreadPack/BTimer.h"
 
 namespace BThreadPack{
 
-class BGroupTask:public NoneCopy{
+template<class TaskType>
+class BGroupTask:private NoneCopy{
+    typedef TaskType group_task_type;
 
 public:
     /* @BGroupTask() - Constructor */    
     BGroupTask();
     ~BGroupTask();
+    
+    void pushTask(group_task_type* _task_handle)
+    {
+        m_task_vec.push_back(_task_handle);
+    }
+    
+    int removeTask(unsigned int _task_id)
+    {
+        if(_task_id >= size())
+            return ReturnCode::BError;
+        else {
+            typename std::vector<group_task_type*>::iterator it = m_task_vec.begin();
+            m_task_vec.erase(it + _task_id);
+            
+            return ReturnCode::BSuccess;
+        }
+    }
+    
+    group_task_type* getTask(unsigned int _task_id)
+    {
+        if(_task_id >= size())
+            return nullptr;
+        else {
+            return m_task_vec[m_task_vec];
+        }
+    }
+    
+    unsigned int size()
+    {
+        return m_task_vec.size();
+    }
+    
+    /* Time of execution*/
+    void startExecutionTiming()
+    {
+        m_execute_timer.start();
+    }
+
+    void stopExecutionTiming()
+    {
+        m_execute_timer.stop();
+    }
+
+    long long executionTime()
+    {
+        return m_execute_timer.time();
+    }
+    
+    /* Time between pushing to the task queue and finished execution*/
+    void startRealTiming()
+    {
+        m_real_timer.start();
+    }
+
+    void stopRealTiming()
+    {
+         m_real_timer.stop();
+    }
+
+    long long realTime()
+    {
+        return m_real_timer.time();
+    }
+    
+private:
+    std::vector<group_task_type*> m_task_vec;
+    BTimer m_real_timer;
+    BTimer m_execute_timer;
 };
 };
 

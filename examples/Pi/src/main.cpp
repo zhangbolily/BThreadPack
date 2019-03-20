@@ -90,7 +90,7 @@ BGeneralThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadContro
 int main(int argc, char** argv)
 {   
     //vector<BGeneralTask *> task_vec;
-    int slice_num = 24;
+    int slice_num = 8;
     //1. Add task into thread pool.
     for(int i = 0;i < slice_num;i++)
     {
@@ -98,6 +98,7 @@ int main(int argc, char** argv)
         std::string _slice_name = "Pi slice #";
         _slice_name += std::to_string(i);
         p_slice_pi->setName(_slice_name);
+        p_slice_pi->setUUID();
         pi_slice_pool.pushTask(static_cast<void *>(p_slice_pi));
         //task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
     }
@@ -112,7 +113,7 @@ int main(int argc, char** argv)
     
     while(g_pi_slice_result.size() != slice_num)
     {
-        std::cout << "Current result size: " << g_pi_slice_result.size() << std::endl;
+        //std::cout << "Current result size: " << g_pi_slice_result.size() << std::endl;
         sleep(1);
     }
     

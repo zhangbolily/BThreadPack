@@ -15,7 +15,9 @@
 #include <mutex>
 #include <thread>
 
-#include "BAbstractClass.h"
+#include "BThreadPack/BAbstractClass.h"
+#include "BThreadPack/BTimer.h"
+#include "BThreadPack/BUtils.h"
 
 using namespace std;
 
@@ -89,8 +91,27 @@ public:
     int outputBuffer(const void** _buffer, size_t &_size);
     
     void setPriority(int);
-    
     int priority() const;
+    
+    /* Time of execution*/
+    void startExecutionTiming();
+    void stopExecutionTiming();
+    long long executionTime();
+    
+    /* Time between pushing to the task queue and finished execution*/
+    void startRealTiming();
+    void stopRealTiming();
+    long long realTime();
+    
+    /* Set the task name. This name will be shown on thread name. */
+    void setName(const char* _name);
+    void setName(std::string _name);
+    const std::string& name() const;
+    
+    /* Set a unified id for this task. */
+    void setUUID();
+    void setUUID(std::string &_uuid);
+    const std::string UUID();
     
     bool destroyable() const;
     
@@ -103,6 +124,10 @@ private:
     atomic_int m_task_priority;
     atomic_int m_task_status_;
     atomic_bool m_task_autodestroy;
+    BTimer m_real_timer;
+    BTimer m_execute_timer;
+    std::string m_name;
+    std::string m_uuid;
     
     /* @m_input_buffer_ - store the buffer of input data */
     char* m_input_buffer_;
