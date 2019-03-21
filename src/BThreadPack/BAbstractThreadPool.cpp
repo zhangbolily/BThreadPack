@@ -1,3 +1,26 @@
+/* MIT License
+* 
+* Copyright (c) 2018 Ball Chang
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
 /*
  * @Author      : Ball Chang
  * @File        : BAbstractThreadPool.cpp
@@ -313,12 +336,9 @@ int BAbstractThreadPool::kill()
     return BCore::ReturnCode::BSuccess;
 }
 
-int BAbstractThreadPool::pushTask(void* _task_buffer)
+int BAbstractThreadPool::pushTask(BAbstractTask* _task_buffer)
 {
     lock_guard<std::mutex> guard(m_task_mutex_);
-    /*TODO:This part will be deprecated
-    m_task_queue_.push(_task_buffer);
-    */
     
     BAbstractTask* _abstract_task = static_cast<BAbstractTask*>(_task_buffer);
     int _priority = _abstract_task->priority();
@@ -349,19 +369,9 @@ int BAbstractThreadPool::pushTask(void* _task_buffer)
     return BCore::ReturnCode::BSuccess;
 }
 
-void* BAbstractThreadPool::getTask()
+BAbstractTask* BAbstractThreadPool::getTask()
 {
     lock_guard<std::mutex> guard(m_task_mutex_);
-    
-    /*TODO: This part will be deprecated.
-    if(m_task_queue_.empty())
-        return nullptr;
-    else{
-        void* _resultTask = m_task_queue_.front();
-        m_task_queue_.pop();
-        
-        return _resultTask;
-    }*/
     
     std::chrono::milliseconds _ms(10);
     std::this_thread::sleep_for(_ms);
@@ -375,7 +385,7 @@ void* BAbstractThreadPool::getTask()
     
     if(_has_task)
     {
-        void* _resultTask = m_priority_task_queue[m_priority_state - 1].front();
+        BAbstractTask* _resultTask = m_priority_task_queue[m_priority_state - 1].front();
         m_priority_task_queue[m_priority_state - 1].pop();
         
         // Current priority queue is empty, change the priority state.
@@ -408,7 +418,15 @@ void* BAbstractThreadPool::getTask()
 int BAbstractThreadPool::taskQueueSize()
 {
 	lock_guard<std::mutex> guard(m_task_mutex_);
-	return m_task_queue_.size();
+	
+	int _size = 0;
+	
+	for(int i=0;i < PriorityNum; i++)
+	{
+	    _size += m_priority_task_queue[i].size();
+	}
+	
+	return _size;
 }
 
 int BAbstractThreadPool::sendMessage(int _queue_num, void* _message_buffer)

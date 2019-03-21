@@ -1,3 +1,26 @@
+/* MIT License
+* 
+* Copyright (c) 2018 Ball Chang
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
 /*
  * @Author      : Ball Chang
  * @File        : BAbstractThreadPool.cpp
@@ -49,7 +72,7 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
     return BCore::ReturnCode::BSuccess;
 }
 
-int BGeneralThreadPool::pushTask(void* _task_buffer)
+int BGeneralThreadPool::pushTask(BGeneralTask* _task_buffer)
 {
     static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
     
@@ -233,7 +256,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {
-            if(pushTask(static_cast<void*>(*it)) < 0)
+            if(pushTask(static_cast<BGeneralTask*>(*it)) < 0)
                 return BCore::ReturnCode::BError;
         }
         

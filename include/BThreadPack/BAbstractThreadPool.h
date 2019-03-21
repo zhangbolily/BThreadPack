@@ -1,3 +1,26 @@
+/* MIT License
+* 
+* Copyright (c) 2018 Ball Chang
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
 /*
  * @Author      : Ball Chang
  * @File        : BAbstractThreadPool.h
@@ -168,12 +191,12 @@ public:
      * @_task_buffer - A memory buffer that contains the task data.
      * @return - Returns B_SUCCESS if success
     */
-    int pushTask(void* _task_buffer);
+    int pushTask(BAbstractTask* _task_buffer);
     
     /* @getTask - Get a task from task queue.
      * @return - Returns task buffer.
     */
-    void* getTask();
+    BAbstractTask* getTask();
     
     /* @taskQueueSize - Get the size of task queue.
     */
@@ -196,11 +219,10 @@ private:
     atomic_uint m_thread_capacity_;
     std::vector<std::thread> m_thread_vec_;
     std::vector<std::thread::id> m_thread_id_vec;
-    std::vector<std::queue<void *>> m_priority_task_queue;
+    std::vector<std::queue<BAbstractTask *>> m_priority_task_queue;
     std::vector<atomic_bool> m_task_bitmap;
     std::vector<int> m_task_counter;
     atomic_int m_priority_state;
-    queue<void *> m_task_queue_;
     atomic_int m_pool_mode_;
     atomic_int m_pool_status_;
     atomic_int m_remove_count;

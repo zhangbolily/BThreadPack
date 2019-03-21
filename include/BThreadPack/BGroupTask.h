@@ -30,90 +30,29 @@
 #ifndef _BGROUP_TASK_H_
 #define _BGROUP_TASK_H_
 
-#include <vector>
-
-#include "BUtils/BTimer.h"
 #include "BThreadPack/BThreadPack.h"
-#include "BThreadPack/BGeneralTask.h"
+#include "BThreadPack/BAbstractTask.h"
+
+class BGroupTaskPrivate;
 
 namespace BThreadPack{
 
-template<class TaskType>
 class BGroupTask:private NoneCopy{
-    typedef TaskType group_task_type;
 
 public:
     /* @BGroupTask() - Constructor */    
     BGroupTask();
     ~BGroupTask();
     
-    void pushTask(group_task_type* _task_handle)
-    {
-        m_task_vec.push_back(_task_handle);
-    }
+    void pushTask(BAbstractTask* _task_handle);
+    int removeTask(unsigned int _task_id);
+    BAbstractTask* getTask(unsigned int _task_id);
+    unsigned int size();
+    long long executionTime();
+    long long realTime();
     
-    int removeTask(unsigned int _task_id)
-    {
-        if(_task_id >= size())
-            return BCore::ReturnCode::BError;
-        else {
-            typename std::vector<group_task_type*>::iterator it = m_task_vec.begin();
-            m_task_vec.erase(it + _task_id);
-            
-            return BCore::ReturnCode::BSuccess;
-        }
-    }
-    
-    group_task_type* getTask(unsigned int _task_id)
-    {
-        if(_task_id >= size())
-            return nullptr;
-        else {
-            return m_task_vec[m_task_vec];
-        }
-    }
-    
-    unsigned int size()
-    {
-        return m_task_vec.size();
-    }
-    
-    /* Time of execution*/
-    void startExecutionTiming()
-    {
-        m_execute_timer.start();
-    }
-
-    void stopExecutionTiming()
-    {
-        m_execute_timer.stop();
-    }
-
-    long long executionTime()
-    {
-        return m_execute_timer.time();
-    }
-    
-    /* Time between pushing to the task queue and finished execution*/
-    void startRealTiming()
-    {
-        m_real_timer.start();
-    }
-
-    void stopRealTiming()
-    {
-         m_real_timer.stop();
-    }
-
-    long long realTime()
-    {
-        return m_real_timer.time();
-    }
-    
-private:
-    std::vector<group_task_type*> m_task_vec;
-    BTimer m_real_timer;
-    BTimer m_execute_timer;
+protected:
+    BGroupTaskPrivate* m_private_ptr;
 };
 };
 

@@ -4,7 +4,7 @@
 
 [中文版](./README.zh_CN.md)
 
-A handful thread tool kit.
+Efficient multi-threading task framework.
 
 ## Features
 - Satisfied general task usage and specified task usage.
@@ -24,7 +24,7 @@ If you want to use BThreadPack in your platform, these requirements need to be s
 
 ```
 System: Linux (This project only be tested on this platform)
-gcc version > 4.8 (Need c++11 support)
+gcc version >= 4.8 (Need c++11 support)
 ```
 
 ### Source Code Structure

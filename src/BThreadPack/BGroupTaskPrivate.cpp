@@ -23,59 +23,33 @@
 
 /*
  * @Author      : Ball Chang
- * @File        : BGroupTask.cpp
- * @Date        : 2019-3-17
+ * @File        : BGroupTaskPrivate.cpp
+ * @Date        : 2019-3-21
 */
 
-#include "BThreadPack/private/BGroupTaskPrivate.h"
 #include "BThreadPack/BGroupTask.h"
 
 namespace BThreadPack{
 
-BGroupTask::BGroupTask()
-    :m_private_ptr(new BGroupTaskPrivate)
+void BGroupTaskPrivate::startExecutionTiming()
 {
+    m_execute_timer.start();
 }
 
-void BGroupTask::pushTask(BAbstractTask* _task_handle)
+void BGroupTaskPrivate::stopExecutionTiming()
 {
-    m_private_ptr->m_task_vec.push_back(_task_handle);
+    m_execute_timer.stop();
 }
 
-int BGroupTask::removeTask(unsigned int _task_id)
+void BGroupTaskPrivate::startRealTiming()
 {
-    if(_task_id >= size())
-        return BCore::ReturnCode::BError;
-    else {
-        std::vector<BAbstractTask*>::iterator it = m_private_ptr->m_task_vec.begin();
-        m_private_ptr->m_task_vec.erase(it + _task_id);
-        
-        return BCore::ReturnCode::BSuccess;
-    }
+    m_real_timer.start();
 }
 
-BAbstractTask* BGroupTask::getTask(unsigned int _task_id)
+void BGroupTaskPrivate::stopRealTiming()
 {
-    if(_task_id >= size())
-        return nullptr;
-    else {
-        return m_private_ptr->m_task_vec[_task_id];
-    }
-}
-
-unsigned int BGroupTask::size()
-{
-    return m_private_ptr->m_task_vec.size();
-}
-
-long long BGroupTask::executionTime()
-{
-    return m_private_ptr->m_execute_timer.time();
-}
-
-long long BGroupTask::realTime()
-{
-    return m_private_ptr->m_real_timer.time();
+     m_real_timer.stop();
 }
 
 };
+
