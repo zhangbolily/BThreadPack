@@ -13,12 +13,19 @@ linux build:
     - cmake ..
     - make -j 4
 
+linux install:
+  tags:
+    - linux
   stage: install
   script:
     - make install
+
+linux test:
+  tags:
+    - linux
   stage: test
 
-window build:
+windows build:
   tags:
     - Windows
   stage: build
@@ -28,8 +35,14 @@ window build:
     - cmake ..
     - make -j 4
 
+windows install:
+  tags:
+    - Windows
   stage: install
   script:
     - make install
-    
+
+windows install:
+  tags:
+    - Windows   
   stage: test
