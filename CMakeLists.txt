@@ -31,6 +31,10 @@ include_directories ("${PROJECT_SOURCE_DIR}/include")
 # Set build environment
 set (CMAKE_CXX_STANDARD_REQUIRED "11")
 
+if (UNIX)
+    add_definitions (-DUNIX)
+endif (UNIX)
+
 # Build examples
 add_subdirectory (examples)
 

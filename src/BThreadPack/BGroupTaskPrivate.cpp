@@ -28,6 +28,7 @@
 */
 
 #include "BThreadPack/BGroupTask.h"
+#include "BThreadPack/private/BGroupTaskPrivate.h"
 
 namespace BThreadPack{
 
