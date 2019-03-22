@@ -1,19 +1,25 @@
-# use the official gcc image, based on debian
-# can use verions as well, like gcc:5.2
-# see https://hub.docker.com/_/gcc/
-image: registry.gitlab.com/zhangbolily/bthreadpack/build-environment/ubuntu:18.04
-
-build:
+linux build:
   stage: build
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
-  before_script:
+  tags:
+    - Linux
+  image: registry.gitlab.com/zhangbolily/bthreadpack/build-environment/ubuntu:18.04
   script:
     - mkdir build && cd build
     - cmake ..
     - make -j 4
     - make install
     # after_script:
+
+window build:
+  stage:
+    - build
+  tags:
+    - Windows
+  script:
+    - mkdir build && cd build
+    - cmake ..
+    - make -j 4
+    - make install
 
 # run tests using the binary built before
 # test:
