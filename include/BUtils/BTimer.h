@@ -30,11 +30,14 @@
 #ifndef _BTIMER_H_
 #define _BTIMER_H_
 
+#ifdef UNIX
+#include <signal.h>
+#endif
+
 #include <atomic>
 #include <chrono>
 #include <ctime>
 #include <functional>
-#include <signal.h>
 #include <string.h>
 #include <sstream>
 #include <thread>
@@ -66,11 +69,12 @@ public:
     /* @stop record time or this timer */
     int stop();
     
-    void setInterval(long long _msec);
-    void setInterval(std::chrono::milliseconds _msec);
-    
     /* @time - Get how many milliseconds have beed recorded or remained */
     long long time() const;
+    
+#ifdef UNIX
+    void setInterval(long long _msec);
+    void setInterval(std::chrono::milliseconds _msec);
     
     template<class Function>
     void callOnTimeout(Function&& _f, void* _arg)
@@ -145,16 +149,20 @@ public:
     }
     
     void reset();
+#endif
     
 private:
     std::chrono::steady_clock::time_point m_start_time_us;
     std::chrono::steady_clock::time_point m_stop_time_us;
+    BTimerMode m_timer_mode;
+    
+#ifdef UNIX
     sigevent m_timer_event;
     struct sigaction m_timer_action;
     timer_t m_timer_id;
     itimerspec m_timer_initial_value;
     bool m_timeout_call_flag;
-    BTimerMode m_timer_mode;
+#endif
 };
 };
 

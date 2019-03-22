@@ -1,3 +1,8 @@
+stages:
+  - build
+  - install
+  - test
+
 linux build:
   stage: build
   tags:
@@ -7,20 +12,22 @@ linux build:
     - mkdir build && cd build
     - cmake ..
     - make -j 4
+
+  stage: install
+  script:
     - make install
-    # after_script:
+  stage: test
 
 window build:
   stage: build
   tags:
     - Windows
   script:
-    - mkdir build && cd build
+    - mkdir build
+    - cd build
     - cmake ..
     - make -j 4
-    - make install
 
-# run tests using the binary built before
-# test:
-  # stage: test
-  # script:
+  stage: install
+  script:
+    - make install

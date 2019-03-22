@@ -35,12 +35,16 @@ using namespace chrono;
 namespace BThreadPack {
 
 BTimer::BTimer()
+#ifdef UNIX
     :m_timer_id(nullptr),
     m_timeout_call_flag(false)
+#endif
 {
+#ifdef UNIX
     memset(&m_timer_event, 0, sizeof(sigevent));
     memset(&m_timer_action, 0, sizeof(struct sigaction));
     memset(&m_timer_initial_value, 0, sizeof(itimerspec));
+#endif
 }
 
 BTimer::~BTimer()
@@ -57,6 +61,8 @@ int BTimer::start(long long _msec)
 {
     m_timer_mode = BTimer::AlarmMode;
     m_start_time_us = steady_clock::now();
+    
+#ifdef UNIX
     m_timer_initial_value.it_value.tv_sec = _msec / 1000;
     m_timer_initial_value.it_value.tv_nsec = static_cast<long>(_msec % 1000 * MILLIAN);
 #ifdef _B_DEBUG_
@@ -86,6 +92,8 @@ int BTimer::start(long long _msec)
 #endif
 	    return BCore::ReturnCode::BSuccess;
 	}
+#endif
+    return BCore::ReturnCode::BSuccess;
 }
 
 int BTimer::start(std::chrono::milliseconds _msec)
@@ -96,6 +104,7 @@ int BTimer::start(std::chrono::milliseconds _msec)
 int BTimer::stop()
 {
     m_stop_time_us = steady_clock::now();
+#ifdef UNIX
     switch(m_timer_mode){
         case BTimerMode::TimingMode: {
         };
@@ -111,8 +120,11 @@ int BTimer::stop()
         };
         default:return BCore::ReturnCode::BSuccess;
     }
+#endif
+    return BCore::ReturnCode::BSuccess;
 }
 
+#ifdef UNIX
 void BTimer::setInterval(long long _msec)
 {
     m_timer_initial_value.it_interval.tv_sec = _msec / 1000;
@@ -140,5 +152,5 @@ long long BTimer::time() const
 void BTimer::reset()
 {
 }
-
+#endif
 }

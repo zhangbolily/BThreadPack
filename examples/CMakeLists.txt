@@ -22,4 +22,6 @@
 
 add_subdirectory (HelloWorld)
 add_subdirectory (Pi)
-add_subdirectory (Timer)
+if (UNIX)
+    add_subdirectory (Timer)
+endif ()
