@@ -1,7 +1,6 @@
 stages:
   - build
   - install
-  - test
 
 linux build:
   tags:
@@ -20,11 +19,6 @@ linux install:
   script:
     - make install
 
-linux test:
-  tags:
-    - linux
-  stage: test
-
 windows build:
   tags:
     - Windows
@@ -41,8 +35,3 @@ windows install:
   stage: install
   script:
     - make install
-
-windows install:
-  tags:
-    - Windows   
-  stage: test
