@@ -4,9 +4,9 @@ stages:
   - test
 
 linux build:
-  stage: build
   tags:
     - linux
+  stage: build
   image: registry.gitlab.com/zhangbolily/bthreadpack/build-environment/ubuntu:18.04
   script:
     - mkdir build && cd build
@@ -19,9 +19,9 @@ linux build:
   stage: test
 
 window build:
-  stage: build
   tags:
     - Windows
+  stage: build
   script:
     - mkdir build
     - cd build
@@ -31,3 +31,5 @@ window build:
   stage: install
   script:
     - make install
+    
+  stage: test
