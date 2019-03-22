@@ -1,6 +1,5 @@
 stages:
   - build
-  - install
 
 linux build:
   tags:
@@ -11,12 +10,6 @@ linux build:
     - mkdir build && cd build
     - cmake ..
     - make -j 4
-
-linux install:
-  tags:
-    - linux
-  stage: install
-  script:
     - make install
 
 windows build:
@@ -28,10 +21,4 @@ windows build:
     - cd build
     - cmake ..
     - make -j 4
-
-windows install:
-  tags:
-    - Windows
-  stage: install
-  script:
     - make install
