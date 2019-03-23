@@ -149,7 +149,9 @@ long long BAbstractThreadPool::setAffinity(unsigned int _thread_num)
 {
     if(_thread_num >= size())
         return BCore::ReturnCode::BParameterOutOfRange;
-    
+
+#ifdef WIN32
+#else
     cpu_set_t _cpuset;
     CPU_ZERO(&_cpuset);
     
@@ -164,6 +166,7 @@ long long BAbstractThreadPool::setAffinity(unsigned int _thread_num)
     if(_retcode != 0)
         return BCore::ReturnCode::BError;
     else
+#endif
         return BCore::ReturnCode::BSuccess;
 }
 
