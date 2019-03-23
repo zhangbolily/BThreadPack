@@ -62,7 +62,9 @@ set (CPACK_PACKAGE_CONTACT "zhangbolily@gmail.com")
 set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Ball Chang")
 include(CPack)
 
+if (UNIX)
 set (EXTRA_LIBS ${EXTRA_LIBS} rt)
+endif ()
 set (EXTRA_LIBS ${EXTRA_LIBS} pthread)
 set (LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
