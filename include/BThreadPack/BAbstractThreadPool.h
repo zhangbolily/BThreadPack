@@ -32,6 +32,7 @@
 
 #ifdef WIN32
 #include "winbase.h"
+#include "WinDef.h"
 #endif
 
 #include <atomic>

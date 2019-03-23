@@ -32,8 +32,14 @@
 
 #define TASK_TIME_QUEUE	0
 
-#include <string>
+#ifdef WIN32
+#include <windows.h>
+#include <processthreadsapi.h>
+#else
 #include <sys/prctl.h>
+#endif
+
+#include <string>
 
 #include "BUtils/BTimer.h"
 #include "BThreadPack/BThreadPack.h"
