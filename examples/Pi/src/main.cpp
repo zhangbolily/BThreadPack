@@ -34,9 +34,11 @@ public:
     
     virtual int execute()
     {
+#ifdef UNIX
         std::ostringstream _os;
         _os << "Pi slice #" << m_task_id_ << ": is calculating on CPU " << sched_getcpu() << "\n";
         std::cout << _os.str();
+#endif
         long long _pi_slice_result = pi(m_task_id_);
         
         if(g_result_mutex.try_lock())
