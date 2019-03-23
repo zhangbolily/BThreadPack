@@ -70,50 +70,89 @@ private:
             
             if(p_hello_task->inputBuffer(&task_buffer, task_buffer_size) == BCore::ReturnCode::BOnlySingleThread)
             {
-                _os<<"[Error] Get task input buffer failed.\n";
-                cerr<<_os.str();
+                _os << "[Error] Get task input buffer failed.\n";
+                std::cerr << _os.str();
                 return;
             }
             
             std::string language_str(static_cast<const char *>(task_buffer));
-            
+#ifdef WIN32
             if(language_str == language[0])
             {
-            	_os<<"\033[32m"<<"你好，世界！"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "你好，世界！\n";
+		        std::cout << _os.str();
             }else if(language_str == language[1])
             {
-            	_os<<"\033[32m"<<"Hello World!"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "Hello World!\n";
+		        std::cout << _os.str();
             }else if(language_str == language[2])
             {
-            	_os<<"\033[32m"<<"Bonjour le monde!"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "Bonjour le monde!\n";
+		        std::cout << _os.str();
             }else if(language_str == language[3])
             {
-            	_os<<"\033[32m"<<"Hola Mundo!"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "Hola Mundo!\n";
+		        std::cout << _os.str();
             }else if(language_str == language[4])
             {
-            	_os<<"\033[32m"<<"नमस्ते दुनिया!"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "नमस्ते दुनिया!\n";
+		        std::cout << _os.str();
             }else if(language_str == language[5])
             {
-            	_os<<"\033[32m"<<"Привет, мир!"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "Привет, мир!\n";
+		        std::cout << _os.str();
             }else if(language_str == language[6])
             {
-            	_os<<"\033[32m"<<"こんにちは世界"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "こんにちは世界\n";
+		        std::cout << _os.str();
             }else if(language_str == language[7])
             {
-            	_os<<"\033[32m"<<"안녕하세요!"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "안녕하세요!\n";
+		        std::cout << _os.str();
             }else if(language_str == language[8])
             {
-            	_os<<"\033[32m"<<"🙋  🌎"<<"\033[0m\n";
-		        cout<<_os.str();
+            	_os << "🙋  🌎\n";
+		        std::cout << _os.str();
             }
+#else
+            if(language_str == language[0])
+            {
+            	_os << "\033[32m" << "你好，世界！" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[1])
+            {
+            	_os << "\033[32m" << "Hello World!" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[2])
+            {
+            	_os << "\033[32m" << "Bonjour le monde!" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[3])
+            {
+            	_os << "\033[32m" << "Hola Mundo!" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[4])
+            {
+            	_os << "\033[32m" << "नमस्ते दुनिया!" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[5])
+            {
+            	_os << "\033[32m" << "Привет, мир!" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[6])
+            {
+            	_os << "\033[32m" << "こんにちは世界" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[7])
+            {
+            	_os << "\033[32m" << "안녕하세요!" << "\033[0m\n";
+		        std::cout << _os.str();
+            }else if(language_str == language[8])
+            {
+            	_os << "\033[32m" << "🙋  🌎" << "\033[0m\n";
+		        std::cout << _os.str();
+            }
+#endif
             
             if(p_hello_task != nullptr)
             {
