@@ -35,6 +35,16 @@ namespace BThreadPack{
 BGroupTask::BGroupTask()
     :m_private_ptr(new BGroupTaskPrivate)
 {
+    m_private_ptr->setUUID();
+}
+
+BGroupTask::~BGroupTask()
+{
+    if(m_private_ptr != nullptr)
+    {
+        delete m_private_ptr;
+        m_private_ptr = nullptr;
+    }
 }
 
 void BGroupTask::pushTask(BAbstractTask* _task_handle)
@@ -76,6 +86,21 @@ long long BGroupTask::executionTime()
 long long BGroupTask::realTime()
 {
     return m_private_ptr->m_real_timer.time();
+}
+
+const std::string BGroupTask::UUID()
+{
+    return m_private_ptr->m_uuid;
+}
+
+void BGroupTask::setPriority(int _priority)
+{
+    m_private_ptr->m_task_priority = _priority;
+}
+    
+int BGroupTask::priority() const
+{
+    return m_private_ptr->m_task_priority.load();
 }
 
 };

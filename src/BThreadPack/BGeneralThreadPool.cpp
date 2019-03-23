@@ -72,11 +72,11 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
     return BCore::ReturnCode::BSuccess;
 }
 
-int BGeneralThreadPool::pushTask(BGeneralTask* _task_buffer)
+void BGeneralThreadPool::pushTask(BGeneralTask* _task_buffer)
 {
     static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
     
-    return BAbstractThreadPool::pushTask(_task_buffer);
+    BAbstractThreadPool::pushTask(_task_buffer);
 }
 
 unsigned int BGeneralThreadPool::resize(unsigned int _size)
@@ -256,8 +256,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         
         for(vector<BGeneralTask *>::iterator it = _task_vec.begin(); it != _task_vec.end(); it++)
         {
-            if(pushTask(static_cast<BGeneralTask*>(*it)) < 0)
-                return BCore::ReturnCode::BError;
+            pushTask(static_cast<BGeneralTask*>(*it));
         }
         
         startAllTasks();

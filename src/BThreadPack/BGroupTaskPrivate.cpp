@@ -32,6 +32,20 @@
 
 namespace BThreadPack{
 
+BGroupTaskPrivate::BGroupTaskPrivate()
+    :m_task_priority((PriorityNum+1)/2)
+{
+}
+
+BGroupTaskPrivate::~BGroupTaskPrivate()
+{
+}
+
+bool BGroupTaskPrivate::queueEmpty()
+{
+    return m_task_queue.empty();
+}
+
 void BGroupTaskPrivate::startExecutionTiming()
 {
     m_execute_timer.start();
@@ -50,6 +64,33 @@ void BGroupTaskPrivate::startRealTiming()
 void BGroupTaskPrivate::stopRealTiming()
 {
      m_real_timer.stop();
+}
+
+void BGroupTaskPrivate::setUUID()
+{
+    if(!BUtils::isUUID4(m_uuid))
+        m_uuid = BUtils::generateUUID4();
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BGroupTaskPrivate::setUUID - UUID is " << m_uuid << " .")
+#endif
+}
+
+void BGroupTaskPrivate::setUUID(std::string &_uuid)
+{
+    m_uuid = _uuid;
+}
+
+BAbstractTask* BGroupTaskPrivate::getTask()
+{
+    BAbstractTask* result_task_ptr = m_task_queue.front();
+    
+    if(result_task_ptr == nullptr)
+    {
+        return nullptr;
+    } else {
+        m_task_queue.pop();
+        return result_task_ptr;
+    }
 }
 
 };

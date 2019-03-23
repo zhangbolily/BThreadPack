@@ -28,6 +28,7 @@
 */
 
 #include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
+#include "BThreadPack/private/BGroupTaskPrivate.h"
 #include "BThreadPack/BAbstractThreadPool.h"
 
 namespace BThreadPack{
@@ -323,43 +324,33 @@ int BAbstractThreadPool::kill()
     return BCore::ReturnCode::BSuccess;
 }
 
-int BAbstractThreadPool::pushTask(BAbstractTask* _task_buffer)
+void BAbstractThreadPool::pushTask(BAbstractTask* _task_ptr)
 {
     lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);
     
-    BAbstractTask* _abstract_task = static_cast<BAbstractTask*>(_task_buffer);
-    int _priority = _abstract_task->priority();
-    m_private_ptr->m_priority_task_queue[_priority - 1].push(_task_buffer);
-    m_private_ptr->m_task_bitmap[_priority - 1] = true;
+    int task_priority = _task_ptr->priority();
+    m_private_ptr->m_priority_task_queue[task_priority - 1].push(_task_ptr);
+    m_private_ptr->m_task_bitmap[task_priority - 1] = true;
     
-    if(m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].empty() && _priority < m_private_ptr->m_priority_state.load())
-    {
-        m_private_ptr->m_task_bitmap[m_private_ptr->m_priority_state - 1] = false;
-        bool _has_task = false;
-        
-        for(int i= m_private_ptr->m_priority_state - 1;i > 0;i--)
-        {
-            if(m_private_ptr->m_task_bitmap[i-1])
-            {
-                _has_task = true;
-                m_private_ptr->m_priority_state = i;
-                break;
-            }
-        }
-        
-        // No task in task queue. Reset m_private_ptr->m_priority_state to default value.
-        if(!_has_task)
-            m_private_ptr->m_priority_state = (PriorityNum+1)/2;
-    } else
-        m_private_ptr->m_priority_state = _priority > m_private_ptr->m_priority_state.load()?_priority:m_private_ptr->m_priority_state.load();
+    m_private_ptr->updatePriorityState(task_priority);
+}
+
+void BAbstractThreadPool::pushGroupTask(BGroupTask* _task_ptr)
+{
+    lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);
     
-    return BCore::ReturnCode::BSuccess;
+    int task_priority = _task_ptr->priority();
+    m_private_ptr->m_priority_group_task_queue[task_priority - 1].push(_task_ptr);
+    m_private_ptr->m_task_bitmap[task_priority - 1] = true;
+    
+    m_private_ptr->updatePriorityState(task_priority);
 }
 
 BAbstractTask* BAbstractThreadPool::getTask()
 {
     lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);
     
+    //DEBUG PART Can be removed
     std::chrono::milliseconds _ms(10);
     std::this_thread::sleep_for(_ms);
     
@@ -372,31 +363,31 @@ BAbstractTask* BAbstractThreadPool::getTask()
     
     if(_has_task)
     {
-        BAbstractTask* _resultTask = m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].front();
-        m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].pop();
-        
-        // Current priority queue is empty, change the priority state.
-        if(m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].empty())
+        // If group task queue is not empty, schedule it first.
+        if(!m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].empty())
         {
-            m_private_ptr->m_task_bitmap[m_private_ptr->m_priority_state - 1] = false;
-            _has_task = false;
+            // Group task schedule it't own tasks.
+            BAbstractTask* _resultTask = m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].front()->m_private_ptr->getTask();
             
-            for(int i= m_private_ptr->m_priority_state - 1;i > 0;i--)
+            // This group task has been finished.
+            if(m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].front()->m_private_ptr->queueEmpty())
             {
-                if(m_private_ptr->m_task_bitmap[i-1])
-                {
-                    _has_task = true;
-                    m_private_ptr->m_priority_state = i;
-                    break;
-                }
+                m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].pop();  // Remove this group task from queue.
+                // Current priority queue maybe empty, force checking priority state.
+                m_private_ptr->updatePriorityState(m_private_ptr->m_priority_state.load() - 1);
+                return _resultTask;
+            } else {
+                return _resultTask;
             }
+        } else {
+            BAbstractTask* _resultTask = m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].front();
+            m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].pop();
             
-            // No task in task queue. Reset m_private_ptr->m_priority_state to default value.
-            if(!_has_task)
-                m_private_ptr->m_priority_state = (PriorityNum+1)/2;
+            // Current priority queue maybe empty, force checking priority state.
+            m_private_ptr->updatePriorityState(m_private_ptr->m_priority_state.load() - 1);
+            
+            return _resultTask;
         }
-        
-        return _resultTask;
     }else{
         return nullptr;
     }

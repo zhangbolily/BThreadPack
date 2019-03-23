@@ -41,6 +41,7 @@
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractTask.h"
+#include "BThreadPack/BGroupTask.h"
 
 namespace BThreadPack {
 
@@ -61,6 +62,7 @@ public:
     std::vector<std::thread> m_thread_vec_;
     std::vector<std::thread::id> m_thread_id_vec;
     std::vector<std::queue<BAbstractTask *>> m_priority_task_queue;
+    std::vector<std::queue<BGroupTask *>> m_priority_group_task_queue;
     std::vector<atomic_bool> m_task_bitmap;
     std::vector<int> m_task_counter;
     mutex m_task_mutex_;
@@ -72,6 +74,8 @@ public:
     map<int, condition_variable> m_message_cond_map_;
     map<int, mutex> m_message_mutex_map_;
     map<std::thread::id, bool> m_thread_exit_map;
+    
+    void updatePriorityState(int task_priority);
     
     virtual int _init_(BAbstractThreadPool* _this);
     

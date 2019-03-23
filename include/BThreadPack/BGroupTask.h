@@ -44,15 +44,19 @@ public:
     BGroupTask();
     ~BGroupTask();
     
-    void pushTask(BAbstractTask* _task_handle);
     int removeTask(unsigned int _task_id);
-    BAbstractTask* getTask(unsigned int _task_id);
-    unsigned int size();
+    int priority() const;
+    void pushTask(BAbstractTask* _task_handle);
+    void setPriority(int);
     long long executionTime();
     long long realTime();
+    unsigned int size();
+    BAbstractTask* getTask(unsigned int _task_id);
+    const std::string UUID();
     
 protected:
     BGroupTaskPrivate* m_private_ptr;
+    friend class BAbstractThreadPool;
 };
 };
 

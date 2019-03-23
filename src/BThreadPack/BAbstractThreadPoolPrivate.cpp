@@ -34,6 +34,7 @@ namespace BThreadPack {
 
 BAbstractThreadPoolPrivate::BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr)
     :m_priority_task_queue(PriorityNum),
+    m_priority_group_task_queue(PriorityNum),
     m_task_bitmap(PriorityNum),
     m_task_counter(PriorityNum),
     m_priority_state((PriorityNum + 1) / 2)
@@ -43,6 +44,32 @@ BAbstractThreadPoolPrivate::BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr)
 
 BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate()
 {
+}
+
+void BAbstractThreadPoolPrivate::updatePriorityState(int task_priority)
+{
+    if(m_priority_task_queue[m_priority_state - 1].empty()
+        && m_priority_group_task_queue[m_priority_state - 1].empty()
+        && task_priority < m_priority_state.load())
+    {
+        m_task_bitmap[m_priority_state - 1] = false;
+        bool has_task = false;
+        
+        for(int i= m_priority_state - 1;i > 0;i--)
+        {
+            if(m_task_bitmap[i-1])
+            {
+                has_task = true;
+                m_priority_state = i;
+                break;
+            }
+        }
+        
+        // No task in task queue. Reset m_priority_state to default value.
+        if(!has_task)
+            m_priority_state = (PriorityNum+1)/2;
+    } else
+        m_priority_state = task_priority > m_priority_state.load()?task_priority:m_priority_state.load();
 }
 
 int BAbstractThreadPoolPrivate::_init_(BAbstractThreadPool* _this)

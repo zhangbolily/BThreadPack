@@ -46,6 +46,7 @@
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractClass.h"
 #include "BThreadPack/BAbstractTask.h"
+#include "BThreadPack/BGroupTask.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -81,33 +82,35 @@ public:
     /* @~BAbstractThreadPool() - Destructor */
     ~BAbstractThreadPool();
     
-    int mode() const;
-    unsigned int capacity() const;
-    void setCapacity(unsigned int _capacity);
-    unsigned int size() const;
-    virtual unsigned int resize(unsigned int _size)=0;
     long long addThread(thread _new_thread);
     long long setAffinity();
     long long setAffinity(unsigned int _thread_num);
     long long removeThread(unsigned int _thread_num);
     bool isRemove();
-    void threadExit(std::thread::id _tid);
     bool isThreadExit(std::thread::id _tid);
-    int detach();
-    int detach(unsigned int _thread_num);
-    int join();
-    int join(unsigned int _thread_num);
-    void wait();
-    void setStatus(BThreadPoolStatus _status);
+    int taskQueueSize();
+    int sendMessage(int _queue_num, void* _message_buffer);
     int status() const;
     int startOneTask();
     int startAllTasks();
     int kill();
-    int pushTask(BAbstractTask* _task_buffer);
-    BAbstractTask* getTask();
-    int taskQueueSize();
-    int sendMessage(int _queue_num, void* _message_buffer);
+    int mode() const;
+    int detach();
+    int detach(unsigned int _thread_num);
+    int join();
+    int join(unsigned int _thread_num);
+    unsigned int capacity() const;
+    unsigned int size() const;
+    void wait();
+    void setCapacity(unsigned int _capacity);
+    void setStatus(BThreadPoolStatus _status);
+    void pushTask(BAbstractTask* _task_ptr);
+    void pushGroupTask(BGroupTask* _task_ptr);
+    void threadExit(std::thread::id _tid);
     void* message(int _queue_num);
+    BAbstractTask* getTask();
+    
+    virtual unsigned int resize(unsigned int _size)=0;
 
 protected:
     BAbstractThreadPoolPrivate* m_private_ptr;

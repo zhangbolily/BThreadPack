@@ -31,8 +31,10 @@
 #define _BGROUP_TASK_PRIVATE_H_
 
 #include <vector>
+#include <queue>
 
 #include "BUtils/BTimer.h"
+#include "BUtils/BUtils.h"
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractTask.h"
 
@@ -40,13 +42,24 @@ namespace BThreadPack{
 
 class BGroupTaskPrivate{
 public:
+    BGroupTaskPrivate();
+    ~BGroupTaskPrivate();
+
+    bool queueEmpty();
     void startExecutionTiming();
     void stopExecutionTiming();
     void startRealTiming();
     void stopRealTiming();
-    std::vector<BAbstractTask*> m_task_vec;
+    void setUUID();
+    void setUUID(std::string &_uuid);
+    BAbstractTask* getTask();
+    
     BTimer m_real_timer;
     BTimer m_execute_timer;
+    atomic_int m_task_priority;
+    std::string m_uuid;
+    std::vector<BAbstractTask*> m_task_vec;
+    std::queue<BAbstractTask*> m_task_queue;
 };
 
 };
