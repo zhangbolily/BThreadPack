@@ -19,6 +19,7 @@ windows build:
   script:
     - mkdir build
     - cd build
+    - rm -rf ./*
     - cmake ..  -DWINDOWS_STL_INCLUDE_DIR="C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\include" -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -G "MinGW Makefiles"
     - make -j 4
     - make install
