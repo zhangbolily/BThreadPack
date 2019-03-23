@@ -124,6 +124,16 @@ int BTimer::stop()
     return BCore::ReturnCode::BSuccess;
 }
 
+long long BTimer::time() const
+{
+    if (m_stop_time_us < m_start_time_us)
+    {
+        return BCore::ReturnCode::BError;
+    }else
+        return duration_cast<microseconds>(m_stop_time_us - m_start_time_us).count();
+}
+
+
 #ifdef UNIX
 void BTimer::setInterval(long long _msec)
 {
@@ -138,15 +148,6 @@ void BTimer::setInterval(long long _msec)
 void BTimer::setInterval(std::chrono::milliseconds _msec)
 {
     setInterval(_msec.count());
-}
-
-long long BTimer::time() const
-{
-    if (m_stop_time_us < m_start_time_us)
-    {
-        return BCore::ReturnCode::BError;
-    }else
-        return duration_cast<microseconds>(m_stop_time_us - m_start_time_us).count();
 }
 
 void BTimer::reset()
