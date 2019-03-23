@@ -328,9 +328,6 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
 void BGeneralThreadPool::m_setThreadName(const char* _name)
 {
 #ifdef WIN32
-    SetThreadDescription(
-        GetCurrentThread(),
-        _name);
 #else
     prctl(PR_SET_NAME, _name);
 #endif

@@ -31,8 +31,7 @@
 #define _BABSTRACT_THREAD_POOL_H_
 
 #ifdef WIN32
-#include "winbase.h"
-#include "WinDef.h"
+#include "windows.h"
 #endif
 
 #include <atomic>

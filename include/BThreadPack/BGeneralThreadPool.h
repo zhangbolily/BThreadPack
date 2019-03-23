@@ -34,7 +34,6 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <processthreadsapi.h>
 #else
 #include <sys/prctl.h>
 #endif
