@@ -6,10 +6,6 @@ BGeneralThreadPool hello_world_pool(num_threads, BAbstractThreadPool::BThreadCon
 int main(int argc, char** argv)
 {   
     //1. Add task into thread pool.
-    ChineseHelloWorldTask* p_chinese_hello = new ChineseHelloWorldTask();
-    p_chinese_hello->setPriority(5);
-    hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_chinese_hello));
-    
     EnglishHelloWorldTask* p_english_hello = new EnglishHelloWorldTask();
     p_english_hello->setPriority(5);
     hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_english_hello));
@@ -19,6 +15,12 @@ int main(int argc, char** argv)
     
     SapnishHelloWorldTask* p_spanish_hello = new SapnishHelloWorldTask();
     hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_spanish_hello));
+    
+#ifndef WIN32
+    //Don't support these languages on Windows.
+    ChineseHelloWorldTask* p_chinese_hello = new ChineseHelloWorldTask();
+    p_chinese_hello->setPriority(5);
+    hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_chinese_hello));
     
     RussianHelloWorldTask* p_russian_hello = new RussianHelloWorldTask();
     hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_russian_hello));
@@ -36,7 +38,8 @@ int main(int argc, char** argv)
     
     KoreanHelloWorldTask* p_korean_hello = new KoreanHelloWorldTask();
     hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_korean_hello));
-    
+#endif
+
     //A different way to print multi-language hello world.
     std::string hello_world_str;
     hello_world_str = "Hello World!";
@@ -54,6 +57,7 @@ int main(int argc, char** argv)
     p_general_hello->setPriority(3);
     hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_general_hello));
     
+#ifndef WIN32
     hello_world_str = "Привет, мир!";
     p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
     p_general_hello->setPriority(4);
@@ -83,6 +87,7 @@ int main(int argc, char** argv)
     p_general_hello = new GeneralHelloWorldTask(hello_world_str.c_str(), hello_world_str.size() + 1);
     p_general_hello->setPriority(4);
     hello_world_pool.pushTask(static_cast<BGeneralTask*>(p_general_hello));
+#endif
     
     hello_world_pool.startAllTasks();
     

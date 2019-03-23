@@ -77,11 +77,7 @@ private:
             
             std::string language_str(static_cast<const char *>(task_buffer));
 #ifdef WIN32
-            if(language_str == language[0])
-            {
-            	_os << "你好，世界！\n";
-		        std::cout << _os.str();
-            }else if(language_str == language[1])
+            if(language_str == language[1])
             {
             	_os << "Hello World!\n";
 		        std::cout << _os.str();
@@ -93,25 +89,8 @@ private:
             {
             	_os << "Hola Mundo!\n";
 		        std::cout << _os.str();
-            }else if(language_str == language[4])
-            {
-            	_os << "नमस्ते दुनिया!\n";
-		        std::cout << _os.str();
-            }else if(language_str == language[5])
-            {
-            	_os << "Привет, мир!\n";
-		        std::cout << _os.str();
-            }else if(language_str == language[6])
-            {
-            	_os << "こんにちは世界\n";
-		        std::cout << _os.str();
-            }else if(language_str == language[7])
-            {
-            	_os << "안녕하세요!\n";
-		        std::cout << _os.str();
-            }else if(language_str == language[8])
-            {
-            	_os << "🙋  🌎\n";
+            }else {
+                _os << "Sorry, don't support this language on Windows.'\n";
 		        std::cout << _os.str();
             }
 #else

@@ -82,6 +82,7 @@ public:
     }
 };
 
+#ifndef WIN32
 class RussianHelloWorldTask: public BGeneralTask{
 public:
     RussianHelloWorldTask()
@@ -96,11 +97,7 @@ public:
     virtual int execute()
     {
     	std::ostringstream _os;
-#ifdef WIN32
-        _os << "Привет, мир!\n";
-#else
     	_os << "\033[32m" << "Привет, мир!" << "\033[0m\n";
-#endif
         cout<<_os.str();
     }
 };
@@ -119,11 +116,7 @@ public:
     virtual int execute()
     {
     	std::ostringstream _os;
-#ifdef WIN32
-        _os << "नमस्ते दुनिया!\n";
-#else
     	_os << "\033[32m" << "नमस्ते दुनिया!" << "\033[0m\n";
-#endif
         cout<<_os.str();
     }
 };
@@ -142,11 +135,7 @@ public:
     virtual int execute()
     {
     	std::ostringstream _os;
-#ifdef WIN32
-        _os << "🙋  🌎\n";
-#else
     	_os << "\033[32m" << "🙋  🌎" << "\033[0m\n";
-#endif
         cout<<_os.str();
     }
 };
@@ -165,11 +154,7 @@ public:
     virtual int execute()
     {
     	std::ostringstream _os;
-#ifdef WIN32
-        _os << "こんにちは世界\n";
-#else
     	_os << "\033[32m" << "こんにちは世界" << "\033[0m\n";
-#endif
         cout<<_os.str();
     }
 };
@@ -188,11 +173,7 @@ public:
     virtual int execute()
     {
     	std::ostringstream _os;
-#ifdef WIN32
-        _os << "안녕하세요!\n";
-#else
     	_os << "\033[32m" << "안녕하세요!" << "\033[0m\n";
-#endif
         cout<<_os.str();
     }
 };
@@ -211,14 +192,11 @@ public:
     virtual int execute()
     {
     	std::ostringstream _os;
-#ifdef WIN32
-        _os << "你好，世界！\n";
-#else
     	_os << "\033[32m" << "你好，世界！" << "\033[0m\n";
-#endif
         cout<<_os.str();
     }
 };
+#endif
 
 class GeneralHelloWorldTask: public BGeneralTask{
 public:
