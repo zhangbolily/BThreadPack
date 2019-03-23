@@ -90,7 +90,7 @@ private:
             	_os << "Hola Mundo!\n";
 		        std::cout << _os.str();
             }else {
-                _os << "Sorry, don't support this language on Windows.'\n";
+                _os << "Sorry, don't support this language on Windows.\n";
 		        std::cout << _os.str();
             }
 #else

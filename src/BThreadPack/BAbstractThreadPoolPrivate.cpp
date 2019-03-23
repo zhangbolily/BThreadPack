@@ -23,37 +23,42 @@
 
 /*
  * @Author      : Ball Chang
- * @File        : BGroupTask.h
- * @Date        : 2019-3-17
+ * @File        : BAbstractThreadPoolPrivate.cpp
+ * @Date        : 2019-3-23
 */
 
-#ifndef _BGROUP_TASK_H_
-#define _BGROUP_TASK_H_
+#include "BThreadPack/BAbstractThreadPool.h"
+#include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
 
-#include "BThreadPack/BThreadPack.h"
-#include "BThreadPack/BAbstractTask.h"
+namespace BThreadPack {
 
-namespace BThreadPack{
+BAbstractThreadPoolPrivate::BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr)
+    :m_priority_task_queue(PriorityNum),
+    m_task_bitmap(PriorityNum),
+    m_task_counter(PriorityNum),
+    m_priority_state((PriorityNum + 1) / 2)
+{
 
-class BGroupTaskPrivate;
+}
 
-class BGroupTask:private NoneCopy{
+BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate()
+{
+}
 
-public:
-    /* @BGroupTask() - Constructor */    
-    BGroupTask();
-    ~BGroupTask();
+int BAbstractThreadPoolPrivate::_init_(BAbstractThreadPool* _this)
+{
+	m_public_ptr->setStatus(BAbstractThreadPool::BThreadPoolStatus::ThreadPoolRunning);
+	    
+    for (unsigned int i = 0; i < m_public_ptr->capacity(); ++i) {
+        m_public_ptr->addThread(thread(BAbstractThreadPoolPrivate::m_threadFunction_, ref(_this)));
+    }
     
-    void pushTask(BAbstractTask* _task_handle);
-    int removeTask(unsigned int _task_id);
-    BAbstractTask* getTask(unsigned int _task_id);
-    unsigned int size();
-    long long executionTime();
-    long long realTime();
-    
-protected:
-    BGroupTaskPrivate* m_private_ptr;
-};
-};
+    return BCore::ReturnCode::BSuccess;
+}
 
-#endif
+void BAbstractThreadPoolPrivate::m_threadFunction_(void* _buffer)
+{
+    //Do nothing.
+}
+
+};
