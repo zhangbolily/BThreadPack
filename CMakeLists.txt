@@ -36,16 +36,8 @@ if (UNIX)
 elseif (WIN32)
     add_definitions (-DWIN32)
     MESSAGE("Windows system is detected.")
-    set (DEFAULT_WINDOWS_MAKE_PREFIX "C:\\Program Files\\MinGW64")
-    option (WINDOWS_MAKE_PREFIX "Specify where the build tools are installed, eg. MinGW32, MinGW64"
-            ${DEFAULT_WINDOWS_MAKE_PREFIX})
-    option (WINDOWS_MAKE "Specify which make command will be used." "make")
-    option (WINDOWS_C_COMPILER "Specify which c compiler will be used." "gcc")
-    option (WINDOWS_CXX_COMPILER "Specify which gcc compiler will be used." "g++")
     option (WINDOWS_STL_INCLUDE_DIR "Specify which directory contains the STL header files.")
     
-    set (CMAKE_C_COMPILER "${WINDOWS_MAKE_PREFIX}\\bin\\${WINDOWS_C_COMPILER}")
-    set (CMAKE_CXX_COMPILER "${WINDOWS_MAKE_PREFIX}\\bin\\${WINDOWS_CXX_COMPILER}")
     include_directories (${WINDOWS_STL_INCLUDE_DIR})
 endif ()
 
