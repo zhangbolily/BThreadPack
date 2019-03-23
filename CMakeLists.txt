@@ -45,7 +45,7 @@ elseif (WIN32)
     
     set (CMAKE_C_COMPILER ${WINDOWS_C_COMPILER})
     set (CMAKE_CXX_COMPILER ${WINDOWS_CXX_COMPILER})
-    include_directories (WINDOWS_STL_INCLUDE_DIR)
+    include_directories (${WINDOWS_STL_INCLUDE_DIR})
 endif ()
 
 # Build examples
