@@ -41,7 +41,7 @@ public:
     int initThreads(HelloWorldThreadPool* _this)
     {    
         for (unsigned int i = 0; i < this->capacity(); ++i) {
-            if(this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this)) == BCore::ReturnCode::BThreadPoolFull)
+            if(this->addThread(std::move(std::thread(HelloWorldThreadPool::_threadFunction_, _this))) == BCore::ReturnCode::BThreadPoolFull)
                 return BCore::ReturnCode::BThreadPoolFull;
         }
         

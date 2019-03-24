@@ -62,7 +62,7 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
 	setStatus(BThreadPoolStatus::ThreadPoolRunning);
 	
     for (unsigned int i = 0; i < _thread_num; ++i) {
-        if(addThread(thread(BGeneralThreadPool::m_threadFunction_, _thread_pool_handle)) == BCore::ReturnCode::BThreadPoolFull)
+        if(addThread(std::move(thread(BGeneralThreadPool::m_threadFunction_, _thread_pool_handle))) == BCore::ReturnCode::BThreadPoolFull)
             return BCore::ReturnCode::BThreadPoolFull;
     }
     
@@ -100,7 +100,7 @@ unsigned int BGeneralThreadPool::resize(unsigned int _size)
     {
         unsigned int _thread_num = _size - size();
         for (unsigned int i = 0; i < _thread_num; ++i) {
-            if(addThread(thread(BGeneralThreadPool::m_threadFunction_, this)) == BCore::ReturnCode::BThreadPoolFull)
+            if(addThread(std::move(thread(BGeneralThreadPool::m_threadFunction_, this))) == BCore::ReturnCode::BThreadPoolFull)
                 return BCore::ReturnCode::BThreadPoolFull;
                 
             setAffinity(i + size());

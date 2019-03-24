@@ -312,14 +312,31 @@ int BAbstractThreadPool::kill()
 	this->setStatus(BThreadPoolStatus::ThreadPoolStop);
 	/* Notify all threads to get the status flag, then thread will exit.*/
 	this->startAllTasks();
-	/*Delete all threads.*/
-	m_private_ptr->m_thread_vec_.clear();
 	/* Wait until all threads exit. */
-	microseconds _ms_time(500);
-	while(size() != 0)
+	microseconds _ms_time(1);
+	while(size())
 	{
+        bool is_exit = false;
+        for(int32 i=0;i < size();i++)
+        {
+            std::thread::id _tid = m_private_ptr->m_thread_id_vec[i];
+            if (m_private_ptr->m_thread_exit_map[_tid] != true)
+                break;
+            else if (i == (size() - 1)) {
+                is_exit = true;
+            }
+        }
+
+        if (is_exit)
+            break;
+
 		this_thread::sleep_for(_ms_time);
 	}
+
+    /* All threads exit. Delete all threads.*/
+    m_private_ptr->m_thread_vec_.clear();
+    m_private_ptr->m_thread_id_vec.clear();
+    m_private_ptr->m_thread_exit_map.clear();
 	
     return BCore::ReturnCode::BSuccess;
 }

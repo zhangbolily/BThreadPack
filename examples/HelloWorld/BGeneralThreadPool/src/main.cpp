@@ -101,6 +101,6 @@ int main(int argc, char** argv)
     obj_group_task_type2.wait();
     
     hello_world_pool.kill();
-	
+
     return 0;
 }
