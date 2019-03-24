@@ -28,6 +28,7 @@
 */
 
 #include "BThreadPack/BAbstractTask.h"
+#include "BThreadPack/private/BAbstractTaskPrivate.h"
 
 namespace BThreadPack{
 
@@ -38,7 +39,8 @@ BAbstractTask::BAbstractTask()
     m_input_buffer_(nullptr),
     m_input_buffer_size_(0),
     m_output_buffer_(nullptr),
-    m_output_buffer_size_(0)
+    m_output_buffer_size_(0),
+    m_private_ptr(new BAbstractTaskPrivate)
 {
 }
 
@@ -49,7 +51,8 @@ BAbstractTask::BAbstractTask(bool _autodestroy)
     m_input_buffer_(nullptr),
     m_input_buffer_size_(0),
     m_output_buffer_(nullptr),
-    m_output_buffer_size_(0)
+    m_output_buffer_size_(0),
+    m_private_ptr(new BAbstractTaskPrivate)
 {
 
 }
@@ -59,7 +62,8 @@ BAbstractTask::BAbstractTask(const void* _buffer, size_t _size)
     m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
     m_task_autodestroy(true),
     m_output_buffer_(nullptr),
-    m_output_buffer_size_(0)
+    m_output_buffer_size_(0),
+    m_private_ptr(new BAbstractTaskPrivate)
 {
     if(setInputBuffer(_buffer, _size))
     {
@@ -78,7 +82,8 @@ BAbstractTask::BAbstractTask(const void* _buffer, size_t _size, bool _autodestro
     m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
     m_task_autodestroy(_autodestroy),
     m_output_buffer_(nullptr),
-    m_output_buffer_size_(0)
+    m_output_buffer_size_(0),
+    m_private_ptr(new BAbstractTaskPrivate)
 {   
     if(setInputBuffer(_buffer, _size))
     {
@@ -101,6 +106,10 @@ BAbstractTask::~BAbstractTask()
     if (m_output_buffer_ != nullptr)
     {
         delete [] m_output_buffer_;
+    }
+    if (m_private_ptr != nullptr)
+    {
+        delete m_private_ptr;
     }
 }
 
@@ -128,7 +137,7 @@ int BAbstractTask::setStatus(BAbstractTask::BTaskStatus _status)
     return BCore::ReturnCode::BSuccess;
 }
 
-int BAbstractTask::setStatus(atomic_int _status)
+int BAbstractTask::setStatus(std::atomic_int _status)
 {
     if(!m_task_mutex.try_lock())
     {
@@ -287,6 +296,7 @@ void BAbstractTask::setUUID()
         B_PRINT_DEBUG("BAbstractTask::setUUID - UUID is " << m_uuid << " .")
 #endif
 }
+
 void BAbstractTask::setUUID(std::string &_uuid)
 {
     m_uuid = _uuid;
@@ -306,6 +316,18 @@ void BAbstractTask::setName(std::string _name)
     m_name = _name;
 }
 
+void BAbstractTask::wait()
+{
+    if(status() == BAbstractTask::BTaskStatus::TaskInit)
+    {
+        return;     // This task is not running, won't be blocked.
+    } else {
+        // Task is running, block until all tasks are finished.
+        std::unique_lock<std::mutex> lock(m_private_ptr->m_task_mutex);
+        m_private_ptr->m_task_cond.wait(lock);
+    }
+}
+
 const std::string& BAbstractTask::name() const
 {
     return m_name;
@@ -315,4 +337,5 @@ bool BAbstractTask::destroyable() const
 {
     return m_task_autodestroy.load();
 }
+
 };

@@ -123,6 +123,11 @@ int main(int argc, char** argv)
     
     pi_group_task.wait();   // Wait all tasks in this group finieshed.
     
+    for(int i=0;i < g_pi_slice_result.size();i++)
+    {
+        ll_Pi += g_pi_slice_result[i];
+    }
+    
     std::cout.setf(ios::showpoint);
     std::cout.precision(64);
     

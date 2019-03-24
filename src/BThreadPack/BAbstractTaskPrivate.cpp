@@ -23,26 +23,17 @@
 
 /*
  * @Author      : Ball Chang
- * @File        : BAbstractTaskPrivate.h
+ * @File        : BAbstractTaskPrivate.cpp
  * @Date        : 2019-3-24
 */
 
-#ifndef _BABSTRACT_TASK_PRIVATE_H_
-#define _BABSTRACT_TASK_PRIVATE_H_
-
-#include <mutex>
-#include <condition_variable>
+#include "BThreadPack/private/BAbstractTaskPrivate.h"
 
 namespace BThreadPack {
 
-class BAbstractTaskPrivate{
-public:
-    void finished();
-    
-    std::mutex m_task_mutex;
-    std::condition_variable m_task_cond;
-};
-};
+void BAbstractTaskPrivate::finished()
+{
+    m_task_cond.notify_all();
+}
 
-#endif
-
+};

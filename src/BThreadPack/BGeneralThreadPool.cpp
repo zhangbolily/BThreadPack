@@ -85,6 +85,7 @@ void BGeneralThreadPool::pushGroupTask(BGroupTask* _task_ptr)
 {
     _task_ptr->m_private_ptr->startRealTiming();
     _task_ptr->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Pending);
+    _task_ptr->m_private_ptr->setTaskNum(_task_ptr->m_private_ptr->m_task_queue.size());
     
     BAbstractThreadPool::pushGroupTask(_task_ptr);
 }
@@ -236,7 +237,7 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
             p_group_task->m_private_ptr->stopExecutionTiming();
             p_group_task->m_private_ptr->stopRealTiming();
             p_group_task->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Finished);
-            p_group_task->m_private_ptr->finished();
+            p_group_task->m_private_ptr->finishedOneTask();
         }
         
         // Check if this task has been processed successfully

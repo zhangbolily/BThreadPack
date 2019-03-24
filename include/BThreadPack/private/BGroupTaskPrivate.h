@@ -55,15 +55,18 @@ public:
     void stopRealTiming();
     void setUUID();
     void setUUID(std::string &_uuid);
+    void setTaskNum(int task_num);
     void setStatus(BGroupTask::BGroupTaskStatus group_status);
     void pushResultTask(BAbstractTask* &result_task_ptr);
-    void finished();
+    void finishedOneTask();
     BAbstractTask* getTask();
     BGroupTask::BGroupTaskStatus status();
     
     BTimer m_real_timer;
     BTimer m_execute_timer;
-    atomic_int m_task_priority;
+    std::atomic_int m_task_priority;
+    std::atomic_int m_task_num;
+    std::atomic_int m_finished_task_counter;
     std::string m_uuid;
     std::queue<BAbstractTask*> m_task_queue;
     std::queue<BAbstractTask*> m_result_task_queue;
