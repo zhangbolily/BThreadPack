@@ -174,7 +174,7 @@ int BAbstractTask::setInputBuffer(const void* _buffer, size_t _size)
     }
     
     //Start transaction
-    m_input_buffer_ = static_cast<char*>(new char[_size]);
+    m_input_buffer_ = new char[_size]();
     std::memcpy(m_input_buffer_, _buffer, _size);
     m_input_buffer_size_.store(_size);
     //Commit
@@ -223,7 +223,7 @@ int BAbstractTask::setOutputBuffer(void* _buffer, size_t _size)
     }
     
     //Start transaction
-    m_output_buffer_ = static_cast<char*>(new(0) char[_size]);
+    m_output_buffer_ = new char[_size]();
     std::memcpy(m_output_buffer_, _buffer, _size);
     m_output_buffer_size_.store(_size);
     //Commit

@@ -17,9 +17,6 @@ using namespace std;
 using namespace BThreadPack;
 
 const long long multiple = 4000000000000000000;
-std::condition_variable g_result_cond;
-std::mutex g_result_mutex;
-std::vector<long long> g_pi_slice_result;
 
 class CalculatePiTask: public BGeneralTask{
 public:
@@ -47,32 +44,13 @@ public:
         _os << "Pi slice #" << m_task_id_ << " result is " << _pi_slice_result << "\n";
         std::cout << _os.str();
         
-        if(g_result_mutex.try_lock())
-        {
-            g_pi_slice_result.push_back(_pi_slice_result);
-            g_result_mutex.unlock();
-            g_result_cond.notify_all();
-            return 0;
-        }
-        
-        while(1)
-        {
-            std::unique_lock<std::mutex> lock(g_result_mutex);
-            g_result_cond.wait(lock);
-            if(g_result_mutex.try_lock())
-            {
-                g_pi_slice_result.push_back(_pi_slice_result);
-                g_result_mutex.unlock();
-                g_result_cond.notify_all();
-                return 0;
-            }
-        }
+        setOutputBuffer(&_pi_slice_result, sizeof(long long));
             
         return 0;
     }
 
 private:
-    const unsigned long long m_range = 4000000000;
+    const unsigned long long m_range = 40000000;
     int m_task_id_;
     
     long long pi(int _offset)
@@ -123,9 +101,19 @@ int main(int argc, char** argv)
     
     pi_group_task.wait();   // Wait all tasks in this group finieshed.
     
-    for(int i=0;i < g_pi_slice_result.size();i++)
-    {
-        ll_Pi += g_pi_slice_result[i];
+    while(1){
+        CalculatePiTask* p_slice_pi = static_cast<CalculatePiTask*>(pi_group_task.getFinishedTask());
+        
+        if(p_slice_pi == nullptr)
+            break;
+        
+        const void* pi_slice_result = nullptr;
+        size_t buffer_size;
+        p_slice_pi->outputBuffer(&pi_slice_result, buffer_size);
+        
+        ll_Pi += *(static_cast<const long long *>(pi_slice_result));
+        
+        delete p_slice_pi;
     }
     
     std::cout.setf(ios::showpoint);
