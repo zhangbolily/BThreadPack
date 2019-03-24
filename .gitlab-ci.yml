@@ -11,6 +11,7 @@ linux build:
     - cmake ..
     - make -j 4
     - make install
+    - bin/GeneralThreadPool_HelloWorld
 
 windows build:
   tags:

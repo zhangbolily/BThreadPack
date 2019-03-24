@@ -99,20 +99,23 @@ int BGroupTask::wait()
     {
         return BCore::ReturnCode::BSuccess;     // This group task is not running, won't be blocked.
     } else {
+        if(m_private_ptr->m_finished_task_counter == m_private_ptr->m_task_num)
+                return BCore::ReturnCode::BSuccess;
+    
         while(1){
             // Group is running, block until all tasks are finished.
+            std::chrono::microseconds wait_ms(10);
             std::unique_lock<mutex> lock(m_private_ptr->m_group_task_mutex);
-            m_private_ptr->m_group_task_cond.wait(lock);
+            m_private_ptr->m_group_task_cond.wait_for(lock, wait_ms);
             
-            if(m_private_ptr->status() != BGroupTask::BGroupTaskStatus::Finished)
-                return BCore::ReturnCode::BError;
-            else {
-                // m_task_num was set when group task is pushing to thread pool.
-                if(m_private_ptr->m_finished_task_counter == m_private_ptr->m_task_num)
-                    return BCore::ReturnCode::BSuccess;
-                else
-                    continue;
+            // m_task_num was set when group task is pushing to thread pool.
+            if(m_private_ptr->m_finished_task_counter == m_private_ptr->m_task_num)
+            {
+                m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Finished);
+                return BCore::ReturnCode::BSuccess;
             }
+            else
+                continue;
         }
     }
 }

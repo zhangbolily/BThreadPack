@@ -97,7 +97,8 @@ int main(int argc, char** argv)
     
     hello_world_pool.startAllTasks();
     
-    getchar();
+    obj_group_task_type1.wait();
+    obj_group_task_type2.wait();
     
     hello_world_pool.kill();
 	

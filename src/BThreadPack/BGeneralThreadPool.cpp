@@ -232,7 +232,7 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
         // Stop processing
         
         // All of group tasks have been finisehd, stop recording time.
-        if(p_group_task != nullptr && p_group_task->m_private_ptr->queueEmpty())
+        if(p_group_task != nullptr)
         {
             p_group_task->m_private_ptr->stopExecutionTiming();
             p_group_task->m_private_ptr->stopRealTiming();

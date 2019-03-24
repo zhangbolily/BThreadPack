@@ -30,6 +30,8 @@
 #ifndef _BGROUP_TASK_H_
 #define _BGROUP_TASK_H_
 
+#include <chrono>
+
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractTask.h"
 
