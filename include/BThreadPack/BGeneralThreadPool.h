@@ -49,6 +49,8 @@ using namespace std;
 
 namespace BThreadPack {
 
+class BAbstractThreadPoolPrivate;
+
 class BGeneralThreadPool: public BAbstractThreadPool{
 
 public:

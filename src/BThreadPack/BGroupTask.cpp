@@ -52,30 +52,20 @@ void BGroupTask::pushTask(BAbstractTask* _task_handle)
     m_private_ptr->m_task_queue.push(_task_handle);
 }
 
-int BGroupTask::removeTask(unsigned int _task_id)
+BAbstractTask* BGroupTask::getResultTask()
 {
-    if(_task_id >= size())
-        return BCore::ReturnCode::BError;
-    else {
-        std::vector<BAbstractTask*>::iterator it = m_private_ptr->m_task_vec.begin();
-        m_private_ptr->m_task_vec.erase(it + _task_id);
-        
-        return BCore::ReturnCode::BSuccess;
-    }
-}
-
-BAbstractTask* BGroupTask::getTask(unsigned int _task_id)
-{
-    if(_task_id >= size())
+    if(m_private_ptr->m_result_task_queue.empty())
         return nullptr;
     else {
-        return m_private_ptr->m_task_vec[_task_id];
+        BAbstractTask* result_task_ptr = m_private_ptr->m_result_task_queue.front();
+        m_private_ptr->m_result_task_queue.pop();
+        return result_task_ptr;
     }
 }
 
 unsigned int BGroupTask::size()
 {
-    return m_private_ptr->m_task_vec.size();
+    return m_private_ptr->m_task_queue.size();
 }
 
 long long BGroupTask::executionTime()
@@ -101,6 +91,23 @@ void BGroupTask::setPriority(int _priority)
 int BGroupTask::priority() const
 {
     return m_private_ptr->m_task_priority.load();
+}
+
+int BGroupTask::wait()
+{
+    if(m_private_ptr->status() == BGroupTask::BGroupTaskStatus::Init)
+    {
+        return BCore::ReturnCode::BSuccess;     // This group task is not running, won't be blocked.
+    } else {
+        // Group is running, block until all tasks are finished.
+        std::unique_lock<mutex> lock(m_private_ptr->m_group_task_mutex);
+        m_private_ptr->m_group_task_cond.wait(lock);
+        
+        if(m_private_ptr->status() != BGroupTask::BGroupTaskStatus::Finished)
+            return BCore::ReturnCode::BError;
+        else
+            return BCore::ReturnCode::BSuccess;
+    }
 }
 
 };

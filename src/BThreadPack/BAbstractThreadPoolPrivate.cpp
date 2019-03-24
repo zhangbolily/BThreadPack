@@ -29,6 +29,7 @@
 
 #include "BThreadPack/BAbstractThreadPool.h"
 #include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
+#include "BThreadPack/private/BGroupTaskPrivate.h"
 
 namespace BThreadPack {
 
@@ -44,6 +45,74 @@ BAbstractThreadPoolPrivate::BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr)
 
 BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate()
 {
+}
+
+BAbstractTask* BAbstractThreadPoolPrivate::getTask()
+{
+    lock_guard<std::mutex> guard(m_task_mutex_);
+    
+    bool _has_task = false;
+    
+    for(int i=0;i < PriorityNum;i++)
+    {
+        _has_task |= m_task_bitmap[i];
+    }
+    
+    if(_has_task)
+    {
+        // If group task queue is not empty, schedule it first.
+        if(!m_priority_task_queue[m_priority_state - 1].empty())
+        {
+            BAbstractTask* _resultTask = m_priority_task_queue[m_priority_state - 1].front();
+            m_priority_task_queue[m_priority_state - 1].pop();
+            // Current priority queue maybe empty, force checking priority state.
+            updatePriorityState(m_priority_state.load() - 1);
+            
+            return _resultTask;
+        } else {
+            return nullptr;
+        }
+    }else{
+        return nullptr;
+    }
+}
+
+BAbstractTask* BAbstractThreadPoolPrivate::getGroupTask(BGroupTask* &group_task_ptr)
+{
+    lock_guard<std::mutex> guard(m_task_mutex_);
+    
+    bool _has_task = false;
+    
+    for(int i=0;i < PriorityNum;i++)
+    {
+        _has_task |= m_task_bitmap[i];
+    }
+    
+    if(_has_task)
+    {
+        // If group task queue is not empty, schedule it first.
+        if(!m_priority_group_task_queue[m_priority_state - 1].empty())
+        {
+            // Group task schedule it't own tasks.
+            group_task_ptr = m_priority_group_task_queue[m_priority_state - 1].front();
+            BAbstractTask* _resultTask = group_task_ptr->m_private_ptr->getTask();
+            
+            // This group task has been finished.
+            if(group_task_ptr->m_private_ptr->queueEmpty())
+            {
+                m_priority_group_task_queue[m_priority_state - 1].pop();  // Remove this group task from queue.
+                // Current priority queue maybe empty, force checking priority state.
+                updatePriorityState(m_priority_state.load() - 1);
+                return _resultTask;
+            } else {
+                return _resultTask;
+            }
+        } else {
+            return nullptr;
+        }
+    }else{
+        return nullptr;
+    }
 }
 
 void BAbstractThreadPoolPrivate::updatePriorityState(int task_priority)

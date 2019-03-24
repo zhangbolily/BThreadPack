@@ -27,6 +27,7 @@
  * @Date        : 2018-12-2
 */
 
+#include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
 #include "BThreadPack/BGeneralThreadPool.h"
 #include "BThreadPack/private/BGroupTaskPrivate.h"
 
@@ -82,7 +83,8 @@ void BGeneralThreadPool::pushTask(BGeneralTask* _task_buffer)
 
 void BGeneralThreadPool::pushGroupTask(BGroupTask* _task_ptr)
 {
-    static_cast<BGroupTask*>(_task_ptr)->m_private_ptr->startRealTiming();
+    _task_ptr->m_private_ptr->startRealTiming();
+    _task_ptr->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Pending);
     
     BAbstractThreadPool::pushGroupTask(_task_ptr);
 }
@@ -174,15 +176,27 @@ int BGeneralThreadPool::optimizer(vector<BGeneralTask *> _task_vec, BGeneralThre
 
 void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_handle)
 {   
+    BGeneralTask* p_general_task = nullptr;
+    BGroupTask* p_group_task = nullptr;
+
     while(1)
     {
-        // Get task and validate this task
-        BGeneralTask* p_general_task = static_cast<BGeneralTask*>(_thread_pool_handle->getTask());
+        // Get group task first
+        p_general_task = static_cast<BGeneralTask*>(
+                        _thread_pool_handle->m_private_ptr->getGroupTask(p_group_task));
+        if(p_general_task == nullptr)
+        {
+            p_group_task = nullptr;
+            
+            p_general_task = static_cast<BGeneralTask*>(
+                            _thread_pool_handle->m_private_ptr->getTask());
+        }
         
         if(p_general_task == nullptr)
         {
             _thread_pool_handle->wait();
             
+            // Check the thread pool status and flag to determine weather exit.
             if(_thread_pool_handle->status() == BAbstractThreadPool::BThreadPoolStatus::ThreadPoolStop
                 or _thread_pool_handle->isRemove())
             {
@@ -202,6 +216,11 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
         }
         
         // Processing this task and recording time
+        if(p_group_task != nullptr)
+        {
+            p_group_task->m_private_ptr->startExecutionTiming();
+            p_group_task->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Executing);
+        }
         p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
         p_general_task->startExecutionTiming();
         
@@ -210,6 +229,15 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
         p_general_task->stopExecutionTiming();
     	p_general_task->stopRealTiming();
         // Stop processing
+        
+        // All of group tasks have been finisehd, stop recording time.
+        if(p_group_task != nullptr && p_group_task->m_private_ptr->queueEmpty())
+        {
+            p_group_task->m_private_ptr->stopExecutionTiming();
+            p_group_task->m_private_ptr->stopRealTiming();
+            p_group_task->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Finished);
+            p_group_task->m_private_ptr->finished();
+        }
         
         // Check if this task has been processed successfully
         if(_retcode == BCore::ReturnCode::BError)
@@ -238,7 +266,12 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
         }
         
     	if (p_general_task->destroyable())
+    	{
     	    delete p_general_task;
+    	    p_general_task = nullptr;
+    	} else {
+    	    
+    	}
         // Finished check
     }
 }
@@ -255,7 +288,7 @@ int BGeneralThreadPool::m_normalOptimizer_(vector<BGeneralTask *> _task_vec)
         long long _fake_time = 0;
         _average_time.push_back(_fake_time);
         // Find the average time of processing a single task with different threas
-        while(getTask() != nullptr)
+        while(m_private_ptr->getTask() != nullptr)
         {
             // Clear the task queue.The thread pool is waiting for start signal now.
         }

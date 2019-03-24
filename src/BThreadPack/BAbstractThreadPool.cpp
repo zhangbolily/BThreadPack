@@ -346,53 +346,6 @@ void BAbstractThreadPool::pushGroupTask(BGroupTask* _task_ptr)
     m_private_ptr->updatePriorityState(task_priority);
 }
 
-BAbstractTask* BAbstractThreadPool::getTask()
-{
-    lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);
-    
-    //DEBUG PART Can be removed
-    std::chrono::milliseconds _ms(10);
-    std::this_thread::sleep_for(_ms);
-    
-    bool _has_task = false;
-    
-    for(int i=0;i < PriorityNum;i++)
-    {
-        _has_task |= m_private_ptr->m_task_bitmap[i];
-    }
-    
-    if(_has_task)
-    {
-        // If group task queue is not empty, schedule it first.
-        if(!m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].empty())
-        {
-            // Group task schedule it't own tasks.
-            BAbstractTask* _resultTask = m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].front()->m_private_ptr->getTask();
-            
-            // This group task has been finished.
-            if(m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].front()->m_private_ptr->queueEmpty())
-            {
-                m_private_ptr->m_priority_group_task_queue[m_private_ptr->m_priority_state - 1].pop();  // Remove this group task from queue.
-                // Current priority queue maybe empty, force checking priority state.
-                m_private_ptr->updatePriorityState(m_private_ptr->m_priority_state.load() - 1);
-                return _resultTask;
-            } else {
-                return _resultTask;
-            }
-        } else {
-            BAbstractTask* _resultTask = m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].front();
-            m_private_ptr->m_priority_task_queue[m_private_ptr->m_priority_state - 1].pop();
-            
-            // Current priority queue maybe empty, force checking priority state.
-            m_private_ptr->updatePriorityState(m_private_ptr->m_priority_state.load() - 1);
-            
-            return _resultTask;
-        }
-    }else{
-        return nullptr;
-    }
-}
-
 int BAbstractThreadPool::taskQueueSize()
 {
 	lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);

@@ -8,6 +8,7 @@
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BGeneralTask.h"
+#include "BThreadPack/BGroupTask.h"
 #include "BThreadPack/BGeneralThreadPool.h"
 
 #define PRECISION 2000
@@ -34,12 +35,17 @@ public:
     
     virtual int execute()
     {
-#ifdef UNIX
+#ifndef WIN32
         std::ostringstream _os;
         _os << "Pi slice #" << m_task_id_ << ": is calculating on CPU " << sched_getcpu() << "\n";
         std::cout << _os.str();
 #endif
         long long _pi_slice_result = pi(m_task_id_);
+        
+        _os.str("");
+        _os.clear();
+        _os << "Pi slice #" << m_task_id_ << " result is " << _pi_slice_result << "\n";
+        std::cout << _os.str();
         
         if(g_result_mutex.try_lock())
         {
@@ -93,6 +99,7 @@ int main(int argc, char** argv)
 {   
     //vector<BGeneralTask *> task_vec;
     int slice_num = 8;
+    BGroupTask pi_group_task;
     //1. Add task into thread pool.
     for(int i = 0;i < slice_num;i++)
     {
@@ -100,9 +107,11 @@ int main(int argc, char** argv)
         std::string _slice_name = "Pi slice #";
         _slice_name += std::to_string(i);
         p_slice_pi->setName(_slice_name);
-        pi_slice_pool.pushTask(static_cast<BGeneralTask *>(p_slice_pi));
+        pi_group_task.pushTask(static_cast<BAbstractTask *>(p_slice_pi));
         //task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
     }
+    
+    pi_slice_pool.pushGroupTask(&pi_group_task);
     
     //pi_slice_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
     cout << "Current threads: " << pi_slice_pool.size() <<endl;
@@ -112,17 +121,7 @@ int main(int argc, char** argv)
     long long ll_Pi = 0;
     double Pi = 0.0;
     
-    while(g_pi_slice_result.size() != slice_num)
-    {
-        //std::cout << "Current result size: " << g_pi_slice_result.size() << std::endl;
-        sleep(1);
-    }
-    
-    for(int i=0;i < slice_num;i++)
-    {
-        ll_Pi += g_pi_slice_result[i];
-        std::cout << "Pi slice result is : " << g_pi_slice_result[i] << std::endl;
-    }
+    pi_group_task.wait();   // Wait all tasks in this group finieshed.
     
     std::cout.setf(ios::showpoint);
     std::cout.precision(64);
@@ -130,8 +129,6 @@ int main(int argc, char** argv)
     std::cout << "Interger Pi is : " << ll_Pi << std::endl;
     Pi = ll_Pi/(multiple/4.0);
     std::cout << "Pi is : " << Pi << std::endl;
-    
-    getchar();
     
     pi_slice_pool.kill();
 	

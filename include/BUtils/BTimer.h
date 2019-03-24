@@ -50,9 +50,10 @@
 namespace BThreadPack {
 
 class BTimer{
-    enum BTimerMode {
-        TimingMode,
-        AlarmMode
+    enum BTimerStatus {
+        Timing,
+        Alarm,
+        Stop
     };
 
 public:
@@ -72,7 +73,7 @@ public:
     /* @time - Get how many milliseconds have beed recorded or remained */
     long long time() const;
     
-#ifdef UNIX
+#ifndef WIN32
     void setInterval(long long _msec);
     void setInterval(std::chrono::milliseconds _msec);
     
@@ -154,9 +155,9 @@ public:
 private:
     std::chrono::steady_clock::time_point m_start_time_us;
     std::chrono::steady_clock::time_point m_stop_time_us;
-    BTimerMode m_timer_mode;
+    BTimerStatus m_timer_status;
     
-#ifdef UNIX
+#ifndef WIN32
     sigevent m_timer_event;
     struct sigaction m_timer_action;
     timer_t m_timer_id;

@@ -75,6 +75,9 @@ public:
     map<int, mutex> m_message_mutex_map_;
     map<std::thread::id, bool> m_thread_exit_map;
     
+    BAbstractTask* getTask();
+    BAbstractTask* getGroupTask(BGroupTask* &group_task_ptr);
+    
     void updatePriorityState(int task_priority);
     
     virtual int _init_(BAbstractThreadPool* _this);

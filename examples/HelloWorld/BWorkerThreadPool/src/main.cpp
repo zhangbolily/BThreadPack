@@ -8,6 +8,7 @@
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BWorkerTask.h"
+#include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
 #include "BThreadPack/BAbstractThreadPool.h"
 
 using namespace std;
@@ -30,14 +31,14 @@ public:
     HelloWorldThreadPool(int _thread_num)
         :BAbstractThreadPool(_thread_num)
     {
-    	HelloWorldThreadPool::initThreads(static_cast<BAbstractThreadPool*>(this));
+    	HelloWorldThreadPool::initThreads(this);
     }
     
     ~HelloWorldThreadPool()
     {
     }
     
-    int initThreads(BAbstractThreadPool* _this)
+    int initThreads(HelloWorldThreadPool* _this)
     {    
         for (unsigned int i = 0; i < this->capacity(); ++i) {
             if(this->addThread(thread(HelloWorldThreadPool::_threadFunction_, _this)) == BCore::ReturnCode::BThreadPoolFull)
@@ -51,9 +52,14 @@ public:
     {
         return 0;
     }
+    
+    BAbstractTask* getTask()
+    {
+        return m_private_ptr->getTask();
+    }
 
 private:
-    static void _threadFunction_(BAbstractThreadPool* _this)
+    static void _threadFunction_(HelloWorldThreadPool* _this)
     {
         while(1)
         {

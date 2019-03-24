@@ -33,7 +33,8 @@
 namespace BThreadPack{
 
 BGroupTaskPrivate::BGroupTaskPrivate()
-    :m_task_priority((PriorityNum+1)/2)
+    :m_task_priority((PriorityNum+1)/2),
+    m_group_task_status(BGroupTask::BGroupTaskStatus::Init)
 {
 }
 
@@ -81,17 +82,37 @@ void BGroupTaskPrivate::setUUID(std::string &_uuid)
     m_uuid = _uuid;
 }
 
+void BGroupTaskPrivate::setStatus(BGroupTask::BGroupTaskStatus group_status)
+{
+    m_group_task_status = group_status;
+}
+
+BGroupTask::BGroupTaskStatus BGroupTaskPrivate::status()
+{
+    return m_group_task_status;
+}
+
+void BGroupTaskPrivate::pushResultTask(BAbstractTask* &result_task_ptr)
+{
+    m_result_task_queue.push(result_task_ptr);
+}
+
 BAbstractTask* BGroupTaskPrivate::getTask()
 {
-    BAbstractTask* result_task_ptr = m_task_queue.front();
+    BAbstractTask* task_ptr = m_task_queue.front();
     
-    if(result_task_ptr == nullptr)
+    if(task_ptr == nullptr)
     {
         return nullptr;
     } else {
         m_task_queue.pop();
-        return result_task_ptr;
+        return task_ptr;
     }
+}
+
+void BGroupTaskPrivate::finished()
+{
+    m_group_task_cond.notify_all();
 }
 
 };

@@ -35,12 +35,15 @@ using namespace chrono;
 namespace BThreadPack {
 
 BTimer::BTimer()
-#ifdef UNIX
-    :m_timer_id(nullptr),
+#ifdef WIN32
+    :m_timer_status(BTimer::BTimerStatus::Stop)
+#else
+    :m_timer_status(BTimer::BTimerStatus::Stop),
+    m_timer_id(nullptr),
     m_timeout_call_flag(false)
 #endif
 {
-#ifdef UNIX
+#ifndef WIN32
     memset(&m_timer_event, 0, sizeof(sigevent));
     memset(&m_timer_action, 0, sizeof(struct sigaction));
     memset(&m_timer_initial_value, 0, sizeof(itimerspec));
@@ -53,46 +56,54 @@ BTimer::~BTimer()
 
 void BTimer::start()
 {
-    m_timer_mode = BTimer::TimingMode;
-    m_start_time_us = steady_clock::now();
+    if(m_timer_status == BTimer::Stop)
+    {
+        m_timer_status = BTimer::Timing;
+        m_start_time_us = steady_clock::now();
+    }
 }
 
 int BTimer::start(long long _msec)
 {
-    m_timer_mode = BTimer::AlarmMode;
-    m_start_time_us = steady_clock::now();
+    if(m_timer_status == BTimer::Stop)
+    {
+        m_timer_status = BTimer::Alarm;
+        m_start_time_us = steady_clock::now();
     
-#ifdef UNIX
-    m_timer_initial_value.it_value.tv_sec = _msec / 1000;
-    m_timer_initial_value.it_value.tv_nsec = static_cast<long>(_msec % 1000 * MILLIAN);
+#ifndef WIN32
+        m_timer_initial_value.it_value.tv_sec = _msec / 1000;
+        m_timer_initial_value.it_value.tv_nsec = static_cast<long>(_msec % 1000 * MILLIAN);
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BTimer::start - m_timer_initial_value.it_value.tv_sec is "<<m_timer_initial_value.it_value.tv_sec<<".")
-    B_PRINT_DEBUG("BTimer::start - m_timer_initial_value.it_value.tv_nsec is "<<m_timer_initial_value.it_value.tv_nsec<<".")
+        B_PRINT_DEBUG("BTimer::start - m_timer_initial_value.it_value.tv_sec is "<<m_timer_initial_value.it_value.tv_sec<<".")
+        B_PRINT_DEBUG("BTimer::start - m_timer_initial_value.it_value.tv_nsec is "<<m_timer_initial_value.it_value.tv_nsec<<".")
 #endif
-    // There is an existing timer, delete it first.
-    if (m_timer_id != nullptr) {
-        timer_delete(m_timer_id);
-        m_timer_id = nullptr;
+        // There is an existing timer, delete it first.
+        if (m_timer_id != nullptr) {
+            timer_delete(m_timer_id);
+            m_timer_id = nullptr;
+        }
+    
+        if (timer_create(CLOCK_REALTIME, &m_timer_event, &m_timer_id) == -1)
+	    {
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
+#endif
+            return BCore::ReturnCode::BError;
+	    } else if (timer_settime(m_timer_id, 0, &m_timer_initial_value, nullptr) == -1){
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
+#endif
+	        return BCore::ReturnCode::BError;
+	    } else {
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
+#endif
+	        return BCore::ReturnCode::BSuccess;
+	    }
+#endif
+        return BCore::ReturnCode::BSuccess;
     }
     
-    if (timer_create(CLOCK_REALTIME, &m_timer_event, &m_timer_id) == -1)
-	{
-#ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
-#endif
-        return BCore::ReturnCode::BError;
-	} else if (timer_settime(m_timer_id, 0, &m_timer_initial_value, nullptr) == -1){
-#ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
-#endif
-	    return BCore::ReturnCode::BError;
-	} else {
-#ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
-#endif
-	    return BCore::ReturnCode::BSuccess;
-	}
-#endif
     return BCore::ReturnCode::BSuccess;
 }
 
@@ -104,16 +115,21 @@ int BTimer::start(std::chrono::milliseconds _msec)
 int BTimer::stop()
 {
     m_stop_time_us = steady_clock::now();
-#ifdef UNIX
-    switch(m_timer_mode){
-        case BTimerMode::TimingMode: {
+#ifndef WIN32
+    switch(m_timer_status){
+        case BTimerStatus::Timing: {
+            m_timer_status = BTimer::Stop;
         };
-        case BTimerMode::AlarmMode:{
+        case BTimerStatus::Alarm:{
             if (m_timer_id != nullptr) {
                 if(timer_delete(m_timer_id) == -1)
+                {
+                    m_timer_status = BTimer::Stop;
                     return BCore::ReturnCode::BError;
+                }
                 else {
                     m_timer_id = nullptr;
+                    m_timer_status = BTimer::Stop;
                     return BCore::ReturnCode::BSuccess;
                 }
             }
@@ -134,7 +150,7 @@ long long BTimer::time() const
 }
 
 
-#ifdef UNIX
+#ifndef WIN32
 void BTimer::setInterval(long long _msec)
 {
     m_timer_initial_value.it_interval.tv_sec = _msec / 1000;

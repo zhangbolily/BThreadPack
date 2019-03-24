@@ -32,11 +32,14 @@
 
 #include <vector>
 #include <queue>
+#include <mutex>
+#include <condition_variable>
 
 #include "BUtils/BTimer.h"
 #include "BUtils/BUtils.h"
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractTask.h"
+#include "BThreadPack/BGroupTask.h"
 
 namespace BThreadPack{
 
@@ -52,14 +55,21 @@ public:
     void stopRealTiming();
     void setUUID();
     void setUUID(std::string &_uuid);
+    void setStatus(BGroupTask::BGroupTaskStatus group_status);
+    void pushResultTask(BAbstractTask* &result_task_ptr);
+    void finished();
     BAbstractTask* getTask();
+    BGroupTask::BGroupTaskStatus status();
     
     BTimer m_real_timer;
     BTimer m_execute_timer;
     atomic_int m_task_priority;
     std::string m_uuid;
-    std::vector<BAbstractTask*> m_task_vec;
     std::queue<BAbstractTask*> m_task_queue;
+    std::queue<BAbstractTask*> m_result_task_queue;
+    std::mutex m_group_task_mutex;
+    std::condition_variable m_group_task_cond;
+    BGroupTask::BGroupTaskStatus m_group_task_status;
 };
 
 };

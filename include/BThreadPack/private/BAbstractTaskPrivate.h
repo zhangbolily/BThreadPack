@@ -23,51 +23,8 @@
 
 /*
  * @Author      : Ball Chang
- * @File        : BGroupTask.h
- * @Date        : 2019-3-17
+ * @File        : BAbstractTaskPrivate.h
+ * @Date        : 2019-3-24
 */
 
-#ifndef _BGROUP_TASK_H_
-#define _BGROUP_TASK_H_
 
-#include "BThreadPack/BThreadPack.h"
-#include "BThreadPack/BAbstractTask.h"
-
-namespace BThreadPack{
-
-class BGroupTaskPrivate;
-
-class BGroupTask:private NoneCopy{
-
-public:
-    enum BGroupTaskStatus {
-        Failed = -1,
-        Init = 0,
-        Pending = 1,
-        Executing = 2,
-        Finished = 3
-    };
-
-    /* @BGroupTask() - Constructor */    
-    BGroupTask();
-    ~BGroupTask();
-    
-    int priority() const;
-    int wait();
-    void pushTask(BAbstractTask* _task_handle);
-    void setPriority(int);
-    long long executionTime();
-    long long realTime();
-    unsigned int size();
-    BAbstractTask* getResultTask();
-    const std::string UUID();
-    
-protected:
-    BGroupTaskPrivate* m_private_ptr;
-    friend class BAbstractThreadPool;
-    friend class BAbstractThreadPoolPrivate;
-    friend class BGeneralThreadPool;
-};
-};
-
-#endif
