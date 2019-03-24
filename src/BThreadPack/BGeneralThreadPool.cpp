@@ -28,6 +28,7 @@
 */
 
 #include "BThreadPack/BGeneralThreadPool.h"
+#include "BThreadPack/private/BGroupTaskPrivate.h"
 
 namespace BThreadPack{
 
@@ -77,6 +78,13 @@ void BGeneralThreadPool::pushTask(BGeneralTask* _task_buffer)
     static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
     
     BAbstractThreadPool::pushTask(_task_buffer);
+}
+
+void BGeneralThreadPool::pushGroupTask(BGroupTask* _task_ptr)
+{
+    static_cast<BGroupTask*>(_task_ptr)->m_private_ptr->startRealTiming();
+    
+    BAbstractThreadPool::pushGroupTask(_task_ptr);
 }
 
 unsigned int BGeneralThreadPool::resize(unsigned int _size)

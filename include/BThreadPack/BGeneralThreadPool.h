@@ -73,7 +73,8 @@ public:
     ~BGeneralThreadPool();
     
     /* Overload pushTask */
-    void pushTask(BGeneralTask* _task_buffer);
+    void pushTask(BGeneralTask* _task_ptr);
+    void pushGroupTask(BGroupTask* _task_ptr);
     
     /* @optimizer() - Find the minimum threads for maximum thread pool performance
      * and the maximum threads for minimum single task processing time.

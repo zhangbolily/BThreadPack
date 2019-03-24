@@ -57,6 +57,7 @@ public:
 protected:
     BGroupTaskPrivate* m_private_ptr;
     friend class BAbstractThreadPool;
+    friend class BGeneralThreadPool;
 };
 };
 

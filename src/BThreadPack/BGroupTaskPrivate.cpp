@@ -46,6 +46,7 @@ bool BGroupTaskPrivate::queueEmpty()
     return m_task_queue.empty();
 }
 
+// This function called when the group task is scheduled.
 void BGroupTaskPrivate::startExecutionTiming()
 {
     m_execute_timer.start();

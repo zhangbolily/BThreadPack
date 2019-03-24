@@ -49,7 +49,7 @@ BGroupTask::~BGroupTask()
 
 void BGroupTask::pushTask(BAbstractTask* _task_handle)
 {
-    m_private_ptr->m_task_vec.push_back(_task_handle);
+    m_private_ptr->m_task_queue.push(_task_handle);
 }
 
 int BGroupTask::removeTask(unsigned int _task_id)
