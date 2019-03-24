@@ -98,13 +98,16 @@ BGroupTask::BGroupTaskStatus BGroupTaskPrivate::status()
     return m_group_task_status;
 }
 
-void BGroupTaskPrivate::pushResultTask(BAbstractTask* &result_task_ptr)
+void BGroupTaskPrivate::pushFinishedTask(BAbstractTask* result_task_ptr)
 {
+    lock_guard<std::mutex> guard(m_finished_task_mutex);
     m_result_task_queue.push(result_task_ptr);
 }
 
 BAbstractTask* BGroupTaskPrivate::getTask()
 {
+    lock_guard<std::mutex> guard(m_task_mutex);
+
     BAbstractTask* task_ptr = m_task_queue.front();
     
     if(task_ptr == nullptr)

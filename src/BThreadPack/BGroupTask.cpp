@@ -49,11 +49,15 @@ BGroupTask::~BGroupTask()
 
 void BGroupTask::pushTask(BAbstractTask* _task_handle)
 {
+    lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex);
+    
     m_private_ptr->m_task_queue.push(_task_handle);
 }
 
-BAbstractTask* BGroupTask::getResultTask()
+BAbstractTask* BGroupTask::getFinishedTask()
 {
+    lock_guard<std::mutex> guard(m_private_ptr->m_finished_task_mutex);
+    
     if(m_private_ptr->m_result_task_queue.empty())
         return nullptr;
     else {

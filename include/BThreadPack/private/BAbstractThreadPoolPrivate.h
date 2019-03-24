@@ -65,7 +65,9 @@ public:
     std::vector<std::queue<BGroupTask *>> m_priority_group_task_queue;
     std::vector<atomic_bool> m_task_bitmap;
     std::vector<int> m_task_counter;
+    std::queue<BAbstractTask *> m_finished_task_queue;
     mutex m_task_mutex_;
+    mutex m_finished_task_mutex;
     mutex m_message_mutex_;
     mutex m_start_mutex_;
     mutex m_thread_exit_mutex;
@@ -79,6 +81,7 @@ public:
     BAbstractTask* getGroupTask(BGroupTask* &group_task_ptr);
     
     void updatePriorityState(int task_priority);
+    void pushFinishedTask(BAbstractTask* finished_task);
     
     virtual int _init_(BAbstractThreadPool* _this);
     

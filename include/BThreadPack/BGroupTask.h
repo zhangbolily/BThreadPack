@@ -61,7 +61,7 @@ public:
     long long executionTime();
     long long realTime();
     unsigned int size();
-    BAbstractTask* getResultTask();
+    BAbstractTask* getFinishedTask();
     const std::string UUID();
     
 protected:

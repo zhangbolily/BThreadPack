@@ -360,6 +360,16 @@ int BAbstractThreadPool::taskQueueSize()
 	return _size;
 }
 
+BAbstractTask* BAbstractThreadPool::getFinishedTask()
+{
+    lock_guard<std::mutex> guard(m_private_ptr->m_finished_task_mutex);
+
+    BAbstractTask* finished_task = m_private_ptr->m_finished_task_queue.front();
+    m_private_ptr->m_finished_task_queue.pop();
+    
+    return finished_task;
+}
+
 int BAbstractThreadPool::sendMessage(int _queue_num, void* _message_buffer)
 {
 	m_private_ptr->m_message_mutex_.lock();

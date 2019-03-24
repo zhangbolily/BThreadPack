@@ -271,7 +271,12 @@ void BGeneralThreadPool::m_threadFunction_(BGeneralThreadPool* _thread_pool_hand
     	    delete p_general_task;
     	    p_general_task = nullptr;
     	} else {
-    	    
+    	    if(p_group_task != nullptr)
+            {
+                p_group_task->m_private_ptr->pushFinishedTask(static_cast<BAbstractTask*>(p_general_task));
+            } else {
+                _thread_pool_handle->m_private_ptr->pushFinishedTask(static_cast<BAbstractTask*>(p_general_task));
+            }
     	}
         // Finished check
     }

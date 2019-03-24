@@ -141,6 +141,12 @@ void BAbstractThreadPoolPrivate::updatePriorityState(int task_priority)
         m_priority_state = task_priority > m_priority_state.load()?task_priority:m_priority_state.load();
 }
 
+void BAbstractThreadPoolPrivate::pushFinishedTask(BAbstractTask* finished_task)
+{
+    lock_guard<std::mutex> guard(m_finished_task_mutex);
+    m_finished_task_queue.push(finished_task);
+}
+
 int BAbstractThreadPoolPrivate::_init_(BAbstractThreadPool* _this)
 {
 	m_public_ptr->setStatus(BAbstractThreadPool::BThreadPoolStatus::ThreadPoolRunning);

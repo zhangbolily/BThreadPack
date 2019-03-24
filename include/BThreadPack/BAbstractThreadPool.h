@@ -108,6 +108,7 @@ public:
     void pushGroupTask(BGroupTask* _task_ptr);
     void threadExit(std::thread::id _tid);
     void* message(int _queue_num);
+    BAbstractTask* getFinishedTask();
     
     virtual unsigned int resize(unsigned int _size)=0;
 

@@ -57,7 +57,7 @@ public:
     void setUUID(std::string &_uuid);
     void setTaskNum(int task_num);
     void setStatus(BGroupTask::BGroupTaskStatus group_status);
-    void pushResultTask(BAbstractTask* &result_task_ptr);
+    void pushFinishedTask(BAbstractTask* result_task_ptr);
     void finishedOneTask();
     BAbstractTask* getTask();
     BGroupTask::BGroupTaskStatus status();
@@ -70,6 +70,8 @@ public:
     std::string m_uuid;
     std::queue<BAbstractTask*> m_task_queue;
     std::queue<BAbstractTask*> m_result_task_queue;
+    std::mutex m_task_mutex;
+    std::mutex m_finished_task_mutex;
     std::mutex m_group_task_mutex;
     std::condition_variable m_group_task_cond;
     BGroupTask::BGroupTaskStatus m_group_task_status;
