@@ -27,8 +27,8 @@
  * @Date        : 2018-11-12
 */
 
-#ifndef _BABSTRACT_TASK_H_
-#define _BABSTRACT_TASK_H_
+#ifndef INCLUDE_BTHREADPACK_BABSTRACTTASK_H_
+#define INCLUDE_BTHREADPACK_BABSTRACTTASK_H_
 
 #include <atomic>
 #include <condition_variable>
@@ -44,81 +44,79 @@
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractClass.h"
 
-using namespace std;
-
-extern const int PriorityNum;
+extern const int32 PriorityNum;
 
 namespace BThreadPack {
 
+using std::atomic;
+using std::string;
+
 class BAbstractTaskPrivate;
 
-class BAbstractTask: private NoneCopy{
+class BAbstractTask: private NoneCopy {
+ public:
+        enum BTaskStatus{
+            TaskFailed = -1,
+            TaskInit = 0,
+            TaskExecuting = 1,
+            TaskFinished = 2
+        };
 
-public:
-    enum BTaskStatus{
-        TaskFailed = -1,
-        TaskInit = 0,
-        TaskExecuting = 1,
-        TaskFinished = 2
-    };
+        BAbstractTask();
+        explicit BAbstractTask(bool _autodestroy);
+        BAbstractTask(const void* _buffer, size_t _size);
+        BAbstractTask(const void* _buffer, size_t _size, bool _autodestroy);
+        virtual ~BAbstractTask();
+        int32 status();
+        int32 setStatus(BTaskStatus _status);
+        int32 setStatus(std::atomic_int32_t _status);
+        int32 setInputBuffer(const void* _buffer, size_t _size);
+        int32 inputBuffer(void** _buffer, size_t &_size);
+        int32 setOutputBuffer(void* _buffer, size_t _size);
+        int32 outputBuffer(const void** _buffer, size_t &_size);
+        void setPriority(int);
+        int32 priority() const;
+        void startExecutionTiming();
+        void stopExecutionTiming();
+        int64 executionTime();
+        void startRealTiming();
+        void stopRealTiming();
+        int64 realTime();
+        void setName(const char* _name);
+        void setName(const std::string _name);
+        const std::string& name() const;
+        void wait();
+        void setUUID();
+        void setUUID(const std::string &_uuid);
+        const std::string UUID();
+        bool destroyable() const;
+        std::mutex m_task_mutex;
 
-    BAbstractTask();
-    BAbstractTask(bool _autodestroy);
-    BAbstractTask(const void* _buffer, size_t _size);
-    BAbstractTask(const void* _buffer, size_t _size, bool _autodestroy);
-    virtual ~BAbstractTask();
-    int status();
-    int setStatus(BTaskStatus _status);
-    int setStatus(std::atomic_int _status);
-    int setInputBuffer(const void* _buffer, size_t _size);
-    int inputBuffer(void** _buffer, size_t &_size);
-    int setOutputBuffer(void* _buffer, size_t _size);
-    int outputBuffer(const void** _buffer, size_t &_size);
-    void setPriority(int);
-    int priority() const;
-    void startExecutionTiming();
-    void stopExecutionTiming();
-    long long executionTime();
-    void startRealTiming();
-    void stopRealTiming();
-    long long realTime();
-    void setName(const char* _name);
-    void setName(std::string _name);
-    const std::string& name() const;
-    void wait();
-    void setUUID();
-    void setUUID(std::string &_uuid);
-    const std::string UUID();
-    bool destroyable() const;
-    std::mutex m_task_mutex;
+ protected:
+        BAbstractTaskPrivate* m_private_ptr;
 
-protected:
-    BAbstractTaskPrivate* m_private_ptr;
-  
-private:
+ private:
+        /* @m_task_status_ - store the status of task */
+        std::atomic_int32_t m_task_priority;
+        std::atomic_int32_t m_task_status_;
+        std::atomic_bool m_task_autodestroy;
+        BTimer m_real_timer;
+        BTimer m_execute_timer;
+        std::string m_name;
+        std::string m_uuid;
 
-    /* @m_task_status_ - store the status of task */
-    std::atomic_int m_task_priority;
-    std::atomic_int m_task_status_;
-    std::atomic_bool m_task_autodestroy;
-    BTimer m_real_timer;
-    BTimer m_execute_timer;
-    std::string m_name;
-    std::string m_uuid;
-    
-    /* @m_input_buffer_ - store the buffer of input data */
-    char* m_input_buffer_;
-    
-    /* @m_input_buffer_size_ - store the size of input data buffer */
-    std::atomic_size_t m_input_buffer_size_;
-    
-    /* @m_output_buffer_ - store the buffer of output data */
-    char* m_output_buffer_;
-    
-    /* @m_output_buffer_size_ - store the size of output data buffer */
-    std::atomic_size_t m_output_buffer_size_;
+        /* @m_input_buffer_ - store the buffer of input data */
+        char* m_input_buffer_;
+
+        /* @m_input_buffer_size_ - store the size of input data buffer */
+        std::atomic_size_t m_input_buffer_size_;
+
+        /* @m_output_buffer_ - store the buffer of output data */
+        char* m_output_buffer_;
+
+        /* @m_output_buffer_size_ - store the size of output data buffer */
+        std::atomic_size_t m_output_buffer_size_;
 };
+}   // namespace BThreadPack
 
-};
-
-#endif
+#endif  // INCLUDE_BTHREADPACK_BABSTRACTTASK_H_

@@ -32,6 +32,9 @@
 
 #include "BCore/BCore.h"
 #include "BCore/BDebug.h"
+#include "BCore/BType.h"
+
+using namespace BCore;
 
 const int PriorityNum = 5;
 

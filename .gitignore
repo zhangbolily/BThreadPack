@@ -46,3 +46,7 @@ examples/HelloWorld/BGeneralThreadPool/memory_leak\.log
 examples/Pi/debug/
 
 build/
+
+\.idea/
+
+cmake-build-debug/
