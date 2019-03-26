@@ -100,9 +100,8 @@ class BThread : private NoneCopy {
 
  protected:
     BThreadPrivate* m_private_ptr;
-    std::thread m_thread_handle;
-
     BThreadInfo m_thread_info;
+    std::thread m_thread_handle;
 };
 
 }   // namespace BThreadPack
