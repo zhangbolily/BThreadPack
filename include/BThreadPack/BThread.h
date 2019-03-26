@@ -32,6 +32,8 @@
 
 #include <utility>
 #include <thread>
+#include <atomic>
+#include <algorithm>
 
 #ifdef LINUX
 #include <sys/types.h>
@@ -44,41 +46,44 @@ namespace BThreadPack {
 
 using std::thread;
 using std::forward;
+using std::atomic_bool;
+using std::atomic_int32_t;
 using BCore::ReturnCode;
 
 class BThreadPrivate;
 class BAbstractThreadPool;
 
+
+class BThreadInfo {
+ public:
+    BThreadInfo();
+    BThreadInfo(const BThreadInfo& thread_info);
+
+    BThreadInfo& operator=(const BThreadInfo& thread_info);
+
+    void exit(int32 return_code = 0);
+    void running();
+
+    std::atomic_bool is_exited;
+    std::atomic_bool is_running;
+    std::atomic_int32_t stackSize;
+    std::atomic_int32_t returnCode;
+    BAbstractThreadPool* m_thread_pool_handle;
+};
+
 class BThread : private NoneCopy {
  public:
-    class BThreadInfo {
-     public:
-        bool exited = false;
-        bool running = false;
-        uint32 stackSize = 0;
-        int32 returnCode = 0;
-        BAbstractThreadPool* m_thread_pool_handle = nullptr;
 
-        void exit();
-    };
-
-    BThread() noexcept = default;
-
-    template < class Function >
-    explicit BThread(Function&& f, const BThreadInfo& thread_info)
-            : m_private_ptr(new BThreadPrivate(std::forward<Function>(f),
-                            thread_info)) {
-    }
-
-    template < class Function >
-    explicit BThread(bool is_detach, Function&& f, const BThreadInfo& thread_info)
-            : m_private_ptr(new BThreadPrivate(std::forward<Function>(f),
-                            thread_info)) {
-        if (is_detach)
-            detach();
-    }
-
+    BThread();
     ~BThread();
+
+    template< class Function >
+    void start(Function&& f, const BThreadInfo& thread_info) {
+        m_thread_info = thread_info;
+        std::thread worker_thread(std::forward<Function>(f),
+                                  std::ref(m_thread_info));
+        m_thread_handle.swap(worker_thread);
+    }
 
     bool joinable();
     bool isExit();
@@ -95,7 +100,11 @@ class BThread : private NoneCopy {
 
  protected:
     BThreadPrivate* m_private_ptr;
+    std::thread m_thread_handle;
+
+    BThreadInfo m_thread_info;
 };
+
 }   // namespace BThreadPack
 
 

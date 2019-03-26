@@ -23,31 +23,44 @@
 
 /*
  * @Author      : Ball Chang
- * @File        : BThreadPrivate.h
- * @Date        : 2019-3-25
+ * @File        : main.cpp
+ * @Date        : 2019-3-26
 */
 
-#ifndef INCLUDE_BTHREADPACK_PRIVATE_BTHREADPRIVATE_H_
-#define INCLUDE_BTHREADPACK_PRIVATE_BTHREADPRIVATE_H_
-
+#include <iostream>
 #include <thread>
-#include <utility>
+#include <unistd.h>
 
-#include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BThread.h"
 
-namespace BThreadPack {
+using std::cout;
+using BThreadPack::BThread;
+using BThreadPack::BThreadInfo;
 
-using std::thread;
-using std::forward;
+void run(BThreadInfo& thread_info) {
+    thread_info.running();
 
-class BThreadInfo;
+    std::cout << "Worker thread: I'm running......" << std::endl;
+    sleep(2);
+    std::cout << "Walkout!!!" << std::endl;
 
-class BThreadPrivate {
- public:
-    BThreadPrivate() noexcept = default;
-};
-}  // namespace BThreadPack
+    thread_info.exit(0);
+}
 
+int main(int argc, char** argv) {
+    BThreadInfo thread_info;
+    BThread infinite_run;
+    infinite_run.start(run, thread_info);
+    infinite_run.detach();
 
-#endif  // INCLUDE_BTHREADPACK_PRIVATE_BTHREADPRIVATE_H_
+    while(1) {
+        std::cout << "Main thread: I'm running......" << std::endl;
+        if (infinite_run.isRunning())
+            std::cout << "Main thread: Worker thread is running, very good." << std::endl;
+        else {
+            std::cout << "Main thread: Worker thread isn't running, very bad." << std::endl;
+            return 0;
+        }
+        sleep(1);
+    }
+}

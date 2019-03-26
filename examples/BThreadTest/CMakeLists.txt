@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-add_subdirectory (HelloWorld)
-add_subdirectory (Pi)
-add_subdirectory (BThreadTest)
-if (UNIX)
-    add_subdirectory (Timer)
-endif ()
+project (BThreadTest)
+
+SET (EXECUTABLE_OUTPUT_PATH ${BThreadPack_BINARY_DIR}/bin)
+
+aux_source_directory (src DIR_EXAMPLES_BTHREADTEST_SRCS)
+link_directories (${BThreadPack_BINARY_DIR})
+add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_BTHREADTEST_SRCS})
+target_link_libraries (${PROJECT_NAME} bthreadpack)
+target_link_libraries (${PROJECT_NAME} ${EXTRA_LIBS})
+
