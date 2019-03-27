@@ -55,7 +55,7 @@ make install
 
 ##### Demonstration build video
 
-![bthreadpack](docs/source/images/linux_build.svg)
+[![Build](https://asciinema.org/a/4Sh30mIfX3uw6hboIJWFkXqbf.svg)](https://asciinema.org/a/4Sh30mIfX3uw6hboIJWFkXqbf)
 
 Then you can build project in Examples directory to test this library.
 
