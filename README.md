@@ -53,6 +53,10 @@ This step need root privilege.
 make install
 ```
 
+##### Demonstration install video (click to view)
+
+[![asciicast](https://asciinema.org/a/awlyjV1ggOrBqDVVBorgqXG4V.svg)](https://asciinema.org/a/awlyjV1ggOrBqDVVBorgqXG4V)
+
 Then you can build project in Examples directory to test this library.
 
 ## Running the tests
