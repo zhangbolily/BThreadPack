@@ -66,9 +66,6 @@ int BGeneralThreadPool::m_init_(BGeneralThreadPool* _thread_pool_handle, unsigne
             return BCore::ReturnCode::BThreadPoolFull;
     }
     
-    // Attention: This function call can be removed.
-    setAffinity();
-    
     detach();
     
     return BCore::ReturnCode::BSuccess;

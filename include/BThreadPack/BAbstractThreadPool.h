@@ -27,8 +27,8 @@
  * @Date        : 2018-12-2
 */
 
-#ifndef _BABSTRACT_THREAD_POOL_H_
-#define _BABSTRACT_THREAD_POOL_H_
+#ifndef INCLUDE_BTHREADPACK_BABSTRACTTHREADPOOL_H_
+#define INCLUDE_BTHREADPACK_BABSTRACTTHREADPOOL_H_
 
 #ifdef WIN32
 #include "windows.h"
@@ -48,24 +48,22 @@
 #include "BThreadPack/BAbstractTask.h"
 #include "BThreadPack/BGroupTask.h"
 
-using namespace std;
-using namespace std::chrono;
-
-extern const int PriorityNum;
+extern const int32 PriorityNum;
 class BAbstractThreadPoolPrivate;
 
 namespace BThreadPack {
 
-class BAbstractThreadPool: private NoneCopy{
+using std::chrono::microseconds;
 
-public:
-	enum BThreadPoolStatus{
+class BAbstractThreadPool: private NoneCopy{
+ public:
+    enum BThreadPoolStatus {
         ThreadPoolError = -1,
         ThreadPoolStop = 0,
         ThreadPoolRunning = 1
     };
-    
-    enum BThreadControlMode{
+
+    enum BThreadControlMode {
         /* In this mode, thread capacity is fixed. */
         FixedThreadCapacity = 0,
         /* In this mode, thread capacity is dynamic controled.
@@ -75,47 +73,33 @@ public:
         DynamicThreadCapacity = 1,
     };
 
-    BAbstractThreadPool(unsigned int _thread_cap);
-    BAbstractThreadPool(unsigned int _thread_cap,
+    explicit BAbstractThreadPool(uint _thread_cap);
+    BAbstractThreadPool(uint _thread_cap,
                         BAbstractThreadPool::BThreadControlMode _mode);
-    
+
     /* @~BAbstractThreadPool() - Destructor */
     ~BAbstractThreadPool();
-    
-    long long addThread(thread _new_thread);
-    long long setAffinity();
-    long long setAffinity(unsigned int _thread_num);
-    long long removeThread(unsigned int _thread_num);
-    bool isRemove();
-    bool isThreadExit(std::thread::id _tid);
-    int taskQueueSize();
-    int sendMessage(int _queue_num, void* _message_buffer);
-    int status() const;
-    int startOneTask();
-    int startAllTasks();
-    int kill();
-    int mode() const;
-    int detach();
-    int detach(unsigned int _thread_num);
-    int join();
-    int join(unsigned int _thread_num);
-    unsigned int capacity() const;
-    unsigned int size() const;
-    void wait();
-    void setCapacity(unsigned int _capacity);
+
+    int32 taskQueueSize();
+    int32 sendMessage(int32 _queue_num, void* _message_buffer);
+    int32 status() const;
+    int32 kill();
+    int32 mode() const;
+    uint capacity() const;
+    uint size() const;
+    void setCapacity(uint _capacity);
     void setStatus(BThreadPoolStatus _status);
     void pushTask(BAbstractTask* _task_ptr);
     void pushGroupTask(BGroupTask* _task_ptr);
-    void threadExit(std::thread::id _tid);
-    void* message(int _queue_num);
+    void* message(int32 _queue_num);
     BAbstractTask* getFinishedTask();
-    
-    virtual unsigned int resize(unsigned int _size)=0;
 
-protected:
+    virtual uint resize(uint _size) = 0;
+
+ protected:
     BAbstractThreadPoolPrivate* m_private_ptr;
 };
 
-};
+}  // namespace BThreadPack
 
-#endif
+#endif  // INCLUDE_BTHREADPACK_BABSTRACTTHREADPOOL_H_

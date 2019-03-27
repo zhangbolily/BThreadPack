@@ -29,6 +29,7 @@
 
 #include "BThreadPack/BThread.h"
 #include "BThreadPack/private/BThreadPrivate.h"
+#include "BThreadPack/BAbstractThreadPool.h"
 
 namespace BThreadPack {
 
@@ -62,6 +63,10 @@ BThreadInfo& BThreadInfo::operator=(const BThreadInfo& thread_info) {
     return *this;
 }
 
+void BThreadInfo::setThreadPoolHandle(BAbstractThreadPool* &thread_pool_handle) {
+    m_thread_pool_handle = thread_pool_handle;
+}
+
 void BThreadInfo::exit(int32 return_code) {
     is_exited = true;
     is_running = false;
@@ -82,6 +87,10 @@ bool BThreadInfo::isRunning() {
     return is_running;
 }
 
+BAbstractThreadPool* BThreadInfo::threadPoolHandle() {
+    return m_thread_pool_handle;
+}
+
 // End of implementation
 
 
@@ -89,6 +98,12 @@ bool BThreadInfo::isRunning() {
 
 BThread::BThread()
     : m_private_ptr(new BThreadPrivate) {
+}
+
+BThread::BThread(BThread&& _bthread) noexcept {
+    m_private_ptr = _bthread.m_private_ptr;
+    m_thread_info = _bthread.m_thread_info;
+    m_thread_handle.swap(_bthread.m_thread_handle);
 }
 
 BThread::~BThread() {
@@ -134,7 +149,21 @@ int32 BThread::priority() {
 int32 BThread::setAffinity(int32 cpu_num) {
 #if defined(LINUX)
     // TODO(Ball Chang) :Set affinity on any platform.
-    return 0;
+    cpu_set_t _cpuset;
+    CPU_ZERO(&_cpuset);
+
+    int _retcode = 0;
+    unsigned int _cpus = thread::hardware_concurrency();
+    unsigned int _cpu_num = cpu_num % _cpus;
+
+    CPU_SET(_cpu_num, &_cpuset);
+
+    _retcode = pthread_setaffinity_np(nativeHandle(),
+                                    sizeof(cpu_set_t), &_cpuset);
+    if(_retcode != 0)
+        return BCore::ReturnCode::BError;
+    else
+        return BCore::ReturnCode::BSuccess;
 #elif defined(WIN32)
 #endif
 }

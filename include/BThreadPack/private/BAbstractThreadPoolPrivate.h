@@ -27,8 +27,8 @@
  * @Date        : 2019-3-23
 */
 
-#ifndef _BABSTRACT_THREAD_POOL_PRIVATE_H_
-#define _BABSTRACT_THREAD_POOL_PRIVATE_H_
+#ifndef INCLUDE_BTHREADPACK_PRIVATE_BABSTRACTTHREADPOOLPRIVATE_H_
+#define INCLUDE_BTHREADPACK_PRIVATE_BABSTRACTTHREADPOOLPRIVATE_H_
 
 #include <atomic>
 #include <condition_variable>
@@ -40,6 +40,7 @@
 #include <vector>
 
 #include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BThread.h"
 #include "BThreadPack/BAbstractTask.h"
 #include "BThreadPack/BGroupTask.h"
 
@@ -60,45 +61,47 @@ class BAbstractThreadPool;
 
 class BAbstractThreadPoolPrivate {
  public:
-        BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr);
-        ~BAbstractThreadPoolPrivate();
+    explicit BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr);
+    ~BAbstractThreadPoolPrivate();
 
-        BAbstractThreadPool* m_public_ptr;
+    BAbstractThreadPool* m_public_ptr;
 
-        atomic_int m_priority_state;
-        atomic_int m_pool_mode_;
-        atomic_int m_pool_status_;
-        atomic_int m_remove_count;
-        atomic_uint m_thread_capacity_;
-        std::vector<std::thread> m_thread_vec_;
-        std::vector<std::thread::id> m_thread_id_vec;
-        std::vector<std::queue<BAbstractTask *>> m_priority_task_queue;
-        std::vector<std::queue<BGroupTask *>> m_priority_group_task_queue;
-        std::vector<atomic_bool> m_task_bitmap;
-        std::vector<int> m_task_counter;
-        std::queue<BAbstractTask *> m_finished_task_queue;
-        mutex m_task_mutex_;
-        mutex m_finished_task_mutex;
-        mutex m_message_mutex_;
-        mutex m_start_mutex_;
-        mutex m_thread_exit_mutex;
-        condition_variable m_start_condition_;
-        map<int, queue<void *>> m_message_queue_map_;
-        map<int, condition_variable> m_message_cond_map_;
-        map<int, mutex> m_message_mutex_map_;
-        map<std::thread::id, bool> m_thread_exit_map;
+    atomic_int m_priority_state;
+    atomic_int m_pool_mode_;
+    atomic_int m_pool_status_;
+    atomic_int m_remove_count;
+    atomic_uint m_thread_capacity_;
+    std::vector<BThread> m_thread_vec_;
+    std::vector<std::queue<BAbstractTask *>> m_priority_task_queue;
+    std::vector<std::queue<BGroupTask *>> m_priority_group_task_queue;
+    std::vector<atomic_bool> m_task_bitmap;
+    std::vector<int> m_task_counter;
+    std::queue<BAbstractTask *> m_finished_task_queue;
+    mutex m_task_mutex_;
+    mutex m_finished_task_mutex;
+    mutex m_message_mutex_;
+    mutex m_start_mutex_;
+    condition_variable m_start_condition_;
+    map<int, queue<void *>> m_message_queue_map_;
+    map<int, condition_variable> m_message_cond_map_;
+    map<int, mutex> m_message_mutex_map_;
 
-        BAbstractTask* getTask();
-        BAbstractTask* getGroupTask(BGroupTask* &group_task_ptr);
+    BAbstractTask* getTask();
+    BAbstractTask* getGroupTask(BGroupTask** group_task_ptr);
 
-        void updatePriorityState(int task_priority);
-        void pushFinishedTask(BAbstractTask* finished_task);
+    bool isRemove();
+    void wait();
+    void updatePriorityState(int task_priority);
+    void pushFinishedTask(BAbstractTask* finished_task);
+    void startOneTask();
+    void startAllTasks();
+    int64 addThread(BThread&& _bthread);
+    int64 removeThread(uint _thread_num);
 
-        virtual int _init_(BAbstractThreadPool* _this);
-
-        static void m_threadFunction_(void* _buffer);
+    virtual int initializeThreadPool();
+    static void Run(BThreadInfo &thread_info);
 };
-}
+}  // namespace BThreadPack
 
-#endif
+#endif  // INCLUDE_BTHREADPACK_PRIVATE_BABSTRACTTHREADPOOLPRIVATE_H_
 

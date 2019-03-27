@@ -61,10 +61,12 @@ class BThreadInfo {
 
     BThreadInfo& operator=(const BThreadInfo& thread_info);
 
+    void setThreadPoolHandle(BAbstractThreadPool* &thread_pool_handle);
     void exit(int32 return_code = 0);
     void running();
     bool isExit();
     bool isRunning();
+    BAbstractThreadPool* threadPoolHandle();
 
  protected:
     std::atomic_bool is_exited;
@@ -74,10 +76,14 @@ class BThreadInfo {
     BAbstractThreadPool* m_thread_pool_handle;
 };
 
-class BThread : private NoneCopy {
+class BThread {
  public:
 
     BThread();
+    BThread(BThread&) = delete;
+    BThread(const BThread&) = delete;
+    BThread(const BThread&&) = delete;
+    BThread(BThread&& _bthread) noexcept;
     ~BThread();
 
     template< class Function >
