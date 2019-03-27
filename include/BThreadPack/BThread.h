@@ -63,7 +63,10 @@ class BThreadInfo {
 
     void exit(int32 return_code = 0);
     void running();
+    bool isExit();
+    bool isRunning();
 
+ protected:
     std::atomic_bool is_exited;
     std::atomic_bool is_running;
     std::atomic_int32_t stackSize;

@@ -32,6 +32,61 @@
 
 namespace BThreadPack {
 
+// Star implementation of BThreadInfo
+
+BThreadInfo::BThreadInfo()
+        : is_exited (false),
+          is_running (false),
+          stackSize (0),
+          returnCode (0),
+          m_thread_pool_handle (nullptr){
+
+}
+
+BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)
+        : is_exited (thread_info.is_exited.load()),
+          is_running (thread_info.is_running.load()),
+          stackSize (thread_info.stackSize.load()),
+          returnCode (thread_info.returnCode.load()),
+          m_thread_pool_handle (nullptr) {
+
+}
+
+BThreadInfo& BThreadInfo::operator=(const BThreadInfo& thread_info) {
+    is_exited.store(thread_info.is_exited);
+    is_running.store(thread_info.is_running);
+    stackSize.store(thread_info.stackSize);
+    returnCode.store(thread_info.returnCode);
+    m_thread_pool_handle = thread_info.m_thread_pool_handle;
+
+    return *this;
+}
+
+void BThreadInfo::exit(int32 return_code) {
+    is_exited = true;
+    is_running = false;
+    returnCode = return_code;
+    return;
+}
+
+void BThreadInfo::running() {
+    is_exited = false;
+    is_running = true;
+}
+
+bool BThreadInfo::isExit() {
+    return is_exited;
+}
+
+bool BThreadInfo::isRunning() {
+    return is_running;
+}
+
+// End of implementation
+
+
+// Star implementation of BThread
+
 BThread::BThread()
     : m_private_ptr(new BThreadPrivate) {
 }
@@ -46,11 +101,11 @@ bool BThread::joinable() {
 }
 
 bool BThread::isExit() {
-    return m_thread_info.is_exited;
+    return m_thread_info.isExit();
 }
 
 bool BThread::isRunning() {
-    return m_thread_info.is_running;
+    return m_thread_info.isRunning();
 }
 
 int32 BThread::join() {
@@ -99,44 +154,6 @@ pid_t BThread::tid() {
 }
 #endif
 
-void BThreadInfo::exit(int32 return_code) {
-    is_exited = true;
-    is_running = false;
-    returnCode = return_code;
-    return;
-}
-
-void BThreadInfo::running() {
-    is_exited = false;
-    is_running = true;
-}
-
-BThreadInfo::BThreadInfo()
-    : is_exited (false),
-      is_running (false),
-      stackSize (0),
-      returnCode (0),
-      m_thread_pool_handle (nullptr){
-
-}
-
-BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)
-    : is_exited (thread_info.is_exited.load()),
-      is_running (thread_info.is_running.load()),
-      stackSize (thread_info.stackSize.load()),
-      returnCode (thread_info.returnCode.load()),
-      m_thread_pool_handle (nullptr) {
-
-}
-
-BThreadInfo& BThreadInfo::operator=(const BThreadInfo& thread_info) {
-    is_exited.store(thread_info.is_exited);
-    is_running.store(thread_info.is_running);
-    stackSize.store(thread_info.stackSize);
-    returnCode.store(thread_info.returnCode);
-    m_thread_pool_handle = thread_info.m_thread_pool_handle;
-
-    return *this;
-}
+// End of implementation
 
 }  // namespace BThreadPack
