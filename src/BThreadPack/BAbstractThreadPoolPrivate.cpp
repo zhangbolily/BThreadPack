@@ -154,6 +154,8 @@ int BAbstractThreadPoolPrivate::initializeThreadPool() {
         BThread bthread;
         thread_info.setThreadPoolHandle(m_public_ptr);
         bthread.start(BAbstractThreadPoolPrivate::Run, thread_info);
+        // You can add some actions like set affinity here before detach.
+        bthread.detach();
 
         BAbstractThreadPoolPrivate::addThread(std::move(bthread));
     }

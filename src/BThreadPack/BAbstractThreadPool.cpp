@@ -140,6 +140,7 @@ void BAbstractThreadPool::pushTask(BAbstractTask* _task_ptr) {
     m_private_ptr->m_priority_task_queue[task_priority - 1].push(_task_ptr);
     m_private_ptr->m_task_bitmap[task_priority - 1] = true;
 
+    m_private_ptr->startOneTask();
     m_private_ptr->updatePriorityState(task_priority);
 }
 
@@ -151,6 +152,7 @@ void BAbstractThreadPool::pushGroupTask(BGroupTask* _task_ptr) {
     m_priority_group_task_queue[task_priority - 1].push(_task_ptr);
     m_private_ptr->m_task_bitmap[task_priority - 1] = true;
 
+    m_private_ptr->startOneTask();
     m_private_ptr->updatePriorityState(task_priority);
 }
 

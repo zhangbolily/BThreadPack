@@ -61,7 +61,7 @@ class BThreadInfo {
 
     BThreadInfo& operator=(const BThreadInfo& thread_info);
 
-    void setThreadPoolHandle(BAbstractThreadPool* &thread_pool_handle);
+    void setThreadPoolHandle(BAbstractThreadPool* thread_pool_handle);
     void exit(int32 return_code = 0);
     void running();
     bool isExit();
@@ -85,6 +85,8 @@ class BThread {
     BThread(const BThread&&) = delete;
     BThread(BThread&& _bthread) noexcept;
     ~BThread();
+
+    BThread& operator=(BThread&& _bthread) noexcept;
 
     template< class Function >
     void start(Function&& f, const BThreadInfo& thread_info) {

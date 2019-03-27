@@ -9,7 +9,7 @@
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BGeneralTask.h"
 #include "BThreadPack/BGroupTask.h"
-#include "BThreadPack/BGeneralThreadPool.h"
+#include "BThreadPack/BThreadPool.h"
 
 using namespace std;
 using namespace BThreadPack;

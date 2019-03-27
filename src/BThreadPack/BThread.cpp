@@ -63,7 +63,7 @@ BThreadInfo& BThreadInfo::operator=(const BThreadInfo& thread_info) {
     return *this;
 }
 
-void BThreadInfo::setThreadPoolHandle(BAbstractThreadPool* &thread_pool_handle) {
+void BThreadInfo::setThreadPoolHandle(BAbstractThreadPool* thread_pool_handle) {
     m_thread_pool_handle = thread_pool_handle;
 }
 
@@ -109,6 +109,12 @@ BThread::BThread(BThread&& _bthread) noexcept {
 BThread::~BThread() {
     if (m_private_ptr != nullptr)
         delete m_private_ptr;
+}
+
+BThread& BThread::operator=(BThread&& _bthread) noexcept {
+    m_private_ptr = _bthread.m_private_ptr;
+    m_thread_info = _bthread.m_thread_info;
+    m_thread_handle.swap(_bthread.m_thread_handle);
 }
 
 bool BThread::joinable() {
