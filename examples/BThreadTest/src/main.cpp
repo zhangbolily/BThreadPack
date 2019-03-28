@@ -41,7 +41,7 @@ void run(BThreadInfo& thread_info) {
     thread_info.running();
 
     std::cout << "Worker thread: I'm running......" << std::endl;
-    sleep(2);
+    sleep(3);
     std::cout << "Walkout!!!" << std::endl;
 
     thread_info.exit(0);
@@ -51,16 +51,19 @@ int main(int argc, char** argv) {
     BThreadInfo thread_info;
     BThread infinite_run;
     infinite_run.start(run, thread_info);
-    infinite_run.detach();
+
+    sleep(1);
 
     while(1) {
         std::cout << "Main thread: I'm running......" << std::endl;
         if (infinite_run.isRunning())
-            std::cout << "Main thread: Worker thread is running, very good." << std::endl;
+            std::cout << "Main thread: Worker thread #" << infinite_run.id() << " is running, very good." << std::endl;
         else {
-            std::cout << "Main thread: Worker thread isn't running, very bad." << std::endl;
+            std::cout << "Main thread: Worker thread #" << infinite_run.id() << " isn't running, very bad." << std::endl;
             return 0;
         }
         sleep(1);
     }
+
+    infinite_run.detach();
 }

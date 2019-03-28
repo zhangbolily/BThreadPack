@@ -134,26 +134,26 @@ int BAbstractThreadPool::kill() {
 }
 
 void BAbstractThreadPool::pushTask(BAbstractTask* _task_ptr) {
-    lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);
-
+    m_private_ptr->m_task_mutex_.lock();
     int task_priority = _task_ptr->priority();
     m_private_ptr->m_priority_task_queue[task_priority - 1].push(_task_ptr);
     m_private_ptr->m_task_bitmap[task_priority - 1] = true;
-
-    m_private_ptr->startOneTask();
     m_private_ptr->updatePriorityState(task_priority);
+    m_private_ptr->m_task_mutex_.unlock();
+
+    m_private_ptr->startAllTasks();
 }
 
 void BAbstractThreadPool::pushGroupTask(BGroupTask* _task_ptr) {
-    lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex_);
-
+    m_private_ptr->m_task_mutex_.lock();
     int task_priority = _task_ptr->priority();
     m_private_ptr->
     m_priority_group_task_queue[task_priority - 1].push(_task_ptr);
     m_private_ptr->m_task_bitmap[task_priority - 1] = true;
-
-    m_private_ptr->startOneTask();
     m_private_ptr->updatePriorityState(task_priority);
+    m_private_ptr->m_task_mutex_.unlock();
+
+    m_private_ptr->startAllTasks();
 }
 
 int BAbstractThreadPool::taskQueueSize() {

@@ -90,7 +90,7 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
         p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
         p_general_task->startExecutionTiming();
 
-        int _retcode = p_general_task->execute();
+        int32 _retcode = p_general_task->execute();
 
         p_general_task->stopExecutionTiming();
         p_general_task->stopRealTiming();
@@ -143,30 +143,39 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
     }
 }
 
-int BThreadPoolPrivate::normalOptimizer(std::vector<BGeneralTask *> _task_vec) {
+int32 BThreadPoolPrivate::normalOptimizer(std::vector<BGeneralTask *> _task_vec) {
     // TODO(Ball Chang): This function need to be reimplemented.
     return BCore::ReturnCode::BSuccess;
 }
 
-int32 BThreadPoolPrivate::initializeThreadPool() {
+int64 BThreadPoolPrivate::initializeThreadPool() {
     return initializeThreadPool(m_public_ptr->capacity());
 }
 
-int32 BThreadPoolPrivate::initializeThreadPool(uint _thread_num) {
+int64 BThreadPoolPrivate::initializeThreadPool(uint32 _thread_num) {
 
     m_public_ptr->kill();
     m_public_ptr->setStatus(BThreadPool::BThreadPoolStatus::ThreadPoolRunning);
 
-    for (unsigned int i = 0; i < _thread_num; ++i) {
-        //  Construct a new thread and pass it to thread pool.
-        BThreadInfo thread_info;
-        BThread bthread;
-        thread_info.setThreadPoolHandle(static_cast<BAbstractThreadPool*>(m_public_ptr));
-        bthread.start(BAbstractThreadPoolPrivate::Run, thread_info);
-        // You can add some actions like set affinity here before detach.
-        bthread.detach();
+    BThreadInfo thread_info;
+    thread_info.setThreadPoolHandle(static_cast<BAbstractThreadPool*>(m_public_ptr));
 
-        return BAbstractThreadPoolPrivate::addThread(std::move(bthread));
+    for (uint32 i = 0; i < _thread_num; ++i) {
+        //  Construct a new thread and pass it to thread pool.
+        BThread bthread;
+
+        if (BAbstractThreadPoolPrivate::addThread(std::move(bthread)) == BThreadPoolFull) {
+            return BThreadPoolFull;
+        } else {
+            // You can add some actions like set affinity here before detach.
+            m_thread_vec_.back().start(BThreadPoolPrivate::Run, thread_info);
+            m_thread_vec_.back().detach();
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BThreadPoolPrivate::initializeThreadPool"
+                          " - Added a new thread, id is " << m_thread_vec_.back().id())
+#endif
+        }
+
     }
 
     return BCore::ReturnCode::BSuccess;

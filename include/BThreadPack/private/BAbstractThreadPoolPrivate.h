@@ -98,7 +98,7 @@ class BAbstractThreadPoolPrivate {
     int64 addThread(BThread&& _bthread);
     int64 removeThread(uint _thread_num);
 
-    virtual int initializeThreadPool();
+    virtual int64 initializeThreadPool();
     static void Run(BThreadInfo &thread_info);
 };
 }  // namespace BThreadPack

@@ -92,6 +92,8 @@ int main(int argc, char** argv)
     obj_group_task_type2.pushTask(static_cast<BAbstractTask*>(p_general_hello));
 #endif
 
+    sleep(1);
+
     hello_world_pool.pushGroupTask(&obj_group_task_type1);
     hello_world_pool.pushGroupTask(&obj_group_task_type2);
 

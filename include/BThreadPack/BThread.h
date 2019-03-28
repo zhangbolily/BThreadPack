@@ -91,9 +91,12 @@ class BThread {
     template< class Function >
     void start(Function&& f, const BThreadInfo& thread_info) {
         m_thread_info = thread_info;
-        std::thread worker_thread(std::forward<Function>(f),
+        m_thread_handle = new std::thread(std::forward<Function>(f),
                                   std::ref(m_thread_info));
-        m_thread_handle.swap(worker_thread);
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BThread::start - "
+        "Create a new thread # " << id())
+#endif
     }
 
     bool joinable();
@@ -112,7 +115,7 @@ class BThread {
  protected:
     BThreadPrivate* m_private_ptr;
     BThreadInfo m_thread_info;
-    std::thread m_thread_handle;
+    std::thread* m_thread_handle;
 };
 
 }   // namespace BThreadPack

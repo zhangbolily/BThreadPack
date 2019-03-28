@@ -113,11 +113,6 @@ bool BAbstractThreadPoolPrivate::isRemove() {
     }
 }
 
-void BAbstractThreadPoolPrivate::wait() {
-    std::unique_lock<std::mutex> lock(m_start_mutex_);
-    m_start_condition_.wait(lock);
-}
-
 void BAbstractThreadPoolPrivate::updatePriorityState(int task_priority) {
     if (m_priority_task_queue[m_priority_state - 1].empty()
         && m_priority_group_task_queue[m_priority_state - 1].empty()
@@ -145,7 +140,7 @@ void BAbstractThreadPoolPrivate::pushFinishedTask(BAbstractTask* finished_task) 
     m_finished_task_queue.push(finished_task);
 }
 
-int BAbstractThreadPoolPrivate::initializeThreadPool() {
+int64 BAbstractThreadPoolPrivate::initializeThreadPool() {
 	m_public_ptr->setStatus(BAbstractThreadPool::BThreadPoolStatus::ThreadPoolRunning);
 	    
     for (uint i = 0; i < m_public_ptr->capacity(); ++i) {
@@ -180,6 +175,11 @@ int64 BAbstractThreadPoolPrivate::addThread(BThread&& _bthread) {
 #endif
         return m_public_ptr->size();
     }
+}
+
+void BAbstractThreadPoolPrivate::wait() {
+    std::unique_lock<std::mutex> lock(m_start_mutex_);
+    m_start_condition_.wait(lock);
 }
 
 void BAbstractThreadPoolPrivate::startOneTask() {

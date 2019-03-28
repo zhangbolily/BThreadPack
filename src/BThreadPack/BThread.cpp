@@ -49,15 +49,12 @@ BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)
           is_running (thread_info.is_running.load()),
           stackSize (thread_info.stackSize.load()),
           returnCode (thread_info.returnCode.load()),
-          m_thread_pool_handle (nullptr) {
+          m_thread_pool_handle (thread_info.m_thread_pool_handle) {
 
 }
 
 BThreadInfo& BThreadInfo::operator=(const BThreadInfo& thread_info) {
-    is_exited.store(thread_info.is_exited);
-    is_running.store(thread_info.is_running);
     stackSize.store(thread_info.stackSize);
-    returnCode.store(thread_info.returnCode);
     m_thread_pool_handle = thread_info.m_thread_pool_handle;
 
     return *this;
@@ -71,12 +68,19 @@ void BThreadInfo::exit(int32 return_code) {
     is_exited = true;
     is_running = false;
     returnCode = return_code;
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThreadInfo::exit - Exit with return code "
+                  << returnCode)
+#endif
     return;
 }
 
 void BThreadInfo::running() {
     is_exited = false;
     is_running = true;
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThreadInfo::running")
+#endif
 }
 
 bool BThreadInfo::isExit() {
@@ -97,28 +101,70 @@ BAbstractThreadPool* BThreadInfo::threadPoolHandle() {
 // Star implementation of BThread
 
 BThread::BThread()
-    : m_private_ptr(new BThreadPrivate) {
+    : m_private_ptr(new BThreadPrivate),
+      m_thread_handle(nullptr){
 }
 
 BThread::BThread(BThread&& _bthread) noexcept {
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThread::BThread(BThread&& _bthread)"
+                  " - Copy construct function was called.")
+#endif
+
     m_private_ptr = _bthread.m_private_ptr;
     m_thread_info = _bthread.m_thread_info;
-    m_thread_handle.swap(_bthread.m_thread_handle);
+    m_thread_handle = _bthread.m_thread_handle;
+    if (_bthread.m_thread_handle == nullptr) {
+    } else {
+        m_thread_handle = new thread(std::move(*(_bthread.m_thread_handle)));
+    }
+
+    // This object haven't been constructed. So m_thread_handle is
+    // a null pointer. After swap operation, _bthread.m_thread_handle should
+    // be a null pointer too.
+    _bthread.m_thread_handle = nullptr;
+    _bthread.m_private_ptr = nullptr;
 }
 
 BThread::~BThread() {
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThread::~BThread() - "
+                  "Destruct function was called. ")
+#endif
     if (m_private_ptr != nullptr)
         delete m_private_ptr;
+    if (m_thread_handle != nullptr)
+        delete m_thread_handle;
 }
 
 BThread& BThread::operator=(BThread&& _bthread) noexcept {
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThread::operator=(BThread&& _bthread) - "
+                  "Copy function was called. ")
+#endif
+    // TODO(Ball Chang): BThreadPrivate should implement
+    // a copy construct function.
     m_private_ptr = _bthread.m_private_ptr;
     m_thread_info = _bthread.m_thread_info;
-    m_thread_handle.swap(_bthread.m_thread_handle);
+    if (m_thread_handle != nullptr) {
+        delete m_thread_handle;
+        m_thread_handle = nullptr;
+    }
+
+    if (_bthread.m_thread_handle == nullptr) {
+    } else {
+        m_thread_handle = new thread(std::move(*(_bthread.m_thread_handle)));
+    }
+
+    _bthread.m_thread_handle = nullptr;
+    _bthread.m_private_ptr = nullptr;
 }
 
 bool BThread::joinable() {
-    return m_thread_handle.joinable();
+    if (m_thread_handle != nullptr)
+        return (*m_thread_handle).joinable();
+    else
+        return false;
 }
 
 bool BThread::isExit() {
@@ -131,7 +177,7 @@ bool BThread::isRunning() {
 
 int32 BThread::join() {
     if (joinable()) {
-        m_thread_handle.join();
+        (*m_thread_handle).join();
         return BSuccess;
     } else {
         return BError;
@@ -140,7 +186,7 @@ int32 BThread::join() {
 
 int32 BThread::detach() {
     if (joinable()) {
-        m_thread_handle.detach();
+        (*m_thread_handle).detach();
         return BSuccess;
     } else {
         return BError;
@@ -175,11 +221,17 @@ int32 BThread::setAffinity(int32 cpu_num) {
 }
 
 std::thread::id BThread::id() {
-    return m_thread_handle.get_id();
+    if (m_thread_handle != nullptr)
+        return (*m_thread_handle).get_id();
+    else
+        return std::thread::id();
 }
 
 std::thread::native_handle_type BThread::nativeHandle() {
-    return m_thread_handle.native_handle();
+    if (m_thread_handle != nullptr)
+        return m_thread_handle->native_handle();
+    else
+        return std::thread::native_handle_type();
 }
 
 #ifdef LINUX
