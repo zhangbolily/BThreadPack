@@ -79,9 +79,10 @@ install (
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BAbstractTask.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BAbstractThreadPool.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralTask.h"
-    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGeneralThreadPool.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BGroupTask.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BThread.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BThreadPack.h"
+    "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BThreadPool.h"
     "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/BWorkerTask.h"
     DESTINATION include/${PROJECT_NAME}
 )
@@ -90,6 +91,7 @@ install (
     FILES
     "${PROJECT_SOURCE_DIR}/include/BCore/BCore.h"
     "${PROJECT_SOURCE_DIR}/include/BCore/BDebug.h"
+    "${PROJECT_SOURCE_DIR}/include/BCore/BType.h"
     DESTINATION include/BCore
 )
 

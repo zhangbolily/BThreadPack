@@ -21,4 +21,6 @@
 # SOFTWARE.
 
 add_subdirectory (BGeneralThreadPool)
-add_subdirectory (BWorkerThreadPool)
+if (BUILD)
+	add_subdirectory (BWorkerThreadPool)
+endif ()

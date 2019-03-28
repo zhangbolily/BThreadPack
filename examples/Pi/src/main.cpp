@@ -9,7 +9,7 @@
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BGeneralTask.h"
 #include "BThreadPack/BGroupTask.h"
-#include "BThreadPack/BGeneralThreadPool.h"
+#include "BThreadPack/BThreadPool.h"
 
 #define PRECISION 2000
 
@@ -71,7 +71,7 @@ private:
 };
 
 int num_threads = 8;
-BGeneralThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
+BThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
 
 int main(int argc, char** argv)
 {   
@@ -93,7 +93,6 @@ int main(int argc, char** argv)
     
     //pi_slice_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
     cout << "Current threads: " << pi_slice_pool.size() <<endl;
-    pi_slice_pool.startAllTasks();
     
     //2. Calculate pi
     long long ll_Pi = 0;

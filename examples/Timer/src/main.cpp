@@ -9,7 +9,7 @@
 #include "BUtils/BTimer.h"
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BGeneralTask.h"
-#include "BThreadPack/BGeneralThreadPool.h"
+#include "BThreadPack/BThreadPool.h"
 
 using namespace std;
 using namespace BThreadPack;
@@ -68,26 +68,16 @@ void jumpAction(int signum, siginfo_t* _sig, void* context)
 }
 
 int num_threads = 6;
-BGeneralThreadPool signal_task_pool(num_threads);
+BThreadPool signal_task_pool(num_threads);
 
 int main(int argc, char** argv)
-{
-    if(signal_task_pool.removeThread(2) == BCore::ReturnCode::BThreadNotExists)
-    {
-        cout<<"Try to remove a none exist thread."<<endl;
-    }
-    cout<<signal_task_pool.size()<<endl;
-    
+{   
     int task_num = 4;
     for(int i=0;i < task_num;i++)
     {
         SignalTask* _task = new SignalTask();
         signal_task_pool.pushTask(_task);
     }
-    
-    signal_task_pool.startAllTasks();
-    
-    getchar();
     
     signal_task_pool.kill();
 	

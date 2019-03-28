@@ -166,16 +166,16 @@ int BAbstractThreadPoolPrivate::initializeThreadPool() {
 int64 BAbstractThreadPoolPrivate::addThread(BThread&& _bthread) {
     if(m_public_ptr->capacity() == m_public_ptr->size()) {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BAbstractThreadPool::addThread"
+        B_PRINT_DEBUG("BAbstractThreadPoolPrivate::addThread"
                       " - Thread number reach the thread pool capacity limitation.")
-        B_PRINT_DEBUG("BAbstractThreadPool::addThread"
+        B_PRINT_DEBUG("BAbstractThreadPoolPrivate::addThread"
                       " - Current thread pool capacity number :" << m_thread_capacity_)
 #endif
         return BCore::ReturnCode::BThreadPoolFull;
     } else {
         m_thread_vec_.push_back(std::move(_bthread));
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BAbstractThreadPool::addThread"
+        B_PRINT_DEBUG("BAbstractThreadPoolPrivate::addThread"
                       " - Added a new thread, id is " << m_thread_vec_.back().id())
 #endif
         return m_public_ptr->size();
