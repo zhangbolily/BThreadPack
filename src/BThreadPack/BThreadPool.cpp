@@ -35,18 +35,18 @@
 namespace BThreadPack{
 
 BThreadPool::BThreadPool(unsigned int _thread_cap)
-    : BAbstractThreadPool(_thread_cap),
-      m_private_ptr(new BThreadPoolPrivate(this))
-{
-    m_private_ptr->initializeThreadPool();
+        : BAbstractThreadPool(new BThreadPoolPrivate(this), _thread_cap) {
+    BThreadPool::m_private_ptr = dynamic_cast<BThreadPoolPrivate*>
+                    (BAbstractThreadPool::m_private_ptr);
+    m_private_ptr->initializeThreadPool(_thread_cap);
 }
 
 BThreadPool::BThreadPool(unsigned int _thread_cap,
-    BAbstractThreadPool::BThreadControlMode _mode)
-    : BAbstractThreadPool(_thread_cap, _mode),
-      m_private_ptr(new BThreadPoolPrivate(this))
-{
-    m_private_ptr->initializeThreadPool();
+                         BAbstractThreadPool::BThreadControlMode _mode)
+        : BAbstractThreadPool(new BThreadPoolPrivate(this), _thread_cap, _mode) {
+    BThreadPool::m_private_ptr = dynamic_cast<BThreadPoolPrivate*>
+                    (BAbstractThreadPool::m_private_ptr);
+    m_private_ptr->initializeThreadPool(capacity());
 }
 
 BThreadPool::~BThreadPool()
@@ -56,7 +56,7 @@ BThreadPool::~BThreadPool()
 void BThreadPool::pushTask(BGeneralTask* _task_buffer)
 {
     static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
-    
+
     BAbstractThreadPool::pushTask(_task_buffer);
 }
 
@@ -64,12 +64,13 @@ void BThreadPool::pushGroupTask(BGroupTask* _task_ptr)
 {
     _task_ptr->m_private_ptr->startRealTiming();
     _task_ptr->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Pending);
-    _task_ptr->m_private_ptr->setTaskNum(_task_ptr->m_private_ptr->m_task_queue.size());
-    
+    _task_ptr->m_private_ptr->setTaskNum(
+            _task_ptr->m_private_ptr->m_task_queue.size());
+
     BAbstractThreadPool::pushGroupTask(_task_ptr);
 }
 
-unsigned int BThreadPool::resize(unsigned int _size)
+uint BThreadPool::resize(unsigned int _size)
 {
     if (_size < size())
     {
@@ -113,45 +114,45 @@ int BThreadPool::optimizer(std::vector<BGeneralTask *> _task_vec, BThreadPool::O
 #endif
         return BCore::ReturnCode::BModeIncorrect;
     }
-    
+
     BThreadPool::setOptimizePolicy(_op_policy);
-    
+
     switch (_op_policy) {
-    	case PerformanceFirst : {
-    		if(m_private_ptr->normalOptimizer(_task_vec) != BCore::ReturnCode::BSuccess)
-    		{
+        case PerformanceFirst : {
+            if ( m_private_ptr->normalOptimizer(_task_vec) != BCore::ReturnCode::BSuccess)
+            {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BThreadPool::BOptimizer - m_normalOptimizer_ failed.")
+                B_PRINT_DEBUG("BThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
-				return BCore::ReturnCode::BError;
-    		} else {
-    			if (size() == m_private_ptr->m_max_performance_threads_)
-    			{
-    				return BCore::ReturnCode::BSuccess;
-    			} else {
-    				return resize(m_private_ptr->m_max_performance_threads_);
-    			}
-    		}
-    	}
-    	
-    	case ProcessTimeFirst : {
-    		if(m_private_ptr->normalOptimizer(_task_vec) != BCore::ReturnCode::BSuccess)
-    		{
+                return BCore::ReturnCode::BError;
+            } else {
+                if (size() == m_private_ptr->m_max_performance_threads_)
+                {
+                    return BCore::ReturnCode::BSuccess;
+                } else {
+                    return resize( m_private_ptr->m_max_performance_threads_);
+                }
+            }
+        }
+
+        case ProcessTimeFirst : {
+            if( m_private_ptr->normalOptimizer(_task_vec) != BCore::ReturnCode::BSuccess)
+            {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BThreadPool::BOptimizer - m_normalOptimizer_ failed.")
+                B_PRINT_DEBUG("BThreadPool::BOptimizer - m_normalOptimizer_ failed.")
 #endif
-				return BCore::ReturnCode::BError;
-    		} else {
-    			if (size() == m_private_ptr->m_min_time_threads_)
-    			{
-    				return BCore::ReturnCode::BSuccess;
-    			} else {
-    				return resize(m_private_ptr->m_min_time_threads_);
-    			}
-    		}
-    	}
-    	default:
-    		return BCore::ReturnCode::BError;
+                return BCore::ReturnCode::BError;
+            } else {
+                if (size() == m_private_ptr->m_min_time_threads_)
+                {
+                    return BCore::ReturnCode::BSuccess;
+                } else {
+                    return resize( m_private_ptr->m_min_time_threads_);
+                }
+            }
+        }
+        default:
+            return BCore::ReturnCode::BError;
     }
 }
 

@@ -80,9 +80,7 @@ class BThread {
  public:
 
     BThread();
-    BThread(BThread&) = delete;
-    BThread(const BThread&) = delete;
-    BThread(const BThread&&) = delete;
+    BThread(const BThread& _bthread) noexcept;
     BThread(BThread&& _bthread) noexcept;
     ~BThread();
 

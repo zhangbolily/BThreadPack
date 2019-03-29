@@ -62,7 +62,8 @@ class BAbstractThreadPool;
 class BAbstractThreadPoolPrivate {
  public:
     explicit BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr);
-    ~BAbstractThreadPoolPrivate();
+    explicit BAbstractThreadPoolPrivate(BAbstractThreadPoolPrivate& private_obj);
+    virtual ~BAbstractThreadPoolPrivate();
 
     BAbstractThreadPool* m_public_ptr;
 
@@ -74,7 +75,7 @@ class BAbstractThreadPoolPrivate {
     std::vector<BThread> m_thread_vec_;
     std::vector<std::queue<BAbstractTask *>> m_priority_task_queue;
     std::vector<std::queue<BGroupTask *>> m_priority_group_task_queue;
-    std::vector<atomic_bool> m_task_bitmap;
+    std::vector<bool> m_task_bitmap;
     std::vector<int> m_task_counter;
     std::queue<BAbstractTask *> m_finished_task_queue;
     mutex m_task_mutex_;

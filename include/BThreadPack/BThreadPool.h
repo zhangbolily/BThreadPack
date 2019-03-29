@@ -62,7 +62,7 @@ class BThreadPool: public BAbstractThreadPool{
     BThreadPool(uint _thread_cap);
     BThreadPool(uint _thread_cap,
                 BAbstractThreadPool::BThreadControlMode _mode);
-    ~BThreadPool();
+    virtual ~BThreadPool();
 
     /* Overload pushTask */
     void pushTask(BGeneralTask* _task_ptr);
@@ -76,8 +76,8 @@ class BThreadPool: public BAbstractThreadPool{
     const BThreadPool::Optimizer optimizePolicy() const;
 
  protected:
-    BThreadPoolPrivate* m_private_ptr;
     friend class BThreadPoolPrivate;
+    BThreadPoolPrivate* m_private_ptr;
 
  private:
     BThreadPool::Optimizer m_optimize_policy;

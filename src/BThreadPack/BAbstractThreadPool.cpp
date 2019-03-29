@@ -34,8 +34,8 @@
 namespace BThreadPack{
 
 BAbstractThreadPool::BAbstractThreadPool(unsigned int _thread_cap)
-    :m_private_ptr(new BAbstractThreadPoolPrivate(this)) {
-    m_private_ptr->m_pool_mode_ = BThreadControlMode::FixedThreadCapacity;
+    : m_private_ptr(new BAbstractThreadPoolPrivate(this)) {
+      m_private_ptr->m_pool_mode_ = BThreadControlMode::FixedThreadCapacity;
 
     this->setCapacity(_thread_cap);
 
@@ -46,8 +46,35 @@ BAbstractThreadPool::BAbstractThreadPool(unsigned int _thread_cap)
 }
 
 BAbstractThreadPool::BAbstractThreadPool(unsigned int _thread_cap,
-                     BAbstractThreadPool::BThreadControlMode _mode)
-    :m_private_ptr(new BAbstractThreadPoolPrivate(this)) {
+    BAbstractThreadPool::BThreadControlMode _mode)
+    : m_private_ptr(new BAbstractThreadPoolPrivate(this)) {
+      m_private_ptr->m_thread_capacity_ = _thread_cap;
+      m_private_ptr->m_pool_mode_ = _mode;
+
+    this->setCapacity(_thread_cap);
+
+    for (int i = 0; i < PriorityNum; i++) {
+        m_private_ptr->m_task_bitmap[i] = 0;
+        m_private_ptr->m_task_counter[i] = 0;
+    }
+}
+
+BAbstractThreadPool::BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr,
+    uint _thread_cap)
+    : m_private_ptr(private_ptr) {
+      m_private_ptr->m_pool_mode_ = BThreadControlMode::FixedThreadCapacity;
+
+    this->setCapacity(_thread_cap);
+
+    for (int i = 0; i < PriorityNum; i++) {
+        m_private_ptr->m_task_bitmap[i] = 0;
+        m_private_ptr->m_task_counter[i] = 0;
+    }
+}
+
+BAbstractThreadPool::BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr, uint _thread_cap,
+    BAbstractThreadPool::BThreadControlMode _mode)
+    : m_private_ptr(private_ptr){
     m_private_ptr->m_thread_capacity_ = _thread_cap;
     m_private_ptr->m_pool_mode_ = _mode;
 
@@ -115,12 +142,13 @@ int BAbstractThreadPool::kill() {
     /* Notify all threads to get the status flag, then thread will exit.*/
     this->m_private_ptr->startAllTasks();
     /* Wait until all threads exit. */
-    microseconds _ms_time(1);
+    std::chrono::milliseconds _ms_time(1000);
+    bool is_exit = true;
     while (size()) {
-        bool is_exit = false;
+        is_exit = true;
         for (int32 i = 0; i < size(); i++) {
+            is_exit &= m_private_ptr->m_thread_vec_[i].isExit();
         }
-
         if (is_exit)
             break;
 

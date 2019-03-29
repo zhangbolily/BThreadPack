@@ -1,7 +1,7 @@
 #include "HelloWorld.h"
 
-int num_threads = 20;
-BThreadPool hello_world_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
+int num_threads = 4;
+BThreadPool hello_world_pool(num_threads); //   BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
 
 int main(int argc, char** argv)
 {   
@@ -91,8 +91,6 @@ int main(int argc, char** argv)
     p_general_hello->setPriority(4);
     obj_group_task_type2.pushTask(static_cast<BAbstractTask*>(p_general_hello));
 #endif
-
-    sleep(1);
 
     hello_world_pool.pushGroupTask(&obj_group_task_type1);
     hello_world_pool.pushGroupTask(&obj_group_task_type2);

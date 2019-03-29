@@ -50,13 +50,23 @@ BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)
           stackSize (thread_info.stackSize.load()),
           returnCode (thread_info.returnCode.load()),
           m_thread_pool_handle (thread_info.m_thread_pool_handle) {
-
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)"
+                  " - Copy construct function was called.")
+#endif
 }
 
 BThreadInfo& BThreadInfo::operator=(const BThreadInfo& thread_info) {
+    is_exited.store(thread_info.is_exited.load());
+    is_running.store(thread_info.is_running.load());
+    stackSize.store(thread_info.stackSize.load());
+    returnCode.store(thread_info.returnCode.load());
     stackSize.store(thread_info.stackSize);
     m_thread_pool_handle = thread_info.m_thread_pool_handle;
-
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThreadInfo::operator=(const BThreadInfo& thread_info)"
+                  " - Copy function was called.")
+#endif
     return *this;
 }
 
@@ -65,30 +75,42 @@ void BThreadInfo::setThreadPoolHandle(BAbstractThreadPool* thread_pool_handle) {
 }
 
 void BThreadInfo::exit(int32 return_code) {
-    is_exited = true;
-    is_running = false;
-    returnCode = return_code;
+    is_exited.store(true, std::memory_order_release);
+    is_running.store(false, std::memory_order_release);
+    returnCode.store(return_code, std::memory_order_release);
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BThreadInfo::exit - Exit with return code "
-                  << returnCode)
+    << returnCode << " and is_exited is " << is_exited
+    << " - BThreadInfo address is :" << this)
 #endif
     return;
 }
 
 void BThreadInfo::running() {
-    is_exited = false;
-    is_running = true;
+    is_exited.store(false, std::memory_order_release);
+    is_running.store(true, std::memory_order_release);
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BThreadInfo::running")
+    B_PRINT_DEBUG("BThreadInfo::running"
+    << " - BThreadInfo address is :" << this)
 #endif
+    return;
 }
 
 bool BThreadInfo::isExit() {
-    return is_exited;
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThreadInfo::isExit"
+    << " - BThreadInfo address is :" << this
+    << " and is_exited is " << is_exited)
+#endif
+    return is_exited.load(std::memory_order_acquire);
 }
 
 bool BThreadInfo::isRunning() {
-    return is_running;
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThreadInfo::isRunning"
+    << " - BThreadInfo address is :" << this)
+#endif
+    return is_running.load(std::memory_order_acquire);
 }
 
 BAbstractThreadPool* BThreadInfo::threadPoolHandle() {
@@ -105,6 +127,21 @@ BThread::BThread()
       m_thread_handle(nullptr){
 }
 
+BThread::BThread(const BThread& _bthread) noexcept {
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThread::BThread(const BThread&& _bthread)"
+                  " - Copy construct function was called.")
+#endif
+
+    m_private_ptr = _bthread.m_private_ptr;
+    m_thread_info = _bthread.m_thread_info;
+    if (_bthread.m_thread_handle == nullptr) {
+        m_thread_handle = nullptr;
+    } else {
+        m_thread_handle->swap(*_bthread.m_thread_handle);
+    }
+}
+
 BThread::BThread(BThread&& _bthread) noexcept {
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BThread::BThread(BThread&& _bthread)"
@@ -113,8 +150,8 @@ BThread::BThread(BThread&& _bthread) noexcept {
 
     m_private_ptr = _bthread.m_private_ptr;
     m_thread_info = _bthread.m_thread_info;
-    m_thread_handle = _bthread.m_thread_handle;
     if (_bthread.m_thread_handle == nullptr) {
+        m_thread_handle = nullptr;
     } else {
         m_thread_handle = new thread(std::move(*(_bthread.m_thread_handle)));
     }
@@ -168,10 +205,18 @@ bool BThread::joinable() {
 }
 
 bool BThread::isExit() {
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info.isExit()
+                          << " - BThreadInfo address is :" << &m_thread_info)
+#endif
     return m_thread_info.isExit();
 }
 
 bool BThread::isRunning() {
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info.isRunning()
+    << " - BThreadInfo address is :" << &m_thread_info)
+#endif
     return m_thread_info.isRunning();
 }
 

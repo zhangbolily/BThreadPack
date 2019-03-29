@@ -162,18 +162,16 @@ int64 BThreadPoolPrivate::initializeThreadPool(uint32 _thread_num) {
 
     for (uint32 i = 0; i < _thread_num; ++i) {
         //  Construct a new thread and pass it to thread pool.
-        BThread bthread;
-
-        if (BAbstractThreadPoolPrivate::addThread(std::move(bthread)) == BThreadPoolFull) {
+        if (BAbstractThreadPoolPrivate::addThread(BThread()) == BThreadPoolFull) {
             return BThreadPoolFull;
         } else {
             // You can add some actions like set affinity here before detach.
             m_thread_vec_.back().start(BThreadPoolPrivate::Run, thread_info);
-            m_thread_vec_.back().detach();
 #ifdef _B_DEBUG_
             B_PRINT_DEBUG("BThreadPoolPrivate::initializeThreadPool"
                           " - Added a new thread, id is " << m_thread_vec_.back().id())
 #endif
+            m_thread_vec_.back().detach();
         }
 
     }
