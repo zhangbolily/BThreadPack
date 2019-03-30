@@ -32,3 +32,8 @@ env:
     - OPENSSL_DIR=$(brew --prefix openssl)
     - RBXOPT=-Xcodedb.cache.enabled=no
     - LANG="en_US.UTF-8"
+    - TRAVIS_COMPILER=g++-7
+    - CXX_FOR_BUILD=g++-7
+    - CC_FOR_BUILD=gcc-7
+    - CXX=g++-7
+    - CC=gcc-7
