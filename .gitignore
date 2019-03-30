@@ -34,3 +34,19 @@ examples/WriteDisk/bin/
 examples/Pi/bin/data/
 
 examples/Pi/bin/
+
+examples/Timer/bin/
+
+examples/Timer/debug/
+
+docs/build/
+
+examples/HelloWorld/BGeneralThreadPool/memory_leak\.log
+
+examples/Pi/debug/
+
+build/
+
+\.idea/
+
+cmake-build-debug/

@@ -1,0 +1,39 @@
+language: cpp
+sudo: required
+dist: xenial
+compiler:
+  - g++-7
+os:
+  - linux
+ruby: 2.2.0
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make unzip cmake; fi
+script:
+  - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7  && make && sudo make install; fi
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-7
+      - g++-7
+after_success:
+  - if [ $TRAVIS_OS_NAME == linux ]; then pwd && bin/HelloWorld; fi
+branches:
+  only:
+    - master
+    - dev
+notifications:
+
+env:
+  global:
+    - OPENSSL_DIR=$(brew --prefix openssl)
+    - RBXOPT=-Xcodedb.cache.enabled=no
+    - LANG="en_US.UTF-8"
+    - TRAVIS_COMPILER=g++-7
+    - CXX_FOR_BUILD=g++-7
+    - CC_FOR_BUILD=gcc-7
+    - CXX=g++-7
+    - CC=gcc-7
