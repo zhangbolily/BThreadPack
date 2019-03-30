@@ -11,7 +11,7 @@ before_install:
   - echo $LC_ALL
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make unzip cmake; fi
 script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. && make && sudo make install; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7  && make && sudo make install; fi
 addons:
   apt:
     sources:
