@@ -5,18 +5,15 @@ compiler:
   - gcc
 os:
   - linux
-  - windows
 ruby: 2.2.0
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt install -y autoconf automake libtool curl make g++ unzip cmake; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make g++ unzip cmake; fi
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. && make && sudo make install; fi
-  - if [ $TRAVIS_OS_NAME == windows ]; then mkdir build && cd build && cmake .. -G "MinGW Makefiles" && make && make install; fi
 after_success:
   - if [ $TRAVIS_OS_NAME == linux ]; then bin/HelloWorld; fi
-  - if [ $TRAVIS_OS_NAME == windows ]; then bin/HelloWorld; fi
 branches:
   only:
     - master
