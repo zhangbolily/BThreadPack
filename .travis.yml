@@ -1,0 +1,28 @@
+language: cpp
+sudo: required
+dist: trusty
+compiler:
+  - gcc
+os:
+  - linux
+  - windows
+ruby: 2.2.0
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+  - if [ $TRAVIS_OS_NAME == linux ]; then apt install -y autoconf automake libtool curl make g++ unzip cmake; fi
+script:
+  - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. && make && sudo make install; fi
+after_success:
+  - if [ $TRAVIS_OS_NAME == linux ]; then bin/HelloWorld; fi
+branches:
+  only:
+    - master
+    - dev
+notifications:
+
+env:
+  global:
+    - OPENSSL_DIR=$(brew --prefix openssl)
+    - RBXOPT=-Xcodedb.cache.enabled=no
+    - LANG="en_US.UTF-8"

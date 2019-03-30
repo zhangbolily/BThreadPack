@@ -78,6 +78,8 @@ int main(int argc, char** argv)
         SignalTask* _task = new SignalTask();
         signal_task_pool.pushTask(_task);
     }
+
+    sleep(2);
     
     signal_task_pool.kill();
 	
