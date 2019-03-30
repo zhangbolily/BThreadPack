@@ -71,7 +71,7 @@ class BAbstractTask: private NoneCopy {
         virtual ~BAbstractTask();
         int32 status();
         int32 setStatus(BTaskStatus _status);
-        int32 setStatus(std::atomic_int32_t _status);
+        int32 setStatus(std::atomic_int _status);
         int32 setInputBuffer(const void* _buffer, size_t _size);
         int32 inputBuffer(void** _buffer, size_t &_size);
         int32 setOutputBuffer(void* _buffer, const size_t _size);
@@ -99,8 +99,8 @@ class BAbstractTask: private NoneCopy {
 
  private:
         /* @m_task_status_ - store the status of task */
-        std::atomic_int32_t m_task_priority;
-        std::atomic_int32_t m_task_status_;
+        std::atomic_int m_task_priority;
+        std::atomic_int m_task_status_;
         std::atomic_bool m_task_autodestroy;
         BTimer m_real_timer;
         BTimer m_execute_timer;

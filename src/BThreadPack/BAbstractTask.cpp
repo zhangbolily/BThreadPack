@@ -132,7 +132,7 @@ int32 BAbstractTask::setStatus(BAbstractTask::BTaskStatus _status) {
     return BCore::ReturnCode::BSuccess;
 }
 
-int32 BAbstractTask::setStatus(std::atomic_int32_t _status) {
+int32 BAbstractTask::setStatus(std::atomic_int _status) {
     if (!m_task_mutex.try_lock()) {
         return BCore::ReturnCode::BOnlySingleThread;
     }

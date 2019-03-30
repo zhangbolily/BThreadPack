@@ -47,7 +47,7 @@ namespace BThreadPack {
 using std::thread;
 using std::forward;
 using std::atomic_bool;
-using std::atomic_int32_t;
+using std::atomic_int;
 using BCore::ReturnCode;
 
 class BThreadPrivate;
@@ -72,8 +72,8 @@ class BThreadInfo {
  protected:
     std::atomic_bool is_exited;
     std::atomic_bool is_running;
-    std::atomic_int32_t stackSize;
-    std::atomic_int32_t returnCode;
+    std::atomic_int stackSize;
+    std::atomic_int returnCode;
     std::thread::id     m_id;
     BAbstractThreadPool* m_thread_pool_handle;
 };
