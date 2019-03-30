@@ -6,7 +6,7 @@ The format is based on
 and this project adheres to
  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.1-alpha] - 2019-3-31
 ### Added
 [@Ball Chang]
 
@@ -19,7 +19,6 @@ and this project adheres to
 - Add task priority feature, high priority task must be scheduled
 prior than low priority task.
 - Add a new changelog to record the development of this project.
-- Many bug fix.
 
 ### Changed
 [@Ball Chang]
@@ -29,13 +28,15 @@ prior than low priority task.
 - Follow Google C++ Style.
 - Separate the implementation of public members and private members.
 - Using cmake to manage and build project.
+- Using travis ci to build the project instead of gitlab ci.
+- Fixed some memory leak bugs.
 
 ### Removed
 [@Ball Chang]
 
 - Removed the dependency of protobuf in example project.
 
-## [0.1.1-alpha] - 2019-10-22
+## [0.1.1-alpha] - 2018-10-22
 ### Added
 [@BallChang]
 
@@ -45,5 +46,7 @@ prior than low priority task.
 [Unreleased]: https://gitlab.com/zhangbolily/bthreadpack/tree/dev
 [0.1.1-alpha]:
  https://gitlab.com/zhangbolily/bthreadpack/tree/v0.1.1-alpha
+[0.2.1-alpha]:
+https://gitlab.com/zhangbolily/bthreadpack/tree/v0.2.1-alpha
 
 [@Ball Chang]: https://gitlab.com/zhangbolily
