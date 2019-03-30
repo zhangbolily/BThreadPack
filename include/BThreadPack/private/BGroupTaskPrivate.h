@@ -44,6 +44,8 @@
 
 namespace BThreadPack {
 
+using BUtils::BTimer;
+
 class BGroupTaskPrivate {
  public:
     BGroupTaskPrivate();

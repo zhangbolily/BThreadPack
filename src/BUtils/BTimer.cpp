@@ -29,7 +29,7 @@
 
 #include "BUtils/BTimer.h"
 
-namespace BThreadPack {
+namespace BUtils {
 
 BTimer::BTimer()
 #ifdef WIN32

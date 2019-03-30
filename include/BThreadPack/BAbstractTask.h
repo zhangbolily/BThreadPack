@@ -51,6 +51,8 @@ namespace BThreadPack {
 using std::atomic;
 using std::string;
 
+using BUtils::BTimer;
+
 class BAbstractTaskPrivate;
 
 class BAbstractTask: private NoneCopy {

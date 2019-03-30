@@ -55,6 +55,8 @@ namespace BThreadPack {
 
 using std::chrono::microseconds;
 
+using BUtils::BTimer;
+
 class BAbstractThreadPool: private NoneCopy{
  public:
     enum BThreadPoolStatus {

@@ -49,7 +49,7 @@
 
 #define MILLIAN 1000000
 
-namespace BThreadPack {
+namespace BUtils {
 
 using namespace BCore;
 using std::chrono::steady_clock;
