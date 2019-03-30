@@ -72,7 +72,7 @@ class BAbstractTask: private NoneCopy {
         int32 setStatus(std::atomic_int32_t _status);
         int32 setInputBuffer(const void* _buffer, size_t _size);
         int32 inputBuffer(void** _buffer, size_t &_size);
-        int32 setOutputBuffer(void* _buffer, size_t _size);
+        int32 setOutputBuffer(void* _buffer, const size_t _size);
         int32 outputBuffer(const void** _buffer, size_t &_size);
         void setPriority(int);
         int32 priority() const;

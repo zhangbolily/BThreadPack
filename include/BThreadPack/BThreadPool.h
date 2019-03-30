@@ -51,7 +51,6 @@ using std::vector;
 class BThreadPoolPrivate;
 
 class BThreadPool: public BAbstractThreadPool{
-
  public:
     enum Optimizer {
         None = 0,
@@ -59,7 +58,7 @@ class BThreadPool: public BAbstractThreadPool{
         ProcessTimeFirst = 2
     };
 
-    BThreadPool(uint _thread_cap);
+    explicit BThreadPool(uint _thread_cap);
     BThreadPool(uint _thread_cap,
                 BAbstractThreadPool::BThreadControlMode _mode);
     virtual ~BThreadPool();
@@ -69,7 +68,8 @@ class BThreadPool: public BAbstractThreadPool{
     void pushGroupTask(BGroupTask* _task_ptr);
     void setOptimizePolicy(BThreadPool::Optimizer _policy);
 
-    int32 optimizer(std::vector<BGeneralTask *> _task_vec, BThreadPool::Optimizer _op_type);
+    int32 optimizer(std::vector<BGeneralTask *> _task_vec,
+                    BThreadPool::Optimizer _op_type);
 
     virtual uint resize(uint _size);
 
@@ -83,6 +83,6 @@ class BThreadPool: public BAbstractThreadPool{
     BThreadPool::Optimizer m_optimize_policy;
 };
 
-}
+}  // namespace BThreadPack
 
 #endif  // INCLUDE_BTHREADPACK_BTHREADPOOL_H_

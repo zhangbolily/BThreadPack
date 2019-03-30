@@ -62,7 +62,8 @@ class BAbstractThreadPool;
 class BAbstractThreadPoolPrivate {
  public:
     explicit BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr);
-    explicit BAbstractThreadPoolPrivate(BAbstractThreadPoolPrivate& private_obj);
+    explicit BAbstractThreadPoolPrivate(
+            const BAbstractThreadPoolPrivate& private_obj);
     virtual ~BAbstractThreadPoolPrivate();
 
     BAbstractThreadPool* m_public_ptr;

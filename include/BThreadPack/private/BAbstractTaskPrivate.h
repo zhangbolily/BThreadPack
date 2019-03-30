@@ -27,22 +27,22 @@
  * @Date        : 2019-3-24
 */
 
-#ifndef _BABSTRACT_TASK_PRIVATE_H_
-#define _BABSTRACT_TASK_PRIVATE_H_
+#ifndef INCLUDE_BTHREADPACK_PRIVATE_BABSTRACTTASKPRIVATE_H_
+#define INCLUDE_BTHREADPACK_PRIVATE_BABSTRACTTASKPRIVATE_H_
 
 #include <mutex>
 #include <condition_variable>
 
 namespace BThreadPack {
 
-class BAbstractTaskPrivate{
-public:
+class BAbstractTaskPrivate {
+ public:
     void finished();
-    
+
     std::mutex m_task_mutex;
     std::condition_variable m_task_cond;
 };
-};
+}  // namespace BThreadPack
 
-#endif
+#endif  // INCLUDE_BTHREADPACK_PRIVATE_BABSTRACTTASKPRIVATE_H_
 

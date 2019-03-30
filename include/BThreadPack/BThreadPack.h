@@ -27,13 +27,14 @@
  * @Date        : 2018-11-17
 */
 
-#ifndef _BTHREAD_PACK_H_
-#define _BTHREAD_PACK_H_
+#ifndef INCLUDE_BTHREADPACK_BTHREADPACK_H_
+#define INCLUDE_BTHREADPACK_BTHREADPACK_H_
 
 #include "BCore/BCore.h"
 #include "BCore/BDebug.h"
 #include "BCore/BType.h"
 
+using BCore::ReturnCode;
 using namespace BCore;
 
 const int PriorityNum = 5;
@@ -42,4 +43,4 @@ const int PriorityNum = 5;
 const int TaskTimeMessageNum = 0;
 // End of definition
 
-#endif
+#endif  // INCLUDE_BTHREADPACK_BTHREADPACK_H_

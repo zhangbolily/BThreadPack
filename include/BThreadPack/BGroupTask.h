@@ -27,10 +27,11 @@
  * @Date        : 2019-3-17
 */
 
-#ifndef _BGROUP_TASK_H_
-#define _BGROUP_TASK_H_
+#ifndef INCLUDE_BTHREADPACK_BGROUPTASK_H_
+#define INCLUDE_BTHREADPACK_BGROUPTASK_H_
 
 #include <chrono>
+#include <string>
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractTask.h"
@@ -43,8 +44,7 @@ using std::lock_guard;
 class BGroupTaskPrivate;
 
 class BGroupTask:private NoneCopy{
-
-public:
+ public:
     enum BGroupTaskStatus {
         Failed = -1,
         Init = 0,
@@ -53,27 +53,27 @@ public:
         Finished = 3
     };
 
-    /* @BGroupTask() - Constructor */    
+    /* @BGroupTask() - Constructor */
     BGroupTask();
     ~BGroupTask();
-    
-    int priority() const;
-    int wait();
+
+    int32 priority() const;
+    int32 wait();
     void pushTask(BAbstractTask* _task_handle);
-    void setPriority(int);
-    long long executionTime();
-    long long realTime();
-    unsigned int size();
+    void setPriority(int32);
+    int64 executionTime();
+    int64 realTime();
+    uint size();
     BAbstractTask* getFinishedTask();
     const std::string UUID();
-    
-protected:
+
+ protected:
     BGroupTaskPrivate* m_private_ptr;
     friend class BAbstractThreadPool;
     friend class BAbstractThreadPoolPrivate;
     friend class BThreadPool;
     friend class BThreadPoolPrivate;
 };
-};
+}  // namespace BThreadPack
 
-#endif
+#endif  // INCLUDE_BTHREADPACK_BGROUPTASK_H_

@@ -27,12 +27,13 @@
  * @Date        : 2019-3-21
 */
 
-#ifndef _BGROUP_TASK_PRIVATE_H_
-#define _BGROUP_TASK_PRIVATE_H_
+#ifndef INCLUDE_BTHREADPACK_PRIVATE_BGROUPTASKPRIVATE_H_
+#define INCLUDE_BTHREADPACK_PRIVATE_BGROUPTASKPRIVATE_H_
 
 #include <vector>
 #include <queue>
 #include <mutex>
+#include <string>
 #include <condition_variable>
 
 #include "BUtils/BTimer.h"
@@ -41,10 +42,10 @@
 #include "BThreadPack/BAbstractTask.h"
 #include "BThreadPack/BGroupTask.h"
 
-namespace BThreadPack{
+namespace BThreadPack {
 
-class BGroupTaskPrivate{
-public:
+class BGroupTaskPrivate {
+ public:
     BGroupTaskPrivate();
     ~BGroupTaskPrivate();
 
@@ -54,14 +55,14 @@ public:
     void startRealTiming();
     void stopRealTiming();
     void setUUID();
-    void setUUID(std::string &_uuid);
+    void setUUID(const std::string &_uuid);
     void setTaskNum(int task_num);
     void setStatus(BGroupTask::BGroupTaskStatus group_status);
     void pushFinishedTask(BAbstractTask* result_task_ptr);
     void finishedOneTask();
     BAbstractTask* getTask();
     BGroupTask::BGroupTaskStatus status();
-    
+
     BTimer m_real_timer;
     BTimer m_execute_timer;
     std::atomic_int m_task_priority;
@@ -77,6 +78,6 @@ public:
     BGroupTask::BGroupTaskStatus m_group_task_status;
 };
 
-};
+}  // namespace BThreadPack
 
-#endif
+#endif  // INCLUDE_BTHREADPACK_PRIVATE_BGROUPTASKPRIVATE_H_

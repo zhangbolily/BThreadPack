@@ -27,8 +27,8 @@
  * @Date        : 2019-3-20
 */
 
-#ifndef _BUTILS_H_
-#define _BUTILS_H_
+#ifndef INCLUDE_BUTILS_BUTILS_H_
+#define INCLUDE_BUTILS_BUTILS_H_
 
 #include <string>
 #include <random>
@@ -38,7 +38,7 @@
 
 #include "BCore/BCore.h"
 
-namespace BUtils{
+namespace BUtils {
 
 std::string generateUUID4();
 
@@ -46,4 +46,4 @@ bool isUUID4(const std::string &_uuid);
 
 }
 
-#endif
+#endif  // INCLUDE_BUTILS_BUTILS_H_

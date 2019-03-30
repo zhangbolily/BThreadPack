@@ -100,7 +100,8 @@ class BAbstractThreadPool: private NoneCopy{
     BAbstractThreadPoolPrivate* m_private_ptr;
     explicit BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr,
                         uint _thread_cap);
-    BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr, uint _thread_cap,
+    BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr,
+                        uint _thread_cap,
                         BAbstractThreadPool::BThreadControlMode _mode);
 };
 

@@ -43,7 +43,7 @@ BAbstractThreadPoolPrivate::BAbstractThreadPoolPrivate(BAbstractThreadPool* ptr)
 }
 
 BAbstractThreadPoolPrivate::BAbstractThreadPoolPrivate(
-        BAbstractThreadPoolPrivate& private_obj)
+        const BAbstractThreadPoolPrivate& private_obj)
         :m_priority_state(private_obj.m_priority_state.load()),
          m_pool_mode_(private_obj.m_pool_mode_.load()),
          m_pool_status_(private_obj.m_pool_status_.load()),

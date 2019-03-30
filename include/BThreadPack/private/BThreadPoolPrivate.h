@@ -31,6 +31,7 @@
 #define INCLUDE_BTHREADPACK_PRIVATE_BTHREADPOOLPRIVATE_H_
 
 #include <vector>
+#include <string>
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
@@ -61,6 +62,6 @@ class BThreadPoolPrivate : public BAbstractThreadPoolPrivate {
  protected:
     BThreadPool* m_public_ptr;
 };
-}
+}  // namespace BThreadPack
 
 #endif  // INCLUDE_BTHREADPACK_PRIVATE_BTHREADPOOLPRIVATE_H_

@@ -27,14 +27,14 @@
  * @Date        : 2019-3-24
 */
 
-#ifndef _BTHREADPACK_BTYPE_H_
-#define _BTHREADPACK_BTYPE_H_
+#ifndef INCLUDE_BCORE_BTYPE_H_
+#define INCLUDE_BCORE_BTYPE_H_
 
 /*
  *  Definition of basic data types
 */
 
-namespace BCore{
+namespace BCore {
     typedef uint32_t uint;
 
     typedef int8_t int8;
@@ -46,6 +46,6 @@ namespace BCore{
     typedef uint16_t uint16;
     typedef uint32_t uint32;
     typedef uint64_t uint64;
-};
+}  // namespace BCore
 
-#endif // BTHREADPACK_BTYPE_H
+#endif  // INCLUDE_BCORE_BTYPE_H_

@@ -80,7 +80,6 @@ class BThreadInfo {
 
 class BThread {
  public:
-
     BThread();
     BThread(const BThread& _bthread) noexcept;
     BThread(BThread&& _bthread) noexcept;

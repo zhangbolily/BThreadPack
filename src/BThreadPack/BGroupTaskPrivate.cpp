@@ -78,7 +78,7 @@ void BGroupTaskPrivate::setUUID()
 #endif
 }
 
-void BGroupTaskPrivate::setUUID(std::string &_uuid)
+void BGroupTaskPrivate::setUUID(const std::string &_uuid)
 {
     m_uuid = _uuid;
 }

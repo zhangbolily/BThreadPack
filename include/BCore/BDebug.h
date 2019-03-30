@@ -27,6 +27,9 @@
  * @Date        : 2019-3-20
 */
 
+#ifndef INCLUDE_BCORE_BDEBUG_H_
+#define INCLUDE_BCORE_BDEBUG_H_
+
 #define _B_DEBUG_
 
 #ifdef _B_DEBUG_
@@ -35,9 +38,6 @@
 #include <ctime>
 #include <thread>
 #endif
-
-#ifndef _B_DEBUG_H_
-#define _B_DEBUG_H_
 
 /*
  *  Definition of return code
@@ -53,8 +53,10 @@
     std::ostringstream _os;\
     std::time_t result = std::time(nullptr);\
     char time_str[64] = {0};\
-    std::strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S ", std::localtime(&result));\
-    _os << "[Debug] Thread "<< std::this_thread::get_id() << " " << time_str << msg << "\n";\
+    std::strftime(time_str, sizeof(time_str), \
+    "%Y-%m-%d %H:%M:%S ", std::localtime(&result));\
+    _os << "[Debug] Thread "<< std::this_thread::get_id()\
+    << " " << time_str << msg << "\n";\
     std::cout << _os.str();\
 }
 
@@ -78,10 +80,12 @@
     std::ostringstream _os;\
     std::time_t result = std::time(nullptr);\
     char time_str[64] = {0};\
-    std::strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S ", std::localtime(&result));\
-    _os << "\033[37;41m[Error] Thread "<< std::this_thread::get_id() << " " << time_str << msg << "\033[0m\n";\
+    std::strftime(time_str, sizeof(time_str), \
+    "%Y-%m-%d %H:%M:%S ", std::localtime(&result));\
+    _os << "\033[37;41m[Error] Thread "<< std::this_thread::get_id() \
+    << " " << time_str << msg << "\033[0m\n";\
     std::cout << _os.str();\
 }
 #endif
 
-#endif
+#endif  // INCLUDE_BCORE_BDEBUG_H_
