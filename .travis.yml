@@ -1,6 +1,6 @@
 language: cpp
 sudo: required
-dist: trusty
+dist: xenial
 compiler:
   - g++
 os:
@@ -9,9 +9,16 @@ ruby: 2.2.0
 before_install:
   - echo $LANG
   - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make g++-7 unzip cmake; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make unzip cmake; fi
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. && make && sudo make install; fi
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-7
+      - g++-7
 after_success:
   - if [ $TRAVIS_OS_NAME == linux ]; then bin/HelloWorld; fi
 branches:
