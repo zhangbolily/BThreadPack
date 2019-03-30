@@ -30,88 +30,73 @@
 #include "BThreadPack/BGroupTask.h"
 #include "BThreadPack/private/BGroupTaskPrivate.h"
 
-namespace BThreadPack{
+namespace BThreadPack {
 
 BGroupTaskPrivate::BGroupTaskPrivate()
-    :m_task_priority((PriorityNum+1)/2),
-    m_finished_task_counter(0),
-    m_group_task_status(BGroupTask::BGroupTaskStatus::Init)
-{
+        : m_task_priority((PriorityNum+1)/2),
+          m_finished_task_counter(0),
+          m_group_task_status(BGroupTask::BGroupTaskStatus::Init) {
 }
 
-BGroupTaskPrivate::~BGroupTaskPrivate()
-{
+BGroupTaskPrivate::~BGroupTaskPrivate() {
 }
 
-bool BGroupTaskPrivate::queueEmpty()
-{
+bool BGroupTaskPrivate::queueEmpty() {
     return m_task_queue.empty();
 }
 
 // This function called when the group task is scheduled.
-void BGroupTaskPrivate::startExecutionTiming()
-{
+void BGroupTaskPrivate::startExecutionTiming() {
     m_execute_timer.start();
 }
 
-void BGroupTaskPrivate::stopExecutionTiming()
-{
+void BGroupTaskPrivate::stopExecutionTiming() {
     m_execute_timer.stop();
 }
 
-void BGroupTaskPrivate::startRealTiming()
-{
+void BGroupTaskPrivate::startRealTiming() {
     m_real_timer.start();
 }
 
-void BGroupTaskPrivate::stopRealTiming()
-{
-     m_real_timer.stop();
+void BGroupTaskPrivate::stopRealTiming() {
+    m_real_timer.stop();
 }
 
-void BGroupTaskPrivate::setUUID()
-{
-    if(!BUtils::isUUID4(m_uuid))
+void BGroupTaskPrivate::setUUID() {
+    if (!BUtils::isUUID4(m_uuid))
         m_uuid = BUtils::generateUUID4();
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BGroupTaskPrivate::setUUID - UUID is " << m_uuid << " .")
+    B_PRINT_DEBUG("BGroupTaskPrivate::setUUID - UUID is " << m_uuid << " .")
 #endif
 }
 
-void BGroupTaskPrivate::setUUID(const std::string &_uuid)
-{
+void BGroupTaskPrivate::setUUID(const std::string &_uuid) {
     m_uuid = _uuid;
 }
 
-void BGroupTaskPrivate::setTaskNum(int task_num)
-{
+void BGroupTaskPrivate::setTaskNum(int task_num) {
     m_task_num.store(task_num);
 }
 
-void BGroupTaskPrivate::setStatus(BGroupTask::BGroupTaskStatus group_status)
-{
+void BGroupTaskPrivate::setStatus(BGroupTask::BGroupTaskStatus group_status) {
     m_group_task_status = group_status;
 }
 
-BGroupTask::BGroupTaskStatus BGroupTaskPrivate::status()
-{
+BGroupTask::BGroupTaskStatus BGroupTaskPrivate::status() {
     return m_group_task_status;
 }
 
-void BGroupTaskPrivate::pushFinishedTask(BAbstractTask* result_task_ptr)
-{
+void BGroupTaskPrivate::pushFinishedTask(BAbstractTask* result_task_ptr) {
     lock_guard<std::mutex> guard(m_finished_task_mutex);
     m_result_task_queue.push(result_task_ptr);
 }
 
-BAbstractTask* BGroupTaskPrivate::getTask()
-{
+BAbstractTask* BGroupTaskPrivate::getTask() {
     lock_guard<std::mutex> guard(m_task_mutex);
 
     BAbstractTask* task_ptr = m_task_queue.front();
-    
-    if(task_ptr == nullptr)
-    {
+
+    if (task_ptr == nullptr) {
         return nullptr;
     } else {
         m_task_queue.pop();
@@ -119,11 +104,10 @@ BAbstractTask* BGroupTaskPrivate::getTask()
     }
 }
 
-void BGroupTaskPrivate::finishedOneTask()
-{
+void BGroupTaskPrivate::finishedOneTask() {
     m_finished_task_counter++;
     m_group_task_cond.notify_all();
 }
 
-};
+}  // namespace BThreadPack
 

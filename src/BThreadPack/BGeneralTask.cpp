@@ -29,34 +29,29 @@
 
 #include "BThreadPack/BGeneralTask.h"
 
-namespace BThreadPack{
-   
+namespace BThreadPack {
+
 BGeneralTask::BGeneralTask()
-    :BAbstractTask()
-{
+        :BAbstractTask() {
     setUUID();
 }
 
 BGeneralTask::BGeneralTask(bool _autodestroy)
-    :BAbstractTask(_autodestroy)
-{
+        :BAbstractTask(_autodestroy) {
     setUUID();
 }
-   
+
 BGeneralTask::BGeneralTask(const void* _buffer, size_t _size)
-    :BAbstractTask(_buffer, _size)
-{
+        :BAbstractTask(_buffer, _size) {
     setUUID();
 }
 
 BGeneralTask::BGeneralTask(const void* _buffer, size_t _size, bool _autodestroy)
-    :BAbstractTask(_buffer, _size, _autodestroy)
-{
+        :BAbstractTask(_buffer, _size, _autodestroy) {
     setUUID();
 }
 
-BGeneralTask::~BGeneralTask()
-{
+BGeneralTask::~BGeneralTask() {
 }
 
-};
+}  // namespace BThreadPack

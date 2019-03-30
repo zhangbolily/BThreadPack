@@ -59,10 +59,11 @@ BAbstractThreadPool::BAbstractThreadPool(unsigned int _thread_cap,
     }
 }
 
-BAbstractThreadPool::BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr,
-    uint _thread_cap)
-    : m_private_ptr(private_ptr) {
-      m_private_ptr->m_pool_mode_ = BThreadControlMode::FixedThreadCapacity;
+BAbstractThreadPool::BAbstractThreadPool(
+        BAbstractThreadPoolPrivate* private_ptr,
+        uint _thread_cap)
+        : m_private_ptr(private_ptr) {
+        m_private_ptr->m_pool_mode_ = BThreadControlMode::FixedThreadCapacity;
 
     this->setCapacity(_thread_cap);
 
@@ -72,11 +73,13 @@ BAbstractThreadPool::BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr
     }
 }
 
-BAbstractThreadPool::BAbstractThreadPool(BAbstractThreadPoolPrivate* private_ptr, uint _thread_cap,
-    BAbstractThreadPool::BThreadControlMode _mode)
-    : m_private_ptr(private_ptr){
-    m_private_ptr->m_thread_capacity_ = _thread_cap;
-    m_private_ptr->m_pool_mode_ = _mode;
+BAbstractThreadPool::BAbstractThreadPool(
+        BAbstractThreadPoolPrivate* private_ptr,
+        uint _thread_cap,
+        BAbstractThreadPool::BThreadControlMode _mode)
+        : m_private_ptr(private_ptr) {
+        m_private_ptr->m_thread_capacity_ = _thread_cap;
+        m_private_ptr->m_pool_mode_ = _mode;
 
     this->setCapacity(_thread_cap);
 

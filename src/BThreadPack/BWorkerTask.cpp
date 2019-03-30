@@ -29,19 +29,16 @@
 
 #include "BThreadPack/BWorkerTask.h"
 
-namespace BThreadPack{
+namespace BThreadPack {
 
-BWorkerTask::BWorkerTask()
-{
+BWorkerTask::BWorkerTask() {
 }
-  
+
 BWorkerTask::BWorkerTask(void* _buffer, size_t _size)
-    :BAbstractTask(_buffer, _size)
-{
+    :BAbstractTask(_buffer, _size) {
 }
 
-BWorkerTask::~BWorkerTask()
-{
+BWorkerTask::~BWorkerTask() {
 }
 
-};
+}  // namespace BThreadPack

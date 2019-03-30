@@ -32,36 +32,34 @@
 #include "BThreadPack/BThreadPool.h"
 #include "BThreadPack/private/BGroupTaskPrivate.h"
 
-namespace BThreadPack{
+namespace BThreadPack {
 
 BThreadPool::BThreadPool(unsigned int _thread_cap)
         : BAbstractThreadPool(new BThreadPoolPrivate(this), _thread_cap) {
     BThreadPool::m_private_ptr = dynamic_cast<BThreadPoolPrivate*>
-                    (BAbstractThreadPool::m_private_ptr);
+    (BAbstractThreadPool::m_private_ptr);
     m_private_ptr->initializeThreadPool(_thread_cap);
 }
 
 BThreadPool::BThreadPool(unsigned int _thread_cap,
                          BAbstractThreadPool::BThreadControlMode _mode)
-        : BAbstractThreadPool(new BThreadPoolPrivate(this), _thread_cap, _mode) {
+        : BAbstractThreadPool(
+                new BThreadPoolPrivate(this), _thread_cap, _mode) {
     BThreadPool::m_private_ptr = dynamic_cast<BThreadPoolPrivate*>
-                    (BAbstractThreadPool::m_private_ptr);
+    (BAbstractThreadPool::m_private_ptr);
     m_private_ptr->initializeThreadPool(capacity());
 }
 
-BThreadPool::~BThreadPool()
-{
+BThreadPool::~BThreadPool() {
 }
 
-void BThreadPool::pushTask(BGeneralTask* _task_buffer)
-{
+void BThreadPool::pushTask(BGeneralTask* _task_buffer) {
     static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
 
     BAbstractThreadPool::pushTask(_task_buffer);
 }
 
-void BThreadPool::pushGroupTask(BGroupTask* _task_ptr)
-{
+void BThreadPool::pushGroupTask(BGroupTask* _task_ptr) {
     _task_ptr->m_private_ptr->startRealTiming();
     _task_ptr->m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Pending);
     _task_ptr->m_private_ptr->setTaskNum(
@@ -70,47 +68,44 @@ void BThreadPool::pushGroupTask(BGroupTask* _task_ptr)
     BAbstractThreadPool::pushGroupTask(_task_ptr);
 }
 
-uint BThreadPool::resize(unsigned int _size)
-{
-    if (_size < size())
-    {
+uint BThreadPool::resize(unsigned int _size) {
+    if (_size < size()) {
         return m_private_ptr->removeThread(size() - _size);
-    }
-    else if (_size > size())
-    {
+    } else if (_size > size()) {
         unsigned int _thread_num = _size - size();
         for (unsigned int i = 0; i < _thread_num; ++i) {
             BThreadInfo thread_info;
             BThread bthread;
-            thread_info.setThreadPoolHandle(static_cast<BAbstractThreadPool*>(this));
-            bthread.start(BAbstractThreadPoolPrivate::Run, thread_info);
+            thread_info.setThreadPoolHandle(
+                    static_cast<BAbstractThreadPool*>(this));
+            bthread.start(
+                    BAbstractThreadPoolPrivate::Run, thread_info);
             // You can add some actions like set affinity here before detach.
             bthread.detach();
 
             return m_private_ptr->addThread(std::move(bthread));
         }
         return size();
-    }
-    else
+    } else {
         return size();
+    }
 }
 
-void BThreadPool::setOptimizePolicy(BThreadPool::Optimizer _policy)
-{
+void BThreadPool::setOptimizePolicy(BThreadPool::Optimizer _policy) {
     m_optimize_policy = _policy;
 }
 
-const BThreadPool::Optimizer BThreadPool::optimizePolicy() const
-{
+const BThreadPool::Optimizer BThreadPool::optimizePolicy() const {
     return m_optimize_policy;
 }
 
-int BThreadPool::optimizer(std::vector<BGeneralTask *> _task_vec, BThreadPool::Optimizer _op_policy)
-{
-    if (mode() != BAbstractThreadPool::DynamicThreadCapacity)
-    {
+int BThreadPool::optimizer(
+        std::vector<BGeneralTask *> _task_vec,
+        BThreadPool::Optimizer _op_policy) {
+    if (mode() != BAbstractThreadPool::DynamicThreadCapacity) {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BThreadPool::BOptimizer - Thread mode "<<mode()<<" is incorrect for BOptimizer.")
+        B_PRINT_DEBUG("BThreadPool::BOptimizer - Thread mode "
+        << mode() <<" is incorrect for BOptimizer.")
 #endif
         return BCore::ReturnCode::BModeIncorrect;
     }
@@ -119,15 +114,15 @@ int BThreadPool::optimizer(std::vector<BGeneralTask *> _task_vec, BThreadPool::O
 
     switch (_op_policy) {
         case PerformanceFirst : {
-            if ( m_private_ptr->normalOptimizer(_task_vec) != BCore::ReturnCode::BSuccess)
-            {
+            if ( m_private_ptr->normalOptimizer(_task_vec)
+                != BCore::ReturnCode::BSuccess) {
 #ifdef _B_DEBUG_
-                B_PRINT_DEBUG("BThreadPool::BOptimizer - m_normalOptimizer_ failed.")
+                B_PRINT_DEBUG("BThreadPool::BOptimizer"
+                              " - m_normalOptimizer_ failed.")
 #endif
                 return BCore::ReturnCode::BError;
             } else {
-                if (size() == m_private_ptr->m_max_performance_threads_)
-                {
+                if (size() == m_private_ptr->m_max_performance_threads_) {
                     return BCore::ReturnCode::BSuccess;
                 } else {
                     return resize( m_private_ptr->m_max_performance_threads_);
@@ -136,15 +131,15 @@ int BThreadPool::optimizer(std::vector<BGeneralTask *> _task_vec, BThreadPool::O
         }
 
         case ProcessTimeFirst : {
-            if( m_private_ptr->normalOptimizer(_task_vec) != BCore::ReturnCode::BSuccess)
-            {
+            if ( m_private_ptr->normalOptimizer(_task_vec)
+                != BCore::ReturnCode::BSuccess) {
 #ifdef _B_DEBUG_
-                B_PRINT_DEBUG("BThreadPool::BOptimizer - m_normalOptimizer_ failed.")
+                B_PRINT_DEBUG("BThreadPool::BOptimizer"
+                              " - m_normalOptimizer_ failed.")
 #endif
                 return BCore::ReturnCode::BError;
             } else {
-                if (size() == m_private_ptr->m_min_time_threads_)
-                {
+                if (size() == m_private_ptr->m_min_time_threads_) {
                     return BCore::ReturnCode::BSuccess;
                 } else {
                     return resize( m_private_ptr->m_min_time_threads_);
@@ -156,4 +151,4 @@ int BThreadPool::optimizer(std::vector<BGeneralTask *> _task_vec, BThreadPool::O
     }
 }
 
-};
+}  // namespace BThreadPack

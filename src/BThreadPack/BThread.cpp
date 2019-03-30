@@ -34,22 +34,20 @@
 namespace BThreadPack {
 
 // Star implementation of BThreadInfo
-
 BThreadInfo::BThreadInfo()
-        : is_exited (false),
-          is_running (false),
-          stackSize (0),
-          returnCode (0),
-          m_thread_pool_handle (nullptr){
-
+        : is_exited(false),
+          is_running(false),
+          stackSize(0),
+          returnCode(0),
+          m_thread_pool_handle(nullptr) {
 }
 
 BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)
-        : is_exited (thread_info.is_exited.load()),
-          is_running (thread_info.is_running.load()),
-          stackSize (thread_info.stackSize.load()),
-          returnCode (thread_info.returnCode.load()),
-          m_thread_pool_handle (thread_info.m_thread_pool_handle) {
+        : is_exited(thread_info.is_exited.load()),
+          is_running(thread_info.is_running.load()),
+          stackSize(thread_info.stackSize.load()),
+          returnCode(thread_info.returnCode.load()),
+          m_thread_pool_handle(thread_info.m_thread_pool_handle) {
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BThreadInfo::BThreadInfo(const BThreadInfo& thread_info)"
                   " - Copy construct function was called.")
@@ -130,7 +128,7 @@ std::thread::id BThreadInfo::id() {
 
 BThread::BThread()
     : m_private_ptr(new BThreadPrivate),
-      m_thread_handle(nullptr){
+      m_thread_handle(nullptr) {
 }
 
 BThread::BThread(const BThread& _bthread) noexcept {
@@ -211,15 +209,17 @@ bool BThread::joinable() {
 
 bool BThread::isExit() {
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info_ptr->isExit()
-                          << " - BThreadInfo address is :" << m_thread_info_ptr)
+    B_PRINT_DEBUG("BThread::isExit - is_exited is "
+    << m_thread_info_ptr->isExit()
+    << " - BThreadInfo address is :" << m_thread_info_ptr)
 #endif
     return m_thread_info_ptr->isExit();
 }
 
 bool BThread::isRunning() {
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info_ptr->isRunning()
+    B_PRINT_DEBUG("BThread::isExit - is_exited is "
+    << m_thread_info_ptr->isRunning()
     << " - BThreadInfo address is :" << m_thread_info_ptr)
 #endif
     return m_thread_info_ptr->isRunning();
@@ -262,7 +262,7 @@ int32 BThread::setAffinity(int32 cpu_num) {
 
     _retcode = pthread_setaffinity_np(nativeHandle(),
                                     sizeof(cpu_set_t), &_cpuset);
-    if(_retcode != 0)
+    if (_retcode != 0)
         return BCore::ReturnCode::BError;
     else
         return BCore::ReturnCode::BSuccess;

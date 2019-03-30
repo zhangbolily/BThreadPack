@@ -30,98 +30,89 @@
 #include "BThreadPack/private/BGroupTaskPrivate.h"
 #include "BThreadPack/BGroupTask.h"
 
-namespace BThreadPack{
+namespace BThreadPack {
 
 BGroupTask::BGroupTask()
-    :m_private_ptr(new BGroupTaskPrivate)
-{
+        : m_private_ptr(new BGroupTaskPrivate) {
     m_private_ptr->setUUID();
 }
 
-BGroupTask::~BGroupTask()
-{
-    if(m_private_ptr != nullptr)
-    {
+BGroupTask::~BGroupTask() {
+    if (m_private_ptr != nullptr) {
         delete m_private_ptr;
         m_private_ptr = nullptr;
     }
 }
 
-void BGroupTask::pushTask(BAbstractTask* _task_handle)
-{
+void BGroupTask::pushTask(BAbstractTask* _task_handle) {
     lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex);
-    
+
     m_private_ptr->m_task_queue.push(_task_handle);
 }
 
-BAbstractTask* BGroupTask::getFinishedTask()
-{
+BAbstractTask* BGroupTask::getFinishedTask() {
     lock_guard<std::mutex> guard(m_private_ptr->m_finished_task_mutex);
-    
-    if(m_private_ptr->m_result_task_queue.empty())
+
+    if (m_private_ptr->m_result_task_queue.empty()) {
         return nullptr;
-    else {
-        BAbstractTask* result_task_ptr = m_private_ptr->m_result_task_queue.front();
+    } else {
+        BAbstractTask* result_task_ptr =
+                m_private_ptr->m_result_task_queue.front();
         m_private_ptr->m_result_task_queue.pop();
         return result_task_ptr;
     }
 }
 
-unsigned int BGroupTask::size()
-{
+uint BGroupTask::size() {
     return m_private_ptr->m_task_queue.size();
 }
 
-long long BGroupTask::executionTime()
-{
+int64 BGroupTask::executionTime() {
     return m_private_ptr->m_execute_timer.time();
 }
 
-long long BGroupTask::realTime()
-{
+int64 BGroupTask::realTime() {
     return m_private_ptr->m_real_timer.time();
 }
 
-const std::string BGroupTask::UUID()
-{
+const std::string BGroupTask::UUID() {
     return m_private_ptr->m_uuid;
 }
 
-void BGroupTask::setPriority(int _priority)
-{
+void BGroupTask::setPriority(int _priority) {
     m_private_ptr->m_task_priority = _priority;
 }
-    
-int BGroupTask::priority() const
-{
+
+int BGroupTask::priority() const {
     return m_private_ptr->m_task_priority.load();
 }
 
-int BGroupTask::wait()
-{
-    if(m_private_ptr->status() == BGroupTask::BGroupTaskStatus::Init)
-    {
-        return BCore::ReturnCode::BSuccess;     // This group task is not running, won't be blocked.
+int BGroupTask::wait() {
+    if (m_private_ptr->status() ==
+        BGroupTask::BGroupTaskStatus::Init) {
+        return BCore::ReturnCode::BSuccess;
+        // This group task is not running, won't be blocked.
     } else {
-        if(m_private_ptr->m_finished_task_counter == m_private_ptr->m_task_num)
-                return BCore::ReturnCode::BSuccess;
-    
-        while(1){
+        if (m_private_ptr->m_finished_task_counter == m_private_ptr->m_task_num)
+            return BCore::ReturnCode::BSuccess;
+
+        while (1) {
             // Group is running, block until all tasks are finished.
             std::chrono::microseconds wait_ms(10);
             std::unique_lock<mutex> lock(m_private_ptr->m_group_task_mutex);
             m_private_ptr->m_group_task_cond.wait_for(lock, wait_ms);
-            
+
             // m_task_num was set when group task is pushing to thread pool.
-            if(m_private_ptr->m_finished_task_counter == m_private_ptr->m_task_num)
-            {
-                m_private_ptr->setStatus(BGroupTask::BGroupTaskStatus::Finished);
+            if (m_private_ptr->m_finished_task_counter ==
+                m_private_ptr->m_task_num) {
+                m_private_ptr->setStatus(
+                        BGroupTask::BGroupTaskStatus::Finished);
                 return BCore::ReturnCode::BSuccess;
-            }
-            else
+            } else {
                 continue;
+            }
         }
     }
 }
 
-};
+}  // namespace BThreadPack

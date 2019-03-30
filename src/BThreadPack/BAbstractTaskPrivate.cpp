@@ -31,8 +31,7 @@
 
 namespace BThreadPack {
 
-void BAbstractTaskPrivate::finished()
-{
+void BAbstractTaskPrivate::finished() {
     m_task_cond.notify_all();
 }
 
