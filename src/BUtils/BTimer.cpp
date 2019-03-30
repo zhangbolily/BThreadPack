@@ -29,20 +29,16 @@
 
 #include "BUtils/BTimer.h"
 
-using namespace std;
-using namespace chrono;
-
 namespace BThreadPack {
 
 BTimer::BTimer()
 #ifdef WIN32
-    :m_timer_status(BTimer::BTimerStatus::Stop)
+    :m_timer_status(BTimer::BTimerStatus::Stop) {
 #else
     :m_timer_status(BTimer::BTimerStatus::Stop),
-    m_timer_id(nullptr),
-    m_timeout_call_flag(false)
+     m_timer_id(nullptr),
+     m_timeout_call_flag(false) {
 #endif
-{
 #ifndef WIN32
     memset(&m_timer_event, 0, sizeof(sigevent));
     memset(&m_timer_action, 0, sizeof(struct sigaction));
@@ -50,84 +46,79 @@ BTimer::BTimer()
 #endif
 }
 
-BTimer::~BTimer()
-{
+BTimer::~BTimer() {
 }
 
-void BTimer::start()
-{
-    if(m_timer_status == BTimer::Stop)
-    {
+void BTimer::start() {
+    if (m_timer_status == BTimer::Stop) {
         m_timer_status = BTimer::Timing;
         m_start_time_us = steady_clock::now();
     }
 }
 
-int BTimer::start(long long _msec)
-{
-    if(m_timer_status == BTimer::Stop)
-    {
+int32 BTimer::start(int64 _msec) {
+    if (m_timer_status == BTimer::Stop) {
         m_timer_status = BTimer::Alarm;
         m_start_time_us = steady_clock::now();
-    
+
 #ifndef WIN32
         m_timer_initial_value.it_value.tv_sec = _msec / 1000;
-        m_timer_initial_value.it_value.tv_nsec = static_cast<long>(_msec % 1000 * MILLIAN);
+        m_timer_initial_value.it_value.tv_nsec =
+                static_cast<int64>(_msec % 1000 * MILLIAN);
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BTimer::start - m_timer_initial_value.it_value.tv_sec is "<<m_timer_initial_value.it_value.tv_sec<<".")
-        B_PRINT_DEBUG("BTimer::start - m_timer_initial_value.it_value.tv_nsec is "<<m_timer_initial_value.it_value.tv_nsec<<".")
+        B_PRINT_DEBUG("BTimer::start -"
+                      " m_timer_initial_value.it_value.tv_sec is "
+        << m_timer_initial_value.it_value.tv_sec << ".")
+        B_PRINT_DEBUG("BTimer::start -"
+                      " m_timer_initial_value.it_value.tv_nsec is "
+        << m_timer_initial_value.it_value.tv_nsec << ".")
 #endif
         // There is an existing timer, delete it first.
         if (m_timer_id != nullptr) {
             timer_delete(m_timer_id);
             m_timer_id = nullptr;
         }
-    
-        if (timer_create(CLOCK_REALTIME, &m_timer_event, &m_timer_id) == -1)
-	    {
+
+        if (timer_create(CLOCK_REALTIME, &m_timer_event, &m_timer_id) == -1) {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
+            B_PRINT_DEBUG("BTimer::start - m_timer_id is " << m_timer_id << ".")
 #endif
             return BCore::ReturnCode::BError;
-	    } else if (timer_settime(m_timer_id, 0, &m_timer_initial_value, nullptr) == -1){
+        } else if (timer_settime(m_timer_id, 0, &m_timer_initial_value, nullptr)
+                    == -1) {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
+            B_PRINT_DEBUG("BTimer::start - m_timer_id is " << m_timer_id << ".")
 #endif
-	        return BCore::ReturnCode::BError;
-	    } else {
+            return BCore::ReturnCode::BError;
+        } else {
 #ifdef _B_DEBUG_
-        B_PRINT_DEBUG("BTimer::start - m_timer_id is "<<m_timer_id<<".")
+            B_PRINT_DEBUG("BTimer::start - m_timer_id is " << m_timer_id << ".")
 #endif
-	        return BCore::ReturnCode::BSuccess;
-	    }
+            return BCore::ReturnCode::BSuccess;
+        }
 #endif
-        return BCore::ReturnCode::BSuccess;
     }
-    
+
     return BCore::ReturnCode::BSuccess;
 }
 
-int BTimer::start(std::chrono::milliseconds _msec)
-{
+int32 BTimer::start(std::chrono::milliseconds _msec) {
     return start(_msec.count());
 }
 
-int BTimer::stop()
-{
+int32 BTimer::stop() {
     m_stop_time_us = steady_clock::now();
 #ifndef WIN32
-    switch(m_timer_status){
+    switch (m_timer_status) {
         case BTimerStatus::Timing: {
             m_timer_status = BTimer::Stop;
         };
-        case BTimerStatus::Alarm:{
+        case BTimerStatus::Alarm: {
             if (m_timer_id != nullptr) {
-                if(timer_delete(m_timer_id) == -1)
-                {
+                if (timer_delete(m_timer_id) == -1) {
                     m_timer_status = BTimer::Stop;
                     return BCore::ReturnCode::BError;
-                }
-                else {
+                } else {
                     m_timer_id = nullptr;
                     m_timer_status = BTimer::Stop;
                     return BCore::ReturnCode::BSuccess;
@@ -140,34 +131,36 @@ int BTimer::stop()
     return BCore::ReturnCode::BSuccess;
 }
 
-long long BTimer::time() const
-{
-    if (m_stop_time_us < m_start_time_us)
-    {
+int64 BTimer::time() const {
+    if (m_stop_time_us < m_start_time_us) {
         return BCore::ReturnCode::BError;
-    }else
-        return duration_cast<microseconds>(m_stop_time_us - m_start_time_us).count();
+    } else {
+        return duration_cast<microseconds>(
+                m_stop_time_us - m_start_time_us).count();
+    }
 }
 
 
 #ifndef WIN32
-void BTimer::setInterval(long long _msec)
-{
+void BTimer::setInterval(int64 _msec) {
     m_timer_initial_value.it_interval.tv_sec = _msec / 1000;
-    m_timer_initial_value.it_interval.tv_nsec = static_cast<long>(_msec % 1000 * MILLIAN);
+    m_timer_initial_value.it_interval.tv_nsec =
+            static_cast<int64>(_msec % 1000 * MILLIAN);
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BTimer::setInterval - m_timer_initial_value.it_interval.tv_sec is "<<m_timer_initial_value.it_interval.tv_sec<<".")
-    B_PRINT_DEBUG("BTimer::setInterval - m_timer_initial_value.it_interval.tv_nsec is "<<m_timer_initial_value.it_interval.tv_nsec<<".")
+    B_PRINT_DEBUG("BTimer::setInterval -"
+                  " m_timer_initial_value.it_interval.tv_sec is "
+                  << m_timer_initial_value.it_interval.tv_sec << ".")
+    B_PRINT_DEBUG("BTimer::setInterval -"
+                  " m_timer_initial_value.it_interval.tv_nsec is "
+                  << m_timer_initial_value.it_interval.tv_nsec << ".")
 #endif
 }
 
-void BTimer::setInterval(std::chrono::milliseconds _msec)
-{
+void BTimer::setInterval(std::chrono::milliseconds _msec) {
     setInterval(_msec.count());
 }
 
-void BTimer::reset()
-{
+void BTimer::reset() {
 }
 #endif
-}
+}  // namespace BThreadPack

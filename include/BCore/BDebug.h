@@ -30,8 +30,6 @@
 #ifndef INCLUDE_BCORE_BDEBUG_H_
 #define INCLUDE_BCORE_BDEBUG_H_
 
-#define _B_DEBUG_
-
 #ifdef _B_DEBUG_
 #include <sstream>
 #include <iostream>

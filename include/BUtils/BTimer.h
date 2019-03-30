@@ -52,6 +52,9 @@
 namespace BThreadPack {
 
 using namespace BCore;
+using std::chrono::steady_clock;
+using std::chrono::duration_cast;
+using std::chrono::microseconds;
 
 class BTimer{
     enum BTimerStatus {

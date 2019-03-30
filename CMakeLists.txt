@@ -41,6 +41,10 @@ elseif (WIN32)
     include_directories (${WINDOWS_STL_INCLUDE_DIR})
 endif ()
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug" OR WITH_DEBUG)
+    add_definitions (-D_B_DEBUG_)
+endif ()
+
 # Build examples
 add_subdirectory (examples)
 
