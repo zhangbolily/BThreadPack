@@ -91,8 +91,7 @@ class BThread {
     void start(Function&& f, const BThreadInfo& thread_info) {
         if (m_thread_info_ptr != nullptr)
             delete m_thread_info_ptr;
-        else
-            m_thread_info_ptr = new BThreadInfo(thread_info);
+        m_thread_info_ptr = new BThreadInfo(thread_info);
         m_thread_handle = new std::thread(std::forward<Function>(f),
                                   std::ref(*m_thread_info_ptr));
 #ifdef _B_DEBUG_

@@ -150,7 +150,7 @@ int BAbstractThreadPool::kill() {
     this->m_private_ptr->startAllTasks();
     /* Wait until all threads exit. */
     std::chrono::milliseconds _ms_time(1000);
-    bool is_exit = true;
+    bool is_exit;
     while (size()) {
         is_exit = true;
         for (int32 i = 0; i < size(); i++) {

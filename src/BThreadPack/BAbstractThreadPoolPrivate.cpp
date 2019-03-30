@@ -90,7 +90,7 @@ BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate() {
     // which can't be deleted.
     for (map<int, queue<void *>>::iterator it = m_message_queue_map_.begin();
         it != m_message_queue_map_.end();
-        it++) {
+        ++it) {
         while (it->second.front() != nullptr) {
             //delete it->second.front();
             it->second.pop();

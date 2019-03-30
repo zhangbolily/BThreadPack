@@ -139,8 +139,7 @@ BThread::BThread(const BThread& _bthread) noexcept {
 #endif
 
     *m_private_ptr = *_bthread.m_private_ptr;
-    m_thread_info_ptr = new BThreadInfo();
-    *m_thread_info_ptr = *_bthread.m_thread_info_ptr;
+    m_thread_info_ptr = new BThreadInfo(*_bthread.m_thread_info_ptr);
     if (_bthread.m_thread_handle == nullptr) {
         m_thread_handle = nullptr;
     } else {
@@ -158,11 +157,11 @@ BThread::BThread(BThread&& _bthread) noexcept {
     if (_bthread.m_thread_handle == nullptr) {
         m_thread_handle = nullptr;
     } else {
+        m_thread_handle = nullptr;
         m_thread_handle = new thread(std::move(*(_bthread.m_thread_handle)));
     }
 
     _bthread.m_thread_info_ptr = nullptr;
-    _bthread.m_thread_handle = nullptr;
     _bthread.m_private_ptr = nullptr;
 }
 
