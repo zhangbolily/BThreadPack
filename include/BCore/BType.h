@@ -30,6 +30,8 @@
 #ifndef INCLUDE_BCORE_BTYPE_H_
 #define INCLUDE_BCORE_BTYPE_H_
 
+#include <cstdint>
+
 /*
  *  Definition of basic data types
 */
