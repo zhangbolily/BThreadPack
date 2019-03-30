@@ -29,7 +29,8 @@ aux_source_directory (src/BThreadPack DIR_SRCS)
 include_directories ("${PROJECT_SOURCE_DIR}/include")
 
 # Set build environment
-set (CMAKE_CXX_STANDARD_REQUIRED "11")
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (UNIX)
     add_definitions (-DUNIX)
