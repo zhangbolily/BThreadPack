@@ -113,14 +113,14 @@ void BGroupTaskPrivate::pushFinishedTask(BAbstractTask* result_task_ptr) {
 BAbstractTask* BGroupTaskPrivate::getTask() {
     lock_guard<std::mutex> guard(m_task_mutex);
 
-    BAbstractTask* task_ptr = m_task_queue.front();
-
-    if (task_ptr == nullptr) {
+    if (m_task_queue.empty()) {
         return nullptr;
     } else {
+        BAbstractTask* task_ptr = m_task_queue.front();
         m_task_queue.pop();
         return task_ptr;
     }
+
 }
 
 void BGroupTaskPrivate::finishedOneTask() {

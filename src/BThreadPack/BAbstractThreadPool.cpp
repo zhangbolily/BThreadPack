@@ -90,9 +90,8 @@ BAbstractThreadPool::BAbstractThreadPool(
 }
 
 BAbstractThreadPool::~BAbstractThreadPool() {
-    this->kill();
-
     if (m_private_ptr != nullptr) {
+        this->kill();
         delete m_private_ptr;
         m_private_ptr = nullptr;
     }

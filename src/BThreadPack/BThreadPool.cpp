@@ -52,8 +52,17 @@ BThreadPool::BThreadPool(unsigned int _thread_cap,
 
 BThreadPool::~BThreadPool() {
     if (m_private_ptr != nullptr) {
+        this->kill();
         delete m_private_ptr;
         m_private_ptr = nullptr;
+        /* BAbstractThreadPool::m_private_ptr and BThreadPool::m_private_ptr
+         * share the same pointer but different interpretation of types.
+         * They are two variable but pointed to the same object.
+         * Delete BThreadPool::m_private_ptr makes BAbstractThreadPool::m_private_ptr
+         * invalid. Set BAbstractThreadPool::m_private_ptr to nullptr avoiding
+         * delete again.
+         */
+        BAbstractThreadPool::m_private_ptr = nullptr;
     }
 }
 
