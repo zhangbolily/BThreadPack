@@ -20,7 +20,7 @@ addons:
       - gcc-7
       - g++-7
 after_success:
-  - if [ $TRAVIS_OS_NAME == linux ]; then build/bin/HelloWorld; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then pwd && ls -al && bin/HelloWorld; fi
 branches:
   only:
     - master
