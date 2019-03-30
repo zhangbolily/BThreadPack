@@ -151,7 +151,9 @@ int BAbstractThreadPool::kill() {
         }
         if (is_exit)
             break;
-
+        // Some times a notify all won't wake up all threads
+        // Need to notify them in every circle.
+        this->m_private_ptr->startAllTasks();
         std::this_thread::sleep_for(_ms_time);
     }
 

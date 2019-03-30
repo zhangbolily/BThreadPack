@@ -67,12 +67,14 @@ class BThreadInfo {
     bool isExit();
     bool isRunning();
     BAbstractThreadPool* threadPoolHandle();
+    std::thread::id id();
 
  protected:
     std::atomic_bool is_exited;
     std::atomic_bool is_running;
     std::atomic_int32_t stackSize;
     std::atomic_int32_t returnCode;
+    std::thread::id     m_id;
     BAbstractThreadPool* m_thread_pool_handle;
 };
 
@@ -88,9 +90,12 @@ class BThread {
 
     template< class Function >
     void start(Function&& f, const BThreadInfo& thread_info) {
-        m_thread_info = thread_info;
+        if (m_thread_info_ptr != nullptr)
+            delete m_thread_info_ptr;
+        else
+            m_thread_info_ptr = new BThreadInfo(thread_info);
         m_thread_handle = new std::thread(std::forward<Function>(f),
-                                  std::ref(m_thread_info));
+                                  std::ref(*m_thread_info_ptr));
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BThread::start - "
         "Create a new thread # " << id())
@@ -112,7 +117,7 @@ class BThread {
 
  protected:
     BThreadPrivate* m_private_ptr;
-    BThreadInfo m_thread_info;
+    BThreadInfo* m_thread_info_ptr;
     std::thread* m_thread_handle;
 };
 

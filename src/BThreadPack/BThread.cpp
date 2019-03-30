@@ -78,6 +78,7 @@ void BThreadInfo::exit(int32 return_code) {
     is_exited.store(true, std::memory_order_release);
     is_running.store(false, std::memory_order_release);
     returnCode.store(return_code, std::memory_order_release);
+    m_id = std::thread::id();
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BThreadInfo::exit - Exit with return code "
     << returnCode << " and is_exited is " << is_exited
@@ -89,6 +90,7 @@ void BThreadInfo::exit(int32 return_code) {
 void BThreadInfo::running() {
     is_exited.store(false, std::memory_order_release);
     is_running.store(true, std::memory_order_release);
+    m_id = std::this_thread::get_id();
 #ifdef _B_DEBUG_
     B_PRINT_DEBUG("BThreadInfo::running"
     << " - BThreadInfo address is :" << this)
@@ -117,6 +119,10 @@ BAbstractThreadPool* BThreadInfo::threadPoolHandle() {
     return m_thread_pool_handle;
 }
 
+std::thread::id BThreadInfo::id() {
+    return m_id;
+}
+
 // End of implementation
 
 
@@ -133,8 +139,8 @@ BThread::BThread(const BThread& _bthread) noexcept {
                   " - Copy construct function was called.")
 #endif
 
-    m_private_ptr = _bthread.m_private_ptr;
-    m_thread_info = _bthread.m_thread_info;
+    *m_private_ptr = *_bthread.m_private_ptr;
+    *m_thread_info_ptr = *_bthread.m_thread_info_ptr;
     if (_bthread.m_thread_handle == nullptr) {
         m_thread_handle = nullptr;
     } else {
@@ -147,18 +153,15 @@ BThread::BThread(BThread&& _bthread) noexcept {
     B_PRINT_DEBUG("BThread::BThread(BThread&& _bthread)"
                   " - Copy construct function was called.")
 #endif
-
     m_private_ptr = _bthread.m_private_ptr;
-    m_thread_info = _bthread.m_thread_info;
+    m_thread_info_ptr = _bthread.m_thread_info_ptr;
     if (_bthread.m_thread_handle == nullptr) {
         m_thread_handle = nullptr;
     } else {
         m_thread_handle = new thread(std::move(*(_bthread.m_thread_handle)));
     }
 
-    // This object haven't been constructed. So m_thread_handle is
-    // a null pointer. After swap operation, _bthread.m_thread_handle should
-    // be a null pointer too.
+    _bthread.m_thread_info_ptr = nullptr;
     _bthread.m_thread_handle = nullptr;
     _bthread.m_private_ptr = nullptr;
 }
@@ -170,6 +173,8 @@ BThread::~BThread() {
 #endif
     if (m_private_ptr != nullptr)
         delete m_private_ptr;
+    if (m_thread_info_ptr != nullptr)
+        delete m_thread_info_ptr;
     if (m_thread_handle != nullptr)
         delete m_thread_handle;
 }
@@ -182,7 +187,7 @@ BThread& BThread::operator=(BThread&& _bthread) noexcept {
     // TODO(Ball Chang): BThreadPrivate should implement
     // a copy construct function.
     m_private_ptr = _bthread.m_private_ptr;
-    m_thread_info = _bthread.m_thread_info;
+    m_thread_info_ptr = _bthread.m_thread_info_ptr;
     if (m_thread_handle != nullptr) {
         delete m_thread_handle;
         m_thread_handle = nullptr;
@@ -192,7 +197,7 @@ BThread& BThread::operator=(BThread&& _bthread) noexcept {
     } else {
         m_thread_handle = new thread(std::move(*(_bthread.m_thread_handle)));
     }
-
+    _bthread.m_thread_info_ptr = nullptr;
     _bthread.m_thread_handle = nullptr;
     _bthread.m_private_ptr = nullptr;
 }
@@ -206,18 +211,18 @@ bool BThread::joinable() {
 
 bool BThread::isExit() {
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info.isExit()
-                          << " - BThreadInfo address is :" << &m_thread_info)
+    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info_ptr->isExit()
+                          << " - BThreadInfo address is :" << m_thread_info_ptr)
 #endif
-    return m_thread_info.isExit();
+    return m_thread_info_ptr->isExit();
 }
 
 bool BThread::isRunning() {
 #ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info.isRunning()
-    << " - BThreadInfo address is :" << &m_thread_info)
+    B_PRINT_DEBUG("BThread::isExit - is_exited is " << m_thread_info_ptr->isRunning()
+    << " - BThreadInfo address is :" << m_thread_info_ptr)
 #endif
-    return m_thread_info.isRunning();
+    return m_thread_info_ptr->isRunning();
 }
 
 int32 BThread::join() {
@@ -266,10 +271,14 @@ int32 BThread::setAffinity(int32 cpu_num) {
 }
 
 std::thread::id BThread::id() {
-    if (m_thread_handle != nullptr)
-        return (*m_thread_handle).get_id();
-    else
+    if (m_thread_handle != nullptr) {
+        if (joinable())
+            return (*m_thread_handle).get_id();
+        else
+            return m_thread_info_ptr->id();
+    } else {
         return std::thread::id();
+    }
 }
 
 std::thread::native_handle_type BThread::nativeHandle() {
