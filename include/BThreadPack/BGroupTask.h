@@ -55,7 +55,7 @@ class BGroupTask:private NoneCopy{
 
     /* @BGroupTask() - Constructor */
     BGroupTask();
-    ~BGroupTask();
+    virtual ~BGroupTask();
 
     int32 priority() const;
     int32 wait();

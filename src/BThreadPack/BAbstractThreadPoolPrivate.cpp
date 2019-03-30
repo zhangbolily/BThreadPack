@@ -66,6 +66,36 @@ BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate() {
             m_finished_task_queue.pop();
         }
     }
+    // Delete all tasks in the queue.
+    BAbstractTask* _task = nullptr;
+    BGroupTask* _gtask = nullptr;
+    while (1) {
+        _task = getTask();
+        if (_task != nullptr)
+            delete _task;
+        else
+            break;
+
+        _task = getGroupTask(&_gtask);
+        if (_task != nullptr) {
+            delete _task;
+            if (_gtask->m_private_ptr->queueEmpty())
+                delete _gtask;
+        } else {
+            break;
+        }
+    }
+    // Delete all message in message queue.
+    // TODO(Ball Chang): Message queue contains generic pointer
+    // which can't be deleted.
+    for (map<int, queue<void *>>::iterator it = m_message_queue_map_.begin();
+        it != m_message_queue_map_.end();
+        it++) {
+        while (it->second.front() != nullptr) {
+            //delete it->second.front();
+            it->second.pop();
+        }
+    }
 }
 
 BAbstractTask* BAbstractThreadPoolPrivate::getTask() {

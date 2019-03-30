@@ -51,6 +51,10 @@ BThreadPool::BThreadPool(unsigned int _thread_cap,
 }
 
 BThreadPool::~BThreadPool() {
+    if (m_private_ptr != nullptr) {
+        delete m_private_ptr;
+        m_private_ptr = nullptr;
+    }
 }
 
 void BThreadPool::pushTask(BGeneralTask* _task_buffer) {

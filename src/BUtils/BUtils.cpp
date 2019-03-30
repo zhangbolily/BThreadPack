@@ -33,7 +33,7 @@ namespace BUtils {
 
 const char UUID_CHARS[] =
         "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";c
+        "abcdefghijklmnopqrstuvwxyz";
 
 std::string generateUUID4() {
     std::random_device true_rand;

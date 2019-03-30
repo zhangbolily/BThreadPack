@@ -169,12 +169,18 @@ BThread::~BThread() {
     B_PRINT_DEBUG("BThread::~BThread() - "
                   "Destruct function was called. ")
 #endif
-    if (m_private_ptr != nullptr)
+    if (m_private_ptr != nullptr) {
         delete m_private_ptr;
-    if (m_thread_info_ptr != nullptr)
+        m_private_ptr = nullptr;
+    }
+    if (m_thread_info_ptr != nullptr) {
         delete m_thread_info_ptr;
-    if (m_thread_handle != nullptr)
+        m_thread_info_ptr = nullptr;
+    }
+    if (m_thread_handle != nullptr) {
         delete m_thread_handle;
+        m_thread_handle = nullptr;
+    }
 }
 
 BThread& BThread::operator=(BThread&& _bthread) noexcept {

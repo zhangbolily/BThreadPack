@@ -100,12 +100,15 @@ BAbstractTask::BAbstractTask(
 BAbstractTask::~BAbstractTask() {
     if (m_input_buffer_ != nullptr) {
         delete [] m_input_buffer_;
+        m_input_buffer_ = nullptr;
     }
     if (m_output_buffer_ != nullptr) {
         delete [] m_output_buffer_;
+        m_output_buffer_ = nullptr;
     }
     if (m_private_ptr != nullptr) {
         delete m_private_ptr;
+        m_private_ptr = nullptr;
     }
 }
 

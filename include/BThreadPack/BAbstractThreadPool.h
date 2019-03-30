@@ -78,7 +78,7 @@ class BAbstractThreadPool: private NoneCopy{
                         BAbstractThreadPool::BThreadControlMode _mode);
 
     /* @~BAbstractThreadPool() - Destructor */
-    ~BAbstractThreadPool();
+    virtual ~BAbstractThreadPool();
 
     int32 taskQueueSize();
     int32 sendMessage(int32 _queue_num, void* _message_buffer);

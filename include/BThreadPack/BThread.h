@@ -83,7 +83,7 @@ class BThread {
     BThread();
     BThread(const BThread& _bthread) noexcept;
     BThread(BThread&& _bthread) noexcept;
-    ~BThread();
+    virtual ~BThread();
 
     BThread& operator=(BThread&& _bthread) noexcept;
 

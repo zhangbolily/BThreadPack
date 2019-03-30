@@ -47,7 +47,7 @@ namespace BThreadPack {
 class BGroupTaskPrivate {
  public:
     BGroupTaskPrivate();
-    ~BGroupTaskPrivate();
+    virtual ~BGroupTaskPrivate();
 
     bool queueEmpty();
     void startExecutionTiming();

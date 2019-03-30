@@ -39,6 +39,25 @@ BGroupTaskPrivate::BGroupTaskPrivate()
 }
 
 BGroupTaskPrivate::~BGroupTaskPrivate() {
+    // Delete all tasks in the task queue and finished task queue.
+    BAbstractTask* _task = nullptr;
+    bool is_exit = false;
+    while (!is_exit) {
+        _task = getTask();
+        if (_task != nullptr)
+            delete _task;
+        else
+            is_exit = true;
+
+        _task = m_result_task_queue.front();
+        if (_task != nullptr) {
+            delete _task;
+            m_result_task_queue.pop();
+            is_exit &= false;
+        } else {
+            is_exit &= true;
+        }
+    }
 }
 
 bool BGroupTaskPrivate::queueEmpty() {
