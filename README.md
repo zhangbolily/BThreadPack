@@ -7,13 +7,13 @@
 
 [中文版](./README.zh_CN.md)
 
-Efficient multi-threading task framework.
+BThreadPack is an efficient, task driven concurrency
+ programming framework.
 
-## Features
-- Satisfied general task usage and specified task usage.
-- Full control of threads at any time.
-- Message queue mechanism for interthread communication.
-- Thread quantity optimization mechanism.
+## Main Features
+- Defining a task and execute it are easy.
+- Full control of threads at any time, like create and exit.
+- Message queue mechanism for inter-thread communication.
 - Every task is thread-safe.
 
 
@@ -23,41 +23,28 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-If you want to use BThreadPack in your platform, these requirements need to be satisfied.
+If you want to use BThreadPack in your platform, these requirements should be satisfied.
 
 ```
-System: Linux (This project only be tested on this platform)
-gcc version >= 4.8 (Need c++11 support)
+C++ Standard: c++11
+Build tools: cmake make autoconf automake gcc
 ```
 
-### Source Code Structure
-- include: All header files.
-- src: All cpp source code files.
-- Examples: Some examples tell you how to use this library.
-
-### Installing
-
-BThreadPack doesn't rellay on any third-party moudules(Only STL is required).
-
-##### Step1. Build target
+### Installation
 
 ```
-make
+$ git clone https://gitlab.com/zhangbolily/bthreadpack.git BThreadPack
+$ cd BThreadPack
+$ mkdir build
+$ cd build
+$ cmake .. 
+$ make
+$ make install
 ```
 
-##### Step2. Install into your system
-
-This step need root privilege.
-
-```
-make install
-```
-
-##### Demonstration build video
+##### Demonstration build video (click to veiw)
 
 [![Build](https://asciinema.org/a/4Sh30mIfX3uw6hboIJWFkXqbf.svg)](https://asciinema.org/a/4Sh30mIfX3uw6hboIJWFkXqbf)
-
-Then you can build project in Examples directory to test this library.
 
 ## Running the tests
 
@@ -71,9 +58,12 @@ Read [./examples/README.md](./examples/README.md) for more details.
 
 For the versions available, see the [tags on this repository](https://gitlab.com/zhangbolily/bthreadpack/tags).
 
+## Roadmap
+Performance improvement in the next version.
+
 ## Authors
 
-* **Ball Chang** - *Make the whole project*
+* **Ball Chang** - *Build the whole project*
 
 ## License
 

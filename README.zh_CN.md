@@ -7,13 +7,12 @@
 
 [English](./README.md)
 
-高效的多线程任务框架。
+BThreadPack 是一个高效、任务驱动的并发编程框架。
 
-## 特性
-- 能够满足通用任务和特定任务两种线程池模型
-- 随时可以控制线程池的运转
+## 主要特性
+- 轻松地定义和执行任务
+- 随时可以控制线程池的运转，例如创建和退出线程
 - 用于线程间通讯的消息队列机制
-- 线程数量优化机制
 - 每个任务都是线程安全的
 
 ## 如何开始
@@ -24,34 +23,25 @@
 
 若你想在你的平台上使用 BThreadPack，必须满足以下条件。
 ```
-系统: Linux (此项目只在Linux系统上进行过测试)
-gcc 版本 >= 4.8 (需要 c++11 支持)
+C++ 标准: c++11
+构建工具: cmake make autoconf automake gcc
 ```
-
-### 源代码结构
-- include: 所有的头文件
-- src: 所有的源代码
-- Examples: 一些示例帮助你理解如何使用这个工具包
 
 ### 安装
 
-BThreadPack 不依赖任何第三方模块（只需要STL）。
-
-##### 步骤1. 构建目标文件
-
 ```
-make
-```
-
-##### 步骤2. 安装到系统
-
-此步骤需要root权限。
-
-```
-make install
+$ git clone https://gitlab.com/zhangbolily/bthreadpack.git BThreadPack
+$ cd BThreadPack
+$ mkdir build
+$ cd build
+$ cmake .. 
+$ make
+$ make install
 ```
 
-安装成功后，就可以构建 Examples 目录下的示例用于测试。
+##### Demonstration build video (click to veiw)
+
+[![Build](https://asciinema.org/a/4Sh30mIfX3uw6hboIJWFkXqbf.svg)](https://asciinema.org/a/4Sh30mIfX3uw6hboIJWFkXqbf)
 
 ## 运行示例程序
 
@@ -64,6 +54,9 @@ make install
 ## 版本信息
 
 获取可用版本，请参阅 [tags on this repository](https://gitlab.com/zhangbolily/bthreadpack/tags)。
+
+## 路线图
+在下个版本进行性能提升。
 
 ## 作者
 
