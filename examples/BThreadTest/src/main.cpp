@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
             std::cout << "Main thread: Worker thread #" << infinite_run.id() << " is running, very good." << std::endl;
         else {
             std::cout << "Main thread: Worker thread #" << infinite_run.id() << " isn't running, very bad." << std::endl;
-            return 0;
+            break;
         }
         sleep(1);
     }

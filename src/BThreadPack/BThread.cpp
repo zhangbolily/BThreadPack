@@ -128,7 +128,8 @@ std::thread::id BThreadInfo::id() {
 
 BThread::BThread()
     : m_private_ptr(new BThreadPrivate),
-      m_thread_handle(nullptr) {
+      m_thread_handle(nullptr),
+      m_thread_info_ptr(nullptr) {
 }
 
 BThread::BThread(const BThread& _bthread) noexcept {
@@ -138,6 +139,7 @@ BThread::BThread(const BThread& _bthread) noexcept {
 #endif
 
     *m_private_ptr = *_bthread.m_private_ptr;
+    m_thread_info_ptr = new BThreadInfo();
     *m_thread_info_ptr = *_bthread.m_thread_info_ptr;
     if (_bthread.m_thread_handle == nullptr) {
         m_thread_handle = nullptr;
