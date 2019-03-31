@@ -29,4 +29,6 @@ link_directories (${BThreadPack_BINARY_DIR})
 add_executable (${PROJECT_NAME} ${DIR_EXAMPLES_PI_SRCS})
 target_link_libraries (${PROJECT_NAME} bthreadpack)
 target_link_libraries (${PROJECT_NAME} ${EXTRA_LIBS})
-
+if (CODE_COVERAGE)
+    add_test (NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+endif()
