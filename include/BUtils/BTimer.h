@@ -56,6 +56,7 @@ using std::chrono::microseconds;
 
 class BTimer{
     enum BTimerStatus {
+        CPUTiming,
         Timing,
         Alarm,
         Stop
@@ -71,13 +72,11 @@ class BTimer{
     template< class Rep, class Period >
     int32 start(const std::chrono::duration<Rep, Period>& timer_duration) {
         if (m_timer_status == BTimer::Stop) {
-
             if (timer_duration <= timer_duration.zero())
                 return BError;
 
             m_timer_status = BTimer::Alarm;
             m_start_time_us = steady_clock::now();
-
 #ifdef WIN32
 #else
             auto _s = std::chrono::duration_cast<std::chrono::seconds>(timer_duration);
@@ -123,6 +122,9 @@ class BTimer{
 
     int32 stop();
     std::chrono::microseconds time() const;
+    void startCPUTiming();
+    void stopCPUTiming();
+    int64 CPUTime();
 
 #ifndef WIN32
     void setInterval(int64 timer_duration);     // timer_duration in milliseconds
@@ -215,6 +217,8 @@ class BTimer{
  private:
     std::chrono::steady_clock::time_point m_start_time_us;
     std::chrono::steady_clock::time_point m_stop_time_us;
+    std::clock_t cpu_time_start;
+    std::clock_t cpu_time_stop;
     BTimerStatus m_timer_status;
 
 #ifndef WIN32

@@ -45,6 +45,7 @@
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractClass.h"
+#include "BUtils/BTimer.h"
 
 namespace BThreadPack {
 
@@ -53,6 +54,7 @@ using std::forward;
 using std::atomic_bool;
 using std::atomic_int;
 using BCore::ReturnCode;
+using BUtils::BTimer;
 
 class BThreadPrivate;
 class BAbstractThreadPool;
@@ -72,7 +74,7 @@ class BThreadInfo {
     bool isRunning();
     BAbstractThreadPool* threadPoolHandle();
     std::thread::id id();
-#ifdef _B_DEBUG_
+#ifdef UNIX
     void startCPUTiming();
     void stopCPUTiming();
     int64 CPUTime();
@@ -85,10 +87,7 @@ class BThreadInfo {
     std::atomic_int returnCode;
     std::thread::id     m_id;
     BAbstractThreadPool* m_thread_pool_handle;
-#ifdef _B_DEBUG_
-    std::clock_t cpu_time_start;
-    std::clock_t cpu_time_stop;
-#endif
+    BTimer cpu_timer;
 };
 
 class BThread {
@@ -105,8 +104,10 @@ class BThread {
         if (m_thread_info_ptr != nullptr)
             delete m_thread_info_ptr;
         m_thread_info_ptr = new BThreadInfo(thread_info);
+#ifdef UNIX
 #ifdef _B_DEBUG_
         m_thread_info_ptr->startCPUTiming();
+#endif
 #endif
         m_thread_handle = new std::thread(std::forward<Function>(f),
                                   std::ref(*m_thread_info_ptr));

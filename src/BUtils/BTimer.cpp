@@ -93,6 +93,23 @@ std::chrono::microseconds BTimer::time() const {
     }
 }
 
+void BTimer::startCPUTiming() {
+    if (m_timer_status == BTimer::Stop) {
+        m_timer_status = BTimer::CPUTiming;
+        cpu_time_start = std::clock();
+    }
+}
+
+void BTimer::stopCPUTiming() {
+    if (m_timer_status == BTimer::CPUTiming) {
+        m_timer_status = BTimer::Stop;
+        cpu_time_stop = std::clock();
+    }
+}
+
+int64 BTimer::CPUTime() {
+    return 1000000*(cpu_time_stop - cpu_time_start)/CLOCKS_PER_SEC;
+}
 
 #ifndef WIN32
 void BTimer::setInterval(int64 timer_duration) {     // timer_duration in milliseconds
