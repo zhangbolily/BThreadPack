@@ -112,16 +112,24 @@ int main(int argc, char** argv)
         
         ll_Pi += *(static_cast<const long long *>(pi_slice_result));
 
-        std::cout << "Task " << p_slice_pi->name() << ":" << std::endl;
+        std::cout << "Task - " << p_slice_pi->name() << ":" << std::endl;
         std::cout << "Schedule time: " <<
-                  p_slice_pi->realTime() - p_slice_pi->executionTime() << "us" << std::endl;
+                  p_slice_pi->realTime() - p_slice_pi->executionTime() << " us" << std::endl;
         std::cout << "Real time: " <<
-                  p_slice_pi->realTime() << "us" << std::endl;
+                  p_slice_pi->realTime() << " us" << std::endl;
         std::cout << "Execution time: " <<
-                  p_slice_pi->executionTime() << "us" << std::endl;
+                  p_slice_pi->executionTime() << " us" << std::endl;
         
         delete p_slice_pi;
     }
+
+    std::cout << "Group task Pi :" << std::endl;
+    std::cout << "Schedule time: " <<
+                pi_group_task.realTime() - pi_group_task.executionTime() << " us" << std::endl;
+    std::cout << "Real time: " <<
+                pi_group_task.realTime() << " us" << std::endl;
+    std::cout << "Execution time: " <<
+                pi_group_task.executionTime() << " us" << std::endl;
     
     std::cout.setf(ios::showpoint);
     std::cout.precision(64);

@@ -90,6 +90,7 @@ class BAbstractTask: private NoneCopy {
         BAbstractTaskPrivate* m_private_ptr;
         friend class BThreadPool;
         friend class BThreadPoolPrivate;
+        friend class BGroupTask;
 };
 }   // namespace BThreadPack
 

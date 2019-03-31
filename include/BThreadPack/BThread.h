@@ -39,6 +39,10 @@
 #include <sys/types.h>
 #endif
 
+#ifdef _B_DEBUG_
+#include <ctime>
+#endif
+
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/BAbstractClass.h"
 
@@ -68,6 +72,11 @@ class BThreadInfo {
     bool isRunning();
     BAbstractThreadPool* threadPoolHandle();
     std::thread::id id();
+#ifdef _B_DEBUG_
+    void startCPUTiming();
+    void stopCPUTiming();
+    int64 CPUTime();
+#endif
 
  protected:
     std::atomic_bool is_exited;
@@ -76,6 +85,10 @@ class BThreadInfo {
     std::atomic_int returnCode;
     std::thread::id     m_id;
     BAbstractThreadPool* m_thread_pool_handle;
+#ifdef _B_DEBUG_
+    std::clock_t cpu_time_start;
+    std::clock_t cpu_time_stop;
+#endif
 };
 
 class BThread {
@@ -92,6 +105,9 @@ class BThread {
         if (m_thread_info_ptr != nullptr)
             delete m_thread_info_ptr;
         m_thread_info_ptr = new BThreadInfo(thread_info);
+#ifdef _B_DEBUG_
+        m_thread_info_ptr->startCPUTiming();
+#endif
         m_thread_handle = new std::thread(std::forward<Function>(f),
                                   std::ref(*m_thread_info_ptr));
 #ifdef _B_DEBUG_

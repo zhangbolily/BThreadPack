@@ -121,6 +121,20 @@ std::thread::id BThreadInfo::id() {
     return m_id;
 }
 
+#ifdef _B_DEBUG_
+void BThreadInfo::startCPUTiming() {
+    cpu_time_start = std::clock();
+}
+
+void BThreadInfo::stopCPUTiming() {
+    cpu_time_stop = std::clock();
+}
+
+int64 BThreadInfo::CPUTime() {
+    return 1000000*(cpu_time_stop - cpu_time_start)/CLOCKS_PER_SEC;
+}
+#endif
+
 // End of implementation
 
 

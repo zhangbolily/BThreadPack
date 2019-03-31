@@ -28,6 +28,7 @@
 */
 
 #include "BThreadPack/private/BGroupTaskPrivate.h"
+#include "BThreadPack/private/BAbstractTaskPrivate.h"
 #include "BThreadPack/BGroupTask.h"
 
 namespace BThreadPack {
@@ -46,6 +47,7 @@ BGroupTask::~BGroupTask() {
 
 void BGroupTask::pushTask(BAbstractTask* _task_handle) {
     lock_guard<std::mutex> guard(m_private_ptr->m_task_mutex);
+    _task_handle->m_private_ptr->startRealTiming();
 
     m_private_ptr->m_task_queue.push(_task_handle);
 }

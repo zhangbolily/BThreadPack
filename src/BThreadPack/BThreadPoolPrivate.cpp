@@ -40,6 +40,12 @@ BThreadPoolPrivate::BThreadPoolPrivate(BThreadPool* ptr)
 
 void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
     thread_info.running();
+#ifdef _B_DEBUG_
+    thread_info.stopCPUTiming();
+    B_PRINT_DEBUG("BThreadPoolPrivate::Run"
+                  " - Creating thread cost CPU time: "
+                          << thread_info.CPUTime() << " us")
+#endif
     BThreadPool* thread_pool_handle =
             static_cast<BThreadPool*>(thread_info.threadPoolHandle());
 
