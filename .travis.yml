@@ -6,10 +6,21 @@ compiler:
 os:
   - linux
 ruby: 2.2.0
+cache: # see https://docs.travis-ci.com/user/caching/
+  - directories:
+      - $HOME/.cache
+
 before_install:
   - echo $LANG
   - echo $LC_ALL
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make unzip cmake; fi
+
+install:
+  # (fake) install dependencies (usually involves wget, configure, make, ...)
+  # install into cache folder (build binaries+headers only, no sources and do NOT build there)
+  - mkdir -p $HOME/.cache
+  - touch $HOME/.cache/mydependency.so
+  -
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then cmake .. -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7; fi
