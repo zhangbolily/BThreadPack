@@ -11,7 +11,10 @@ before_install:
   - echo $LC_ALL
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt update && sudo apt install -y autoconf automake libtool curl make unzip cmake; fi
 script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build && cmake .. -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7  && make && sudo make install; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then mkdir build && cd build; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then cmake .. -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then cmake --build . --config Debug -- -j $(nproc) && sudo make install; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then ctest -j $(nproc) --output-on-failure; fi
 addons:
   apt:
     sources:
