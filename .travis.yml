@@ -22,7 +22,7 @@ install:
   - touch $HOME/.cache/mydependency.so
   -
 script:
-  - if [ $TRAVIS_OS_NAME == linux ]; build.sh; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; ./build.sh; fi
 addons:
   apt:
     sources:
