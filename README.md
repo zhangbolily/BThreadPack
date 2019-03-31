@@ -3,7 +3,7 @@
 [![Language](https://img.shields.io/badge/language-C%2B%2B11-orange.svg)](https://isocpp.org/)
 [![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-green.svg)](https://gitlab.com/zhangbolily/bthreadpack)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT/)
-[![coverage report](https://gitlab.com/zhangbolily/bthreadpack/badges/master/coverage.svg)](https://gitlab.com/zhangbolily/bthreadpack/commits/master)
+[![codecov](https://codecov.io/gl/zhangbolily/bthreadpack/branch/dev/graph/badge.svg)](https://codecov.io/gl/zhangbolily/bthreadpack)
 
 [中文版](./README.zh_CN.md)
 
