@@ -67,7 +67,7 @@ BThreadPool::~BThreadPool() {
 }
 
 void BThreadPool::pushTask(BGeneralTask* _task_buffer) {
-    static_cast<BGeneralTask*>(_task_buffer)->startRealTiming();
+    static_cast<BGeneralTask*>(_task_buffer)->m_private_ptr->startRealTiming();
 
     BAbstractThreadPool::pushTask(_task_buffer);
 }

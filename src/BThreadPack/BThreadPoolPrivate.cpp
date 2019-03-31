@@ -90,13 +90,13 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
             p_group_task->m_private_ptr->setStatus(
                     BGroupTask::BGroupTaskStatus::Executing);
         }
-        p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
-        p_general_task->startExecutionTiming();
+        p_general_task->m_private_ptr->setStatus(BGeneralTask::BTaskStatus::TaskExecuting);
+        p_general_task->m_private_ptr->startExecutionTiming();
 
         int32 _retcode = p_general_task->execute();
 
-        p_general_task->stopExecutionTiming();
-        p_general_task->stopRealTiming();
+        p_general_task->m_private_ptr->stopExecutionTiming();
+        p_general_task->m_private_ptr->stopRealTiming();
         // Stop processing
 
         // All of group tasks have been finisehd, stop recording time.
@@ -110,9 +110,9 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
 
         // Check if this task has been processed successfully
         if (_retcode == BError) {
-            p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
+            p_general_task->m_private_ptr->setStatus(BGeneralTask::BTaskStatus::TaskFailed);
         } else {
-            p_general_task->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
+            p_general_task->m_private_ptr->setStatus(BGeneralTask::BTaskStatus::TaskFinished);
         }
 
         switch (thread_pool_handle->optimizePolicy()) {
@@ -135,7 +135,7 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
             default: break;
         }
 
-        if (p_general_task->destroyable()) {
+        if (p_general_task->autoDelete()) {
             delete p_general_task;
             p_general_task = nullptr;
         } else {

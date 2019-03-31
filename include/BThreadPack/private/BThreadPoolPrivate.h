@@ -35,6 +35,7 @@
 
 #include "BThreadPack/BThreadPack.h"
 #include "BThreadPack/private/BAbstractThreadPoolPrivate.h"
+#include "BThreadPack/private/BAbstractTaskPrivate.h"
 #include "BThreadPack/BGeneralTask.h"
 
 namespace  BThreadPack {

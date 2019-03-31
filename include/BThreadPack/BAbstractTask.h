@@ -65,59 +65,31 @@ class BAbstractTask: private NoneCopy {
         };
 
         BAbstractTask();
-        explicit BAbstractTask(bool _autodestroy);
+        explicit BAbstractTask(bool _auto_delete);
         BAbstractTask(const void* _buffer, size_t _size);
-        BAbstractTask(const void* _buffer, size_t _size, bool _autodestroy);
+        BAbstractTask(const void* _buffer, size_t _size, bool _auto_delete);
         virtual ~BAbstractTask();
         int32 status();
-        int32 setStatus(BTaskStatus _status);
-        int32 setStatus(std::atomic_int _status);
         int32 setInputBuffer(const void* _buffer, size_t _size);
         int32 inputBuffer(void** _buffer, size_t &_size);
         int32 setOutputBuffer(void* _buffer, const size_t _size);
         int32 outputBuffer(const void** _buffer, size_t &_size);
-        void setPriority(int);
         int32 priority() const;
-        void startExecutionTiming();
-        void stopExecutionTiming();
         int64 executionTime();
-        void startRealTiming();
-        void stopRealTiming();
         int64 realTime();
+        void setPriority(int32);
+        void setAutoDelete(bool);
         void setName(const char* _name);
         void setName(const std::string _name);
-        const std::string& name() const;
         void wait();
-        void setUUID();
-        void setUUID(const std::string &_uuid);
         const std::string UUID();
-        bool destroyable() const;
-        std::mutex m_task_mutex;
+        const std::string& name() const;
+        bool autoDelete() const;
 
  protected:
         BAbstractTaskPrivate* m_private_ptr;
-
- private:
-        /* @m_task_status_ - store the status of task */
-        std::atomic_int m_task_priority;
-        std::atomic_int m_task_status_;
-        std::atomic_bool m_task_autodestroy;
-        BTimer m_real_timer;
-        BTimer m_execute_timer;
-        std::string m_name;
-        std::string m_uuid;
-
-        /* @m_input_buffer_ - store the buffer of input data */
-        char* m_input_buffer_;
-
-        /* @m_input_buffer_size_ - store the size of input data buffer */
-        std::atomic_size_t m_input_buffer_size_;
-
-        /* @m_output_buffer_ - store the buffer of output data */
-        char* m_output_buffer_;
-
-        /* @m_output_buffer_size_ - store the size of output data buffer */
-        std::atomic_size_t m_output_buffer_size_;
+        friend class BThreadPool;
+        friend class BThreadPoolPrivate;
 };
 }   // namespace BThreadPack
 

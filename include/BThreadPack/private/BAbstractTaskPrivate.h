@@ -33,14 +33,41 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "BThreadPack/BThreadPack.h"
+#include "BThreadPack/BAbstractTask.h"
+
 namespace BThreadPack {
+
+using BThreadPack::BAbstractTask;
 
 class BAbstractTaskPrivate {
  public:
+    explicit BAbstractTaskPrivate();
+    ~BAbstractTaskPrivate();
+    int32 setStatus(BAbstractTask::BTaskStatus _status);
+    int32 setStatus(std::atomic_int _status);
+    void startExecutionTiming();
+    void stopExecutionTiming();
+    void startRealTiming();
+    void stopRealTiming();
+    void setUUID();
+    void setUUID(const std::string &_uuid);
     void finished();
 
     std::mutex m_task_mutex;
     std::condition_variable m_task_cond;
+    std::atomic_int m_task_priority;
+    std::atomic_int m_task_status_;
+    std::atomic_bool m_task_autodelete;
+    BTimer m_real_timer;
+    BTimer m_execute_timer;
+    std::string m_name;
+    std::string m_uuid;
+
+    char* m_input_buffer_;
+    std::atomic_size_t m_input_buffer_size_;
+    char* m_output_buffer_;
+    std::atomic_size_t m_output_buffer_size_;
 };
 }  // namespace BThreadPack
 

@@ -32,35 +32,19 @@
 
 namespace BThreadPack {
 
+// Implementation of public member
 BAbstractTask::BAbstractTask()
-        :m_task_priority((PriorityNum+1)/2),
-         m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
-         m_task_autodestroy(true),
-         m_input_buffer_(nullptr),
-         m_input_buffer_size_(0),
-         m_output_buffer_(nullptr),
-         m_output_buffer_size_(0),
-         m_private_ptr(new BAbstractTaskPrivate) {
+        :m_private_ptr(new BAbstractTaskPrivate) {
 }
 
-BAbstractTask::BAbstractTask(bool _autodestroy)
-        :m_task_priority((PriorityNum+1)/2),
-         m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
-         m_task_autodestroy(_autodestroy),
-         m_input_buffer_(nullptr),
-         m_input_buffer_size_(0),
-         m_output_buffer_(nullptr),
-         m_output_buffer_size_(0),
-         m_private_ptr(new BAbstractTaskPrivate) {
+BAbstractTask::BAbstractTask(bool _auto_delete)
+        :m_private_ptr(new BAbstractTaskPrivate) {
+    setAutoDelete(_auto_delete);
 }
 
 BAbstractTask::BAbstractTask(const void* _buffer, size_t _size)
-        :m_task_priority((PriorityNum+1)/2),
-         m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
-         m_task_autodestroy(true),
-         m_output_buffer_(nullptr),
-         m_output_buffer_size_(0),
-         m_private_ptr(new BAbstractTaskPrivate) {
+        :m_private_ptr(new BAbstractTaskPrivate) {
+    setAutoDelete(true);
     if (setInputBuffer(_buffer, _size)) {
         // TODO(Ball Chang) :SetInputBuffer failed.
         // This object won't be created.
@@ -69,7 +53,7 @@ BAbstractTask::BAbstractTask(const void* _buffer, size_t _size)
                       "(void* _buffer, size_t _size)"
                       " - setInputBuffer failed.")
 #endif
-        m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
+        m_private_ptr->m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
         return;
     }
 }
@@ -77,13 +61,9 @@ BAbstractTask::BAbstractTask(const void* _buffer, size_t _size)
 BAbstractTask::BAbstractTask(
         const void* _buffer,
         size_t _size,
-        bool _autodestroy)
-        :m_task_priority((PriorityNum+1)/2),
-         m_task_status_(static_cast<int>(BTaskStatus::TaskInit)),
-         m_task_autodestroy(_autodestroy),
-         m_output_buffer_(nullptr),
-         m_output_buffer_size_(0),
-         m_private_ptr(new BAbstractTaskPrivate) {
+        bool _auto_delete)
+        :m_private_ptr(new BAbstractTaskPrivate) {
+    setAutoDelete(_auto_delete);
     if (setInputBuffer(_buffer, _size)) {
         // TODO(Ball Chang) :SetInputBuffer failed.
         // This object won't be created.
@@ -92,20 +72,12 @@ BAbstractTask::BAbstractTask(
                       "(void* _buffer, size_t _size)"
                       " - setInputBuffer failed.")
 #endif
-        m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
+        m_private_ptr->m_task_status_ = static_cast<int>(BTaskStatus::TaskFailed);
         return;
     }
 }
 
 BAbstractTask::~BAbstractTask() {
-    if (m_input_buffer_ != nullptr) {
-        delete [] m_input_buffer_;
-        m_input_buffer_ = nullptr;
-    }
-    if (m_output_buffer_ != nullptr) {
-        delete [] m_output_buffer_;
-        m_output_buffer_ = nullptr;
-    }
     if (m_private_ptr != nullptr) {
         delete m_private_ptr;
         m_private_ptr = nullptr;
@@ -113,38 +85,16 @@ BAbstractTask::~BAbstractTask() {
 }
 
 int32 BAbstractTask::status() {
-    if (!m_task_mutex.try_lock()) {
+    if (!m_private_ptr->m_task_mutex.try_lock()) {
         return BCore::ReturnCode::BOnlySingleThread;
     }
-    m_task_mutex.unlock();
+    m_private_ptr->m_task_mutex.unlock();
 
-    return m_task_status_;
-}
-
-int32 BAbstractTask::setStatus(BAbstractTask::BTaskStatus _status) {
-    if (!m_task_mutex.try_lock()) {
-        return BCore::ReturnCode::BOnlySingleThread;
-    }
-
-    m_task_status_ = static_cast<int>(_status);
-    m_task_mutex.unlock();
-
-    return BCore::ReturnCode::BSuccess;
-}
-
-int32 BAbstractTask::setStatus(std::atomic_int _status) {
-    if (!m_task_mutex.try_lock()) {
-        return BCore::ReturnCode::BOnlySingleThread;
-    }
-
-    m_task_status_.store(_status);
-    m_task_mutex.unlock();
-
-    return BCore::ReturnCode::BSuccess;
+    return m_private_ptr->m_task_status_;
 }
 
 int32 BAbstractTask::setInputBuffer(const void* _buffer, const size_t _size) {
-    if (!m_task_mutex.try_lock()) {
+    if (!m_private_ptr->m_task_mutex.try_lock()) {
         return BCore::ReturnCode::BOnlySingleThread;
     }
 
@@ -165,31 +115,31 @@ int32 BAbstractTask::setInputBuffer(const void* _buffer, const size_t _size) {
     }
 
     // Start transaction
-    m_input_buffer_ = new char[_size]();
-    std::memcpy(m_input_buffer_, _buffer, _size);
-    m_input_buffer_size_.store(_size);
+    m_private_ptr->m_input_buffer_ = new char[_size]();
+    std::memcpy(m_private_ptr->m_input_buffer_, _buffer, _size);
+    m_private_ptr->m_input_buffer_size_.store(_size);
     // Commit
 
-    m_task_mutex.unlock();
+    m_private_ptr->m_task_mutex.unlock();
 
     return BCore::ReturnCode::BSuccess;
 }
 
 int32 BAbstractTask::inputBuffer(void** _buffer, size_t &_size) {
-    if (!m_task_mutex.try_lock()) {
+    if (!m_private_ptr->m_task_mutex.try_lock()) {
         return BCore::ReturnCode::BOnlySingleThread;
     }
 
-    *_buffer = m_input_buffer_;
-    _size = m_input_buffer_size_.load();
+    *_buffer = m_private_ptr->m_input_buffer_;
+    _size = m_private_ptr->m_input_buffer_size_.load();
 
-    m_task_mutex.unlock();
+    m_private_ptr->m_task_mutex.unlock();
 
     return BCore::ReturnCode::BSuccess;
 }
 
 int32 BAbstractTask::setOutputBuffer(void* _buffer, size_t _size) {
-    if (!m_task_mutex.try_lock()) {
+    if (!m_private_ptr->m_task_mutex.try_lock()) {
         return BCore::ReturnCode::BOnlySingleThread;
     }
 
@@ -210,83 +160,55 @@ int32 BAbstractTask::setOutputBuffer(void* _buffer, size_t _size) {
     }
 
     // Start transaction
-    m_output_buffer_ = new char[_size]();
-    std::memcpy(m_output_buffer_, _buffer, _size);
-    m_output_buffer_size_.store(_size);
+    m_private_ptr->m_output_buffer_ = new char[_size]();
+    std::memcpy(m_private_ptr->m_output_buffer_, _buffer, _size);
+    m_private_ptr->m_output_buffer_size_.store(_size);
     // Commit
 
-    m_task_mutex.unlock();
+    m_private_ptr->m_task_mutex.unlock();
 
     return BCore::ReturnCode::BSuccess;
 }
 
 int32 BAbstractTask::outputBuffer(const void** _buffer, size_t &_size) {
-    if (!m_task_mutex.try_lock()) {
+    if (!m_private_ptr->m_task_mutex.try_lock()) {
         return BCore::ReturnCode::BOnlySingleThread;
     }
 
-    *_buffer = m_output_buffer_;
-    _size = m_output_buffer_size_.load();
+    *_buffer = m_private_ptr->m_output_buffer_;
+    _size = m_private_ptr->m_output_buffer_size_.load();
 
-    m_task_mutex.unlock();
+    m_private_ptr->m_task_mutex.unlock();
 
     return BCore::ReturnCode::BSuccess;
 }
 
 void BAbstractTask::setPriority(int32 _priority) {
-    m_task_priority = _priority;
+    m_private_ptr->m_task_priority = _priority;
 }
 
 int32 BAbstractTask::priority() const {
-    return m_task_priority.load();
-}
-
-void BAbstractTask::startExecutionTiming() {
-    m_execute_timer.start();
-}
-
-void BAbstractTask::stopExecutionTiming() {
-    m_execute_timer.stop();
+    return m_private_ptr->m_task_priority.load();
 }
 
 int64 BAbstractTask::executionTime() {
-    return m_execute_timer.time();
-}
-
-void BAbstractTask::startRealTiming() {
-    m_real_timer.start();
-}
-
-void BAbstractTask::stopRealTiming() {
-    m_real_timer.stop();
+    return m_private_ptr->m_execute_timer.time();
 }
 
 int64 BAbstractTask::realTime() {
-    return m_real_timer.time();
-}
-
-void BAbstractTask::setUUID() {
-    if (!BUtils::isUUID4(m_uuid))
-        m_uuid = BUtils::generateUUID4();
-#ifdef _B_DEBUG_
-    B_PRINT_DEBUG("BAbstractTask::setUUID - UUID is " << m_uuid << " .")
-#endif
-}
-
-void BAbstractTask::setUUID(const std::string &_uuid) {
-    m_uuid = _uuid;
+    return m_private_ptr->m_real_timer.time();
 }
 
 const std::string BAbstractTask::UUID() {
-    return m_uuid;
+    return m_private_ptr->m_uuid;
 }
 
 void BAbstractTask::setName(const char* _name) {
-    m_name = _name;
+    m_private_ptr->m_name = _name;
 }
 
 void BAbstractTask::setName(const std::string _name) {
-    m_name = _name;
+    m_private_ptr->m_name = _name;
 }
 
 void BAbstractTask::wait() {
@@ -300,11 +222,95 @@ void BAbstractTask::wait() {
 }
 
 const std::string& BAbstractTask::name() const {
-    return m_name;
+    return m_private_ptr->m_name;
 }
 
-bool BAbstractTask::destroyable() const {
-    return m_task_autodestroy.load();
+void BAbstractTask::setAutoDelete(bool auto_delete) {
+    m_private_ptr->m_task_autodelete.store(auto_delete);
 }
+
+bool BAbstractTask::autoDelete() const {
+    return m_private_ptr->m_task_autodelete.load();
+}
+
+// End of implementation
+
+
+
+
+// Implementation of private member
+BAbstractTaskPrivate::BAbstractTaskPrivate()
+    :m_task_priority((PriorityNum+1)/2),
+    m_task_status_(static_cast<int>(BAbstractTask::BTaskStatus::TaskInit)),
+    m_task_autodelete(true),
+    m_input_buffer_(nullptr),
+    m_input_buffer_size_(0),
+    m_output_buffer_(nullptr),
+    m_output_buffer_size_(0) {
+
+}
+
+BAbstractTaskPrivate::~BAbstractTaskPrivate() {
+    if (m_input_buffer_ != nullptr) {
+        delete [] m_input_buffer_;
+        m_input_buffer_ = nullptr;
+    }
+    if (m_output_buffer_ != nullptr) {
+        delete [] m_output_buffer_;
+        m_output_buffer_ = nullptr;
+    }
+}
+
+int32 BAbstractTaskPrivate::setStatus(BAbstractTask::BTaskStatus _status) {
+    if (!m_task_mutex.try_lock()) {
+        return BCore::ReturnCode::BOnlySingleThread;
+    }
+
+    m_task_status_ = static_cast<int>(_status);
+    m_task_mutex.unlock();
+
+    return BCore::ReturnCode::BSuccess;
+}
+
+int32 BAbstractTaskPrivate::setStatus(std::atomic_int _status) {
+    if (!m_task_mutex.try_lock()) {
+        return BCore::ReturnCode::BOnlySingleThread;
+    }
+
+    m_task_status_.store(_status);
+    m_task_mutex.unlock();
+
+    return BCore::ReturnCode::BSuccess;
+}
+
+void BAbstractTaskPrivate::startExecutionTiming() {
+    m_execute_timer.start();
+}
+
+void BAbstractTaskPrivate::stopExecutionTiming() {
+    m_execute_timer.stop();
+}
+
+void BAbstractTaskPrivate::startRealTiming() {
+    m_real_timer.start();
+}
+
+void BAbstractTaskPrivate::stopRealTiming() {
+    m_real_timer.stop();
+}
+
+void BAbstractTaskPrivate::setUUID() {
+    if (!BUtils::isUUID4(m_uuid))
+        m_uuid = BUtils::generateUUID4();
+#ifdef _B_DEBUG_
+    B_PRINT_DEBUG("BAbstractTask::setUUID - UUID is " << m_uuid << " .")
+#endif
+}
+
+void BAbstractTaskPrivate::setUUID(const std::string &_uuid) {
+    m_uuid = _uuid;
+}
+
+// End of implementation
 
 }   // namespace BThreadPack

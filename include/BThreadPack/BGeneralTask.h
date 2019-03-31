@@ -51,7 +51,7 @@ class BGeneralTask: public BAbstractTask {
      * @_size - the size of buffer
     */    
     BGeneralTask(const void* _buffer, size_t _size);
-    BGeneralTask(const void* _buffer, size_t _size, bool _autodestroy);
+    BGeneralTask(const void* _buffer, size_t _size, bool _auto_delete);
 
     /* @execute() - This function will call
      * _taskFunction to execute this task itself.

@@ -28,27 +28,28 @@
 */
 
 #include "BThreadPack/BGeneralTask.h"
+#include "BThreadPack/private/BAbstractTaskPrivate.h"
 
 namespace BThreadPack {
 
 BGeneralTask::BGeneralTask()
         :BAbstractTask() {
-    setUUID();
+    m_private_ptr->setUUID();
 }
 
-BGeneralTask::BGeneralTask(bool _autodestroy)
-        :BAbstractTask(_autodestroy) {
-    setUUID();
+BGeneralTask::BGeneralTask(bool _auto_delete)
+        :BAbstractTask(_auto_delete) {
+    m_private_ptr->setUUID();
 }
 
 BGeneralTask::BGeneralTask(const void* _buffer, size_t _size)
         :BAbstractTask(_buffer, _size) {
-    setUUID();
+    m_private_ptr->setUUID();
 }
 
-BGeneralTask::BGeneralTask(const void* _buffer, size_t _size, bool _autodestroy)
-        :BAbstractTask(_buffer, _size, _autodestroy) {
-    setUUID();
+BGeneralTask::BGeneralTask(const void* _buffer, size_t _size, bool _auto_delete)
+        :BAbstractTask(_buffer, _size, _auto_delete) {
+    m_private_ptr->setUUID();
 }
 
 BGeneralTask::~BGeneralTask() {
