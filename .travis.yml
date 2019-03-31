@@ -19,8 +19,13 @@ addons:
     packages:
       - gcc-7
       - g++-7
+      - lcov
 after_success:
   - if [ $TRAVIS_OS_NAME == linux ]; then pwd && bin/HelloWorld; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then lcov --capture --directory . --output-file coverage.info; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then lcov --remove coverage.info '/usr/*' --output-file coverage.info; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then lcov --list coverage.info; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"; fi
 branches:
   only:
     - master
