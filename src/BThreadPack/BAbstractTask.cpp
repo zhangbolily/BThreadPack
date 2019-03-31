@@ -192,11 +192,11 @@ int32 BAbstractTask::priority() const {
 }
 
 int64 BAbstractTask::executionTime() {
-    return m_private_ptr->m_execute_timer.time();
+    return m_private_ptr->m_execute_timer.time().count();
 }
 
 int64 BAbstractTask::realTime() {
-    return m_private_ptr->m_real_timer.time();
+    return m_private_ptr->m_real_timer.time().count();
 }
 
 const std::string BAbstractTask::UUID() {

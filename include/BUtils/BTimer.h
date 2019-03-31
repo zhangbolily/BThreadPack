@@ -47,8 +47,6 @@
 #include "BCore/BDebug.h"
 #include "BCore/BType.h"
 
-#define MILLIAN 1000000
-
 namespace BUtils {
 
 using namespace BCore;
@@ -67,22 +65,83 @@ class BTimer{
     BTimer();
     ~BTimer();
 
-    /* @start record time in milliseconds */
     void start();
+    int32 start(int64 timer_duration);  // timer_duration in milliseconds
 
-    /* @start timer with specified duration */
-    int32 start(int64 _msec);
-    int32 start(std::chrono::milliseconds _msec);
+    template< class Rep, class Period >
+    int32 start(const std::chrono::duration<Rep, Period>& timer_duration) {
+        if (m_timer_status == BTimer::Stop) {
 
-    /* @stop record time or this timer */
+            if (timer_duration <= timer_duration.zero())
+                return BError;
+
+            m_timer_status = BTimer::Alarm;
+            m_start_time_us = steady_clock::now();
+
+#ifdef WIN32
+#else
+            auto _s = std::chrono::duration_cast<std::chrono::seconds>(timer_duration);
+            auto _ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timer_duration - _s);
+            m_timer_initial_value.it_value.tv_sec = _s.count();
+            m_timer_initial_value.it_value.tv_nsec = _ns.count();
+#ifdef _B_DEBUG_
+            B_PRINT_DEBUG("BTimer::start -"
+                          " m_timer_initial_value.it_value.tv_sec is "
+                                  << m_timer_initial_value.it_value.tv_sec << ".")
+            B_PRINT_DEBUG("BTimer::start -"
+                          " m_timer_initial_value.it_value.tv_nsec is "
+                                  << m_timer_initial_value.it_value.tv_nsec << ".")
+#endif
+            // There is an existing timer, delete it first.
+            if (m_timer_id != nullptr) {
+                timer_delete(m_timer_id);
+                m_timer_id = nullptr;
+            }
+
+            if (timer_create(CLOCK_REALTIME, &m_timer_event, &m_timer_id) == -1) {
+#ifdef _B_DEBUG_
+                B_PRINT_DEBUG("BTimer::start - m_timer_id is " << m_timer_id << ".")
+#endif
+                return BCore::ReturnCode::BError;
+            } else if (timer_settime(m_timer_id, 0, &m_timer_initial_value, nullptr)
+                       == -1) {
+#ifdef _B_DEBUG_
+                B_PRINT_DEBUG("BTimer::start - m_timer_id is " << m_timer_id << ".")
+#endif
+                return BCore::ReturnCode::BError;
+            } else {
+#ifdef _B_DEBUG_
+                B_PRINT_DEBUG("BTimer::start - m_timer_id is " << m_timer_id << ".")
+#endif
+                return BCore::ReturnCode::BSuccess;
+            }
+#endif
+        }
+
+        return BCore::ReturnCode::BSuccess;
+    }
+
     int32 stop();
-
-    /* @time - Get how many milliseconds have beed recorded or remained */
-    int64 time() const;
+    std::chrono::microseconds time() const;
 
 #ifndef WIN32
-    void setInterval(int64 _msec);
-    void setInterval(std::chrono::milliseconds _msec);
+    void setInterval(int64 timer_duration);     // timer_duration in milliseconds
+
+    template< class Rep, class Period >
+    void setInterval(const std::chrono::duration<Rep, Period>& timer_duration) {
+        auto _s = std::chrono::duration_cast<std::chrono::seconds>(timer_duration);
+        auto _ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timer_duration - _s);
+        m_timer_initial_value.it_interval.tv_sec = _s.count();
+        m_timer_initial_value.it_interval.tv_nsec = _ns.count();
+#ifdef _B_DEBUG_
+        B_PRINT_DEBUG("BTimer::setInterval -"
+                      " m_timer_initial_value.it_interval.tv_sec is "
+                              << m_timer_initial_value.it_interval.tv_sec << ".")
+        B_PRINT_DEBUG("BTimer::setInterval -"
+                      " m_timer_initial_value.it_interval.tv_nsec is "
+                              << m_timer_initial_value.it_interval.tv_nsec << ".")
+#endif
+    }
 
     template<class Function>
     void callOnTimeout(Function&& _f, void* _arg) {

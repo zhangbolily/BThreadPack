@@ -111,6 +111,14 @@ int main(int argc, char** argv)
         p_slice_pi->outputBuffer(&pi_slice_result, buffer_size);
         
         ll_Pi += *(static_cast<const long long *>(pi_slice_result));
+
+        std::cout << "Task " << p_slice_pi->name() << ":" << std::endl;
+        std::cout << "Schedule time: " <<
+                  p_slice_pi->realTime() - p_slice_pi->executionTime() << "us" << std::endl;
+        std::cout << "Real time: " <<
+                  p_slice_pi->realTime() << "us" << std::endl;
+        std::cout << "Execution time: " <<
+                  p_slice_pi->executionTime() << "us" << std::endl;
         
         delete p_slice_pi;
     }

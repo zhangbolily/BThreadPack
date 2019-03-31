@@ -68,11 +68,11 @@ uint BGroupTask::size() {
 }
 
 int64 BGroupTask::executionTime() {
-    return m_private_ptr->m_execute_timer.time();
+    return m_private_ptr->m_execute_timer.time().count();
 }
 
 int64 BGroupTask::realTime() {
-    return m_private_ptr->m_real_timer.time();
+    return m_private_ptr->m_real_timer.time().count();
 }
 
 const std::string BGroupTask::UUID() {
