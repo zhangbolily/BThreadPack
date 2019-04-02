@@ -11,8 +11,6 @@
 #include "BThreadPack/BGroupTask.h"
 #include "BThreadPack/BThreadPool.h"
 
-#define PRECISION 2000
-
 using namespace std;
 using namespace BThreadPack;
 
@@ -20,17 +18,15 @@ const long long multiple = 4000000000000000000;
 
 class CalculatePiTask: public BGeneralTask{
 public:
-    CalculatePiTask(int _task_id)
+    explicit CalculatePiTask(int _task_id)
         :BGeneralTask(false),
         m_task_id_(_task_id)
     {
     }
+
+    ~CalculatePiTask() override = default;
     
-    ~CalculatePiTask()
-    {
-    }
-    
-    virtual int execute()
+    int execute() override
     {
 #ifndef WIN32
         std::ostringstream _os;
@@ -55,7 +51,6 @@ private:
     
     long long pi(int _offset)
     {
-        _offset;
         bool sign = true;
         long long _pi = 0;
         for(unsigned long long i = 0;i < m_range;i++)
@@ -70,38 +65,37 @@ private:
     }
 };
 
-int num_threads = 8;
-BThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
-
 int main(int argc, char** argv)
-{   
-    //vector<BGeneralTask *> task_vec;
+{
+    //1. Initialize thread pool.
+    uint num_threads = 8;
+    BThreadPool pi_slice_pool(num_threads, BAbstractThreadPool::BThreadControlMode::DynamicThreadCapacity);
+
     int slice_num = 8;
     BGroupTask pi_group_task;
-    //1. Add task into thread pool.
+
+    //2. Add task into thread pool.
     for(int i = 0;i < slice_num;i++)
     {
-        CalculatePiTask* p_slice_pi = new CalculatePiTask(i);
+        auto p_slice_pi = new CalculatePiTask(i);
         std::string _slice_name = "Pi slice #";
         _slice_name += std::to_string(i);
         p_slice_pi->setName(_slice_name);
         pi_group_task.pushTask(static_cast<BAbstractTask *>(p_slice_pi));
-        //task_vec.push_back(static_cast<BGeneralTask *>(p_slice_pi));
     }
     
     pi_slice_pool.pushGroupTask(&pi_group_task);
     
-    //pi_slice_pool.optimizer(task_vec, BGeneralThreadPool::Optimizer::PerformanceFirst);
     cout << "Current threads: " << pi_slice_pool.size() <<endl;
     
-    //2. Calculate pi
+    //3. Calculate pi
     long long ll_Pi = 0;
     double Pi = 0.0;
     
-    pi_group_task.wait();   // Wait all tasks in this group finieshed.
+    pi_group_task.wait();   // Wait all tasks in this group finished.
     
-    while(1){
-        CalculatePiTask* p_slice_pi = static_cast<CalculatePiTask*>(pi_group_task.getFinishedTask());
+    while(true){
+        auto p_slice_pi = dynamic_cast<CalculatePiTask*>(pi_group_task.getFinishedTask());
         
         if(p_slice_pi == nullptr)
             break;
@@ -113,6 +107,8 @@ int main(int argc, char** argv)
         ll_Pi += *(static_cast<const long long *>(pi_slice_result));
 
         std::cout << "Task - " << p_slice_pi->name() << ":" << std::endl;
+        std::cout << "UUID: " <<
+                  p_slice_pi->UUID() << std::endl;
         std::cout << "Schedule time: " <<
                   p_slice_pi->realTime() - p_slice_pi->executionTime() << " us" << std::endl;
         std::cout << "Real time: " <<
