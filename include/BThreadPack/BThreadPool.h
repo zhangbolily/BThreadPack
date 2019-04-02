@@ -61,18 +61,15 @@ class BThreadPool: public BAbstractThreadPool{
     explicit BThreadPool(uint _thread_cap);
     BThreadPool(uint _thread_cap,
                 BAbstractThreadPool::BThreadControlMode _mode);
-    virtual ~BThreadPool();
+    ~BThreadPool() override;
 
     /* Overload pushTask */
     void pushTask(BGeneralTask* _task_ptr);
     void pushGroupTask(BGroupTask* _task_ptr);
     void setOptimizePolicy(BThreadPool::Optimizer _policy);
-
     int32 optimizer(std::vector<BGeneralTask *> _task_vec,
                     BThreadPool::Optimizer _op_type);
-
-    virtual uint resize(uint _size);
-
+    uint resize(uint _size) override;
     const BThreadPool::Optimizer optimizePolicy() const;
 
  protected:

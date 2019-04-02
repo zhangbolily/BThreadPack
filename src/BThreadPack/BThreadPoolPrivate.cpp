@@ -208,4 +208,8 @@ void BThreadPoolPrivate::setThreadName(const std::string _name) {
     BThreadPoolPrivate::setThreadName(_name.c_str());
 }
 
+void BThreadPoolPrivate::threadMonitor(BThreadPool* thread_pool_handle) {
+
+}
+
 }  // namespace BThreadPack

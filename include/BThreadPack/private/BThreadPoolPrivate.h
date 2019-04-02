@@ -59,6 +59,7 @@ class BThreadPoolPrivate : public BAbstractThreadPoolPrivate {
     static void Run(BThreadInfo& thread_info);
     static void setThreadName(const char* _name);
     static void setThreadName(const std::string _name);
+    static void threadMonitor(BThreadPool* thread_pool_handle);
 
  protected:
     BThreadPool* m_public_ptr;
