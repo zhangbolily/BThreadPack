@@ -69,7 +69,7 @@ BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate() {
     // Delete all tasks in the queue.
     BAbstractTask* _task = nullptr;
     BGroupTask* _gtask = nullptr;
-    while (1) {
+    while (true) {
         _task = getTask();
         if (_task != nullptr)
             delete _task;
@@ -88,7 +88,7 @@ BAbstractThreadPoolPrivate::~BAbstractThreadPoolPrivate() {
     // Delete all message in message queue.
     // TODO(Ball Chang): Message queue contains generic pointer
     // which can't be deleted.
-    for (map<int, queue<void *>>::iterator it = m_message_queue_map_.begin();
+    for (auto it = m_message_queue_map_.begin();
         it != m_message_queue_map_.end();
         ++it) {
         while (it->second.front() != nullptr) {
@@ -203,7 +203,7 @@ void BAbstractThreadPoolPrivate::pushFinishedTask(
     m_finished_task_queue.push(finished_task);
 }
 
-int64 BAbstractThreadPoolPrivate::initializeThreadPool() {
+int32 BAbstractThreadPoolPrivate::initializeThreadPool() {
     m_public_ptr->setStatus(
             BAbstractThreadPool::BThreadPoolStatus::ThreadPoolRunning);
 
@@ -222,7 +222,7 @@ int64 BAbstractThreadPoolPrivate::initializeThreadPool() {
     return BCore::ReturnCode::BSuccess;
 }
 
-int64 BAbstractThreadPoolPrivate::addThread(BThread&& _bthread) {
+int32 BAbstractThreadPoolPrivate::addThread(BThread&& _bthread) {
     if (m_public_ptr->capacity() == m_public_ptr->size()) {
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPoolPrivate::addThread"
@@ -252,7 +252,7 @@ void BAbstractThreadPoolPrivate::startAllTasks() {
     m_start_condition_.notify_all();
 }
 
-int64 BAbstractThreadPoolPrivate::removeThread(uint _thread_num) {
+int32 BAbstractThreadPoolPrivate::removeThread(uint _thread_num) {
     if (_thread_num > m_public_ptr->size()) {
 #ifdef _B_DEBUG_
         B_PRINT_DEBUG("BAbstractThreadPool::removeThread"
@@ -275,7 +275,7 @@ int64 BAbstractThreadPoolPrivate::removeThread(uint _thread_num) {
         }
         // Remove action finished, reset m_remove_count
         m_remove_count = 0;
-        return m_thread_vec_.size();
+        return static_cast<int32>(m_thread_vec_.size());
     }
 }
 

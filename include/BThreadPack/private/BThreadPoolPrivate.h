@@ -52,8 +52,8 @@ class BThreadPoolPrivate : public BAbstractThreadPoolPrivate {
     uint m_max_performance_threads_;
     uint m_min_time_threads_;
 
-    virtual int64 initializeThreadPool();
-    virtual int64 initializeThreadPool(uint _thread_num);
+    virtual int32 initializeThreadPool();
+    virtual int32 initializeThreadPool(uint _thread_num);
     int32 normalOptimizer(std::vector<BGeneralTask *> _task_vec);
 
     static void Run(BThreadInfo& thread_info);

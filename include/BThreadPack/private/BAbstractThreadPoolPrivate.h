@@ -97,10 +97,10 @@ class BAbstractThreadPoolPrivate {
     void pushFinishedTask(BAbstractTask* finished_task);
     void startOneTask();
     void startAllTasks();
-    int64 addThread(BThread&& _bthread);
-    int64 removeThread(uint _thread_num);
+    int32 addThread(BThread&& _bthread);
+    int32 removeThread(uint _thread_num);
 
-    virtual int64 initializeThreadPool();
+    virtual int32 initializeThreadPool();
     static void Run(BThreadInfo &thread_info);
 };
 }  // namespace BThreadPack

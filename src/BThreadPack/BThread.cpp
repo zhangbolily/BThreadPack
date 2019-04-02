@@ -122,6 +122,7 @@ std::thread::id BThreadInfo::id() {
 }
 
 #ifdef _B_DEBUG_
+#ifdef UNIX
 void BThreadInfo::startCPUTiming() {
     cpu_timer.startCPUTiming();
 }
@@ -133,6 +134,8 @@ void BThreadInfo::stopCPUTiming() {
 int64 BThreadInfo::CPUTime() {
     return cpu_timer.CPUTime();
 }
+
+#endif
 #endif
 
 // End of implementation

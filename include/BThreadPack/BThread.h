@@ -74,10 +74,12 @@ class BThreadInfo {
     bool isRunning();
     BAbstractThreadPool* threadPoolHandle();
     std::thread::id id();
+#ifdef _B_DEBUG_
 #ifdef UNIX
     void startCPUTiming();
     void stopCPUTiming();
     int64 CPUTime();
+#endif
 #endif
 
  protected:

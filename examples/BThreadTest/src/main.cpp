@@ -42,13 +42,22 @@ using BUtils::BTimer;
 
 BTimer execution_timer;
 BTimer real_timer;
-std::clock_t cpu_time_start;
-std::clock_t cpu_time_stop;
+BTimer cpu_timer;
 
 void run(BThreadInfo& thread_info) {
-    cpu_time_stop = std::clock();
+    cpu_timer.stopCPUTiming();
     execution_timer.start();
     thread_info.running();
+
+#ifdef _B_DEBUG_
+#ifdef UNIX
+    thread_info.startCPUTiming();
+#endif
+#endif
+
+    if (thread_info.threadPoolHandle() == nullptr) {
+        std::cout << "Thread pool handle is null." << std::endl;
+    }
 
     std::cout << "Worker thread: I'm running......" << std::endl;
     sleep(3);
@@ -57,35 +66,53 @@ void run(BThreadInfo& thread_info) {
     thread_info.exit(0);
     execution_timer.stop();
     real_timer.stop();
+#ifdef _B_DEBUG_
+#ifdef UNIX
+    thread_info.stopCPUTiming();
+    std::cout << "Worker thread costs cpu time : " << thread_info.CPUTime() << " us" << std::endl;
+#endif
+#endif
 }
 
 int main(int argc, char** argv) {
-    cpu_time_start = std::clock();
-
+    std::cout << "Start BThread tests." << std::endl;
+    cpu_timer.startCPUTiming();
     real_timer.start();
     BThreadInfo thread_info;
+    thread_info.setThreadPoolHandle(nullptr);
+
     BThread infinite_run;
     infinite_run.start(run, thread_info);
+    infinite_run.setAffinity(0);
     infinite_run.detach();
+    // Just for testing.
+    infinite_run.join();
 
     sleep(1);
 
     while(1) {
         std::cout << "Main thread: I'm running......" << std::endl;
+
         if (infinite_run.isRunning())
-            std::cout << "Main thread: Worker thread #" << infinite_run.id() << " is running, very good." << std::endl;
-        else {
-            std::cout << "Main thread: Worker thread #" << infinite_run.id() << " isn't running, very bad." << std::endl;
+            std::cout << "Main thread: Worker thread #" << infinite_run.id()
+            << " is running, very good." << std::endl;
+        else if (infinite_run.isExit()){
+            std::cout << "Main thread: Worker thread #" << infinite_run.id()
+            << " isn't running, very bad." << std::endl;
             break;
         }
+
         sleep(1);
     }
 
-    std::cout << "Create thread costs :" << 1000000*(cpu_time_stop - cpu_time_start)/CLOCKS_PER_SEC << " us" << std::endl;
-    std::cout << "All cpu time is :" << 1000000*(std::clock() - cpu_time_start)/CLOCKS_PER_SEC << " us" << std::endl;
-    std::cout << "Group task Pi :" << std::endl;
+    std::cout << "Create thread costs :" << cpu_timer.CPUTime()
+            << " us" << std::endl;
+    std::cout << "Thread priority is :" << infinite_run.priority()
+            << std::endl;
+    std::cout << "Group task Pi time summary:" << std::endl;
     std::cout << "Schedule time: " <<
-            real_timer.time().count() - execution_timer.time().count() << " us" << std::endl;
+            real_timer.time().count() - execution_timer.time().count()
+            << " us" << std::endl;
     std::cout << "Real time: " <<
             real_timer.time().count() << " us" << std::endl;
     std::cout << "Execution time: " <<

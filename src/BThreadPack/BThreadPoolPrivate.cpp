@@ -125,7 +125,7 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
 
         switch (thread_pool_handle->optimizePolicy()) {
             case BThreadPool::PerformanceFirst:{
-                uint64 *_task_time = new uint64;
+                int64 *_task_time = new int64;
                 *_task_time = p_general_task->executionTime();
                 thread_pool_handle->sendMessage(
                         TaskTimeMessageNum, static_cast<void*>(_task_time));
@@ -133,7 +133,7 @@ void BThreadPoolPrivate::Run(BThreadInfo &thread_info) {
             };
 
             case BThreadPool::ProcessTimeFirst:{
-                uint64 *_task_time = new uint64;
+                int64 *_task_time = new int64;
                 *_task_time = p_general_task->executionTime();
                 thread_pool_handle->sendMessage(
                         TaskTimeMessageNum, static_cast<void*>(_task_time));
@@ -165,11 +165,11 @@ int32 BThreadPoolPrivate::normalOptimizer(
     return BCore::ReturnCode::BSuccess;
 }
 
-int64 BThreadPoolPrivate::initializeThreadPool() {
+int32 BThreadPoolPrivate::initializeThreadPool() {
     return initializeThreadPool(m_public_ptr->capacity());
 }
 
-int64 BThreadPoolPrivate::initializeThreadPool(uint32 _thread_num) {
+int32 BThreadPoolPrivate::initializeThreadPool(uint _thread_num) {
     m_public_ptr->kill();
     m_public_ptr->setStatus(BThreadPool::BThreadPoolStatus::ThreadPoolRunning);
 
